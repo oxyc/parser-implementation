@@ -1,0 +1,42 @@
+digraph G {
+  node [fontname=Sans,fontsize=12,style=filled]
+  rankdir=LR;
+  nodesep=0.0;
+  overlap=compress;
+  style=filled; // clusters
+
+  subgraph cluster_0 {
+    label = "Kompilator";
+    color="#dddddd";
+
+    node [style=filled,color=white,shape="Mrecord"];
+
+    subgraph cluster_1 {
+      label = "Tolk";
+      color="#bbbbbb";
+
+      subgraph cluster_2 {
+        label = "Parser";
+        style=filled;
+        color="#999999";
+
+
+        lex -> syntactic// [label="Tokens", fontsize=10];
+      }
+
+      syntactic -> semantic// [label="Syntax träd", fontsize=10];
+    }
+
+    semantic -> generation// [label="Optimerat träd", fontsize=10];
+  }
+
+  start -> lex;
+  generation -> end;
+
+  lex [label="Lexikalanalys"]
+  syntactic [label="Syntaxanalys"]
+  semantic [label="Semantisk analys"];
+  generation [label="Kod generering"];
+  start [shape=note, label="Källkod"];
+  end [shape=note, label="Output"];
+}

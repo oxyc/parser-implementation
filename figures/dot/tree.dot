@@ -1,0 +1,38 @@
+digraph G {
+  node [fontname=Sans,fontsize=11,style=filled,color=white,fontcolor=red]
+  nodesep=0.0;
+  ranksep=0.4;
+
+  stat -> ifstat;
+  stat [label="Sats",fontcolor=black]
+
+  ifstat -> if;
+  ifstat -> expr;
+  ifstat -> then;
+  ifstat -> substat;
+  ifstat -> end;
+  ifstat [label="If-sats",fontcolor=black];
+
+  // x < 2
+  expr -> "x";
+  expr -> "<";
+  expr -> "2";
+  expr [label="Uttryck",fontcolor=black];
+
+  // x = x + 1
+  substat -> assign;
+  substat [label="Sats",fontcolor=black];
+  assign -> ident;
+  assign -> "=";
+  assign -> assignExpr;
+  assign [label="Tilldelning",fontcolor=black];
+
+  assignExpr -> ident2;
+  assignExpr -> "+";
+  assignExpr -> "1";
+  assignExpr [label="Uttryck",fontcolor=black];
+
+  ident [label="x"];
+  ident2 [label="x"];
+
+}

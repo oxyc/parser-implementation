@@ -11,13 +11,23 @@ REPLACE := $(REPLACE);s/\([^\]\)&/\1\\\&/g
 # Replace é with \'{e}
 REPLACE_QUOTED := s/é/\\\'{e}/g
 
+all: document
+
+figures:
+	@$(MAKE) -C figures/ all
+
 document:
-	pdflatex $(DOCUMENT)
-	sed -i '$(REPLACE)' $(REFERENCES)
-	sed -i "$(REPLACE_QUOTED)" $(REFERENCES)
-	bibtex $(DOCUMENT)
-	pdflatex $(DOCUMENT)
-	pdflatex $(DOCUMENT)
+	@pdflatex $(DOCUMENT)
+
+full: figures document
+	@sed -i '$(REPLACE)' $(REFERENCES)
+	@sed -i "$(REPLACE_QUOTED)" $(REFERENCES)
+	@bibtex $(DOCUMENT)
+	@pdflatex $(DOCUMENT)
+	@pdflatex $(DOCUMENT)
 
 clean:
-	rm -f *.aux *.bbl *.blg *.lof *.lot *.log *.toc *.lol
+	@rm -f *.aux *.bbl *.blg *.lof *.lot *.log *.toc *.lol
+	@$(MAKE) -C figures clean
+
+.PHONY: all figures

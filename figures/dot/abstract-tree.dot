@@ -1,0 +1,34 @@
+digraph G {
+  node [fontname=Sans,fontsize=11,style=filled,fillcolor="#aaaaaa",shape=box,color="#666666"]
+  ranksep=0.4;
+
+  stat -> ifstat;
+  stat [label="Sats",fontcolor=black]
+
+  ifstat -> expr;
+  ifstat -> substat;
+  ifstat [label="If-sats",fontcolor=black];
+
+  // x not 2
+  expr -> ident3;
+  expr -> const2;
+  expr [label="Binärt uttryck|\<",fontcolor=black,shape=record];
+
+  // x = x + 1
+  substat -> assign;
+  substat [label="Sats",fontcolor=black];
+  assign -> ident;
+  assign -> assignExpr;
+  assign [label="Tilldelning",fontcolor=black];
+
+  assignExpr -> ident2;
+  assignExpr -> const1;
+  assignExpr [label="Binärt Uttryck|+",fontcolor=black,shape=record];
+
+  ident [label="Variabel|x",shape=Mrecord,fillcolor="#eeeeee",color="#cccccc"];
+  ident2 [label="Variabel|x",shape=Mrecord,fillcolor="#eeeeee",color="#cccccc"];
+  ident3 [label="Variabel|x",shape=Mrecord,fillcolor="#eeeeee",color="#cccccc"];
+  const1 [label="Konstant|1",shape=Mrecord,fillcolor="#eeeeee",color="#cccccc"];
+  const2 [label="Konstant|2",shape=Mrecord,fillcolor="#eeeeee",color="#cccccc"];
+
+}
