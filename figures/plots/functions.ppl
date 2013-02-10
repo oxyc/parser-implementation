@@ -1,0 +1,5 @@
+set width 6
+set terminal pdf color
+set output 'functions.pdf'
+piechart 'data/functions.dat' using $1 label key "%s"%($2)
+# vim: set ft=gnuplot

@@ -1,0 +1,14 @@
+digraph G {
+  node [fontname=Sans,fontsize=12,shape=doublecircle] d d2;
+  node [fontname=Sans,fontsize=12,shape=circle];
+  edge [fontsize=12];
+  rankdir=LR;
+
+  d [label="0-9"]
+  d2 [label="0-9"]
+
+  s1 -> d
+  s1 -> "," -> d
+  d -> d;
+  d2 -> d2;
+}

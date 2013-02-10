@@ -1,5 +1,5 @@
 digraph G {
-  node [fontname=Sans,fontsize=11,style=filled,color=white,fontcolor=red]
+  node [fontname=Sans,fontsize=16,style=filled,color=white,fontcolor=red]
   nodesep=0.0;
   ranksep=0.4;
 

@@ -1,0 +1,17 @@
+digraph G {
+
+  subgraph cluster_0 {
+    color=black
+    label="Obegränsad grammatik"
+
+    subgraph cluster_1 {
+      label="Kontextkänslig grammatik"
+
+      subgraph cluster_2 {
+        label="Kontextfri grammatik"
+
+        reg [label="Reguljär grammatik",shape="box"];
+      }
+    }
+  }
+}

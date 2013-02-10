@@ -1,0 +1,9 @@
+COMMIT "Node v0.8.16"
+"utgångsläge (~7.0 ms)" 7.0
+"bailout (~6.7 ms)" 6.7
+"borttagning av regexp" 3.2
+"lagring av raw data" 3.3
+"sträng optimering" 3.0
+"abstraktion av token skapning" 3.1
+"återgå till inlined tokens" 2.9
+"ytterliga sträng optimering" 2.8
