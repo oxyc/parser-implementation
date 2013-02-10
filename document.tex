@@ -1,6 +1,8 @@
 \newcommand{\template}{template}
 \documentclass[listing,syntax,swedish]{\template/thesis}
 
+\usepackage{amsmath}
+\usepackage{subfig}
 \begin{document}
 
 \input{settings}
@@ -11,17 +13,61 @@
 \input{pages/tables}
 
 % Content
-\thispagestyle{empty}
+% \thispagestyle{empty}
 %\addcontentsline{toc}{section}{Förkortningar och definitioner}
-\input{chapters/definitioner}
-\addcontentsline{toc}{section}{Förord}
-\input{chapters/forord}
-\clearpage
+% \input{chapters/definitioner}
+% \addcontentsline{toc}{section}{Förord}
+% \input{chapters/forord}
+% \clearpage
+
 \input{chapters/inledning}
-\input{chapters/teori}
-\input{chapters/design}
+\clearpage
+\input{chapters/sprak}
+\clearpage
+\input{chapters/parsning}
+\clearpage
 \input{chapters/implementation}
+\clearpage
+\input{chapters/optimering}
+\clearpage
+\input{chapters/kvalitet}
+\clearpage
 \input{chapters/diskussion}
+
+
+% Inledning
+% - Målsättning och syfte
+% - Utförande
+% - Begränsningar
+% - Definitioner
+%
+% Programmeringsspråk
+% - Flöde
+% - Kontextfri grammatik
+%   - Backaus-Naur Form
+% - Lua
+%   - ..
+%
+% Parser teknologi
+% - Lexikalisering
+%   - Scanner
+%   - Tokenizer
+% - Syntastisk analys
+%   - AST
+% - Patterns
+%   - Recursive descent
+%   - Bottom-up
+% - Parser Generators
+%
+% Parser implementation
+% - Krav
+% - Verktyg
+% - Analys av Lua
+% - Parser design
+% - Algoritm optimering
+%
+% Diskussion
+
 
 % Include the reference list
 \bibliography{references}
@@ -33,4 +79,4 @@
 
 \end{document}
 
-% vim: set tw=78:ts=2:sw=2:et:fdm=marker:wrap:wm=78
+% vim: set tw=78:ts=2:sw=2:et:fdm=marker:wrap:wm=78:ft=tex

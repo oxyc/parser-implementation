@@ -1,15 +1,59 @@
 \section{Implementation}
 
-\subsection{Grammatik}
-\subsubsection{Literals}
-\subsubsection{Expressions}
-\subsubsection{Assignments}
+\subsection{Lua}
 
-\subsection{Output}
-\subsubsection{AST}
+Vad är Lua och hur utmärks det.
 
-\subsection{Optimering}
-\subsubsection{Mikro optimering}
+\subsubsection{Funktionalitet}
+
+Vilka funktioner har lua.
+
 \subsubsection{Datastrukturer}
-\subsubsection{Trie}
+
+Beskriv hur allt är tables och hur det kan användas till OOP.
+
+\subsubsection{Grammatik}
+
+Beskriv luas grammatik och dess möjliga problem. Hänvisa till bilaga.
+
+\subsection{Design}
+
+LL(1)
+
+\subsection{Modifiering av grammatik}
+
+Hur modifierar vi grammatiken för en LL(1) parser
+
+\subsubsection{Lexer}
+
+\ldots
+
+\subsubsection{Parser}
+
+Beskriv hur parsern skiljer sig från luas egna.
+
+\subsubsection{Uttrycks parser}
+
+Likna parsern till Luas egna.
+
+\subsubsection{Resultat träd}
+
+Beskriv Mozilla Parser API, och funktionaliteten med separat AST funktioner.
+
+Vad är AST?
+
+\begin{figure}[ht]
+  \includegraphics[width=10cm]{figures/output/abstract-tree.pdf}
+  \caption{Abstrakt syntax träd som representation av en parsnings analys.}
+\end{figure}
+
+\subsection{JavaScript kodmönster}
+
+\subsubsection{Imperativt paradigm}
+
+OOP vs Imperativt.
+
+\subsubsection{Modul laddare}
+
+Require.JS, AMD, Node.JS, Browsers, vad det kan användas till.
 

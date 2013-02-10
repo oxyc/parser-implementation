@@ -1,0 +1,182 @@
+
+	stat ::= local namelist [‘=’ explist] 
+		 varlist ‘=’ explist | 
+		 functioncall | 
+
+
+	varlist ::= var {‘,’ var}
+
+	var ::=  Name | prefixexp ‘[’ exp ‘]’ | prefixexp ‘.’ Name 
+
+	namelist ::= Name {‘,’ Name}
+
+	exp ::=  nil | false | true | Number | String | ‘...’ | functiondef | 
+		 prefixexp | tableconstructor | exp binop exp | unop exp 
+
+	prefixexp ::= var | functioncall | ‘(’ exp ‘)’
+
+	functioncall ::=  prefixexp args | prefixexp ‘:’ Name args 
+
+	args ::=  ‘(’ [explist] ‘)’ | tableconstructor | String
+
+	explist ::= exp {‘,’ exp}
+
+	exp ::=   nil
+		| false
+		| true
+		| Number
+		| String
+		| ‘...’
+		| function funcbody
+		| Name					-\			\
+		| prefixexp ‘[’ exp ‘]’			- - var			|
+		| prefixexp ‘.’ Name 			-/			|- prefixexp
+		| prefixexp ‘(’ [explist] ‘)’		-\			|
+		| prefixexp ‘{’ [fieldlist] ‘}’		- \-functioncall	|
+		| prefixexp String			- /			|
+		| prefixexp ‘:’ Name args 		-/			|
+		| ‘(’ exp ‘)’				-			/
+		| ‘{’ [fieldlist] ‘}’
+		| exp binop exp
+		| unop exp 
+
+
+	exp ::= subExpr
+	
+	subExpr ::= ( unop exp | simpleExp ) { binop subExpr }
+
+	simpleExp ::= Number | String | nil | true | false | '...' | function funcbody | tableconstructor | primaryExp
+
+	primaryExp ::= prefixExp { '.' Name | '[' exp ']' | ':' Name args | args }
+
+	prefixExp ::= Name | '(' exp ')'
+
+
+
+
+	exp ::=  nil | false | true | Number | String | ‘...’ | functiondef | 
+		 prefixexp | tableconstructor | exp binop exp | unop exp 
+
+	prefixexp ::= var | functioncall | ‘(’ exp ‘)’
+
+	functioncall ::=  prefixexp args | prefixexp ‘:’ Name args 
+---------------------------------------------------------------------------------
+
+1.	exp ::= Primary | prefixexp | exp binop exp | unop exp
+
+2.	exp  ::= Primary exp' | prefixexp exp' | unop exp
+	exp' ::= binop exp | epsilon
+
+---
+1.	prefixexp ::= var | functioncall | ‘(’ exp ‘)’
+	var ::=  Name | prefixexp ‘[’ exp ‘]’ | prefixexp ‘.’ Name 
+	functioncall ::=  prefixexp args | prefixexp ‘:’ Name args 
+
+2.	prefixexp ::= Name | prefixexp ‘[’ exp ‘]’ | prefixexp ‘.’ Name | functioncall | ‘(’ exp ‘)’
+	functioncall ::=  prefixexp args | prefixexp ‘:’ Name args
+
+3.	prefixexp ::= Name | prefixexp ‘[’ exp ‘]’ | prefixexp ‘.’ Name | prefixexp args | prefixexp ‘:’ Name args | ‘(’ exp ‘)’
+
+4.	prefixexp  ::= Name prefixexp' | ‘(’ exp ‘)’ prefixexp'
+	prefixexp' ::= ‘[’ exp ‘]’ | ‘.’ Name | args | ‘:’ Name args | epsilon
+
+----
+
+====> 	exp  ::= Primary exp' | prefixexp exp' | unop exp
+	exp' ::= binop exp | epsilon
+
+	prefixexp  ::= Name prefixexp' | ‘(’ exp ‘)’ prefixexp'
+	prefixexp' ::= ‘[’ exp ‘]’ | ‘.’ Name | args | ‘:’ Name args | epsilon
+
+	primary ::= nil | false | true | Number | String | ‘...’ | functiondef | tableconstructor
+
+=====>	exp ::= (unop exp | primary | prefixexp) { binop exp }
+	primary ::= nil | false | true | Number | String | ‘...’ | functiondef | tableconstructor
+	prefixexp ::= Name prefixexp' | ‘(’ exp ‘)’ prefixexp'
+	prefixexp' ::= ‘[’ exp ‘]’ | ‘.’ Name | args | ‘:’ Name args | epsilon
+
+THIS ONE -----------
+	exp ::= (unop exp | primary | prefixexp ) { binop exp }
+	primary ::= nil | false | true | Number | String | ‘...’ | functiondef | tableconstructor
+	prefixexp ::= (Name | ‘(’ exp ‘)’ ) { ‘[’ exp ‘]’ | ‘.’ Name | ‘:’ Name args | args }
+
+	args ::=  ‘(’ [explist] ‘)’ | tableconstructor | String
+
+-- Take into account functioncall
+
+	exp ::= (unop exp | primary | prefixexp ) { binop exp }
+	primary ::= nil | false | true | Number | String | ‘...’ | functiondef | tableconstructor
+	prefixexp ::= (Name | ‘(’ exp ‘)’ ) { ‘[’ exp ‘]’ | ‘.’ Name | ‘:’ Name args | args }
+
+	args ::=  ‘(’ [explist] ‘)’ | tableconstructor | String
+
+	functioncall ::= prefixexp args | prefixexp ‘:’ Name args
+
+=====>  
+	exp ::= Primary exp' | unop exp | ( Name prefixexp | ‘(’ exp ‘)’ prefixexp ) exp'
+	prefixexp ::= ‘[’ exp ‘]’ | ‘.’ Name | args | ‘:’ Name args | epsilon
+	primary ::= nil | false | true | Number | String | ‘...’ | functiondef | tableconstructor
+
+	exp' ::= binop exp | epsilon
+
+	args ::=  ‘(’ [explist] ‘)’ | tableconstructor | String
+
+------
+	exp ::= subExpr
+	
+	subExpr ::= ( unop exp | simpleExp ) { binop subExpr }
+
+	simpleExp ::= Number | String | nil | true | false | '...' | function funcbody | tableconstructor | primaryExp
+
+	primaryExp ::= prefixExp { '.' Name | '[' exp ']' | ':' Name args | args }
+
+	prefixExp ::= Name | '(' exp ')'
+	
+
+---------------------------------------------------------------------------------
+	exp ::=  nil | false | true | Number | String | ‘...’ | functiondef | 
+		 tableconstructor | unop exp
+		| exp binop exp
+		| prefixexp
+
+	prefixexp ::= var | functioncall | ‘(’ exp ‘)’
+
+	functioncall ::=  prefixexp args | prefixexp ‘:’ Name args 
+
+Variable:
+Name
+Prefix[]
+Prefix.Name
+Prefix[].Name
+-> Name[].Name
+FnCall()[].Name
+
+FunctionCall
+Prefix.Name.Name:Name("stuff")
+Prefix.Name.Name:Name{}
+Prefix.Name.Name:Name "stuff"
+Prefix()
+
+Function call
+Name()
+Name{}
+Name ""
+Name:
+
+	chunk ::= block
+	block ::= {stat} [retstat]
+	retstat ::= return [explist] [‘;’]
+	label ::= ‘::’ Name ‘::’
+	funcname ::= Name {‘.’ Name} [‘:’ Name]
+	functiondef ::= function funcbody
+	funcbody ::= ‘(’ [parlist] ‘)’ block end
+	parlist ::= namelist [‘,’ ‘...’] | ‘...’
+	tableconstructor ::= ‘{’ [fieldlist] ‘}’
+	fieldlist ::= field {fieldsep field} [fieldsep]
+	field ::= ‘[’ exp ‘]’ ‘=’ exp | Name ‘=’ exp | exp
+	fieldsep ::= ‘,’ | ‘;’
+	binop ::= ‘+’ | ‘-’ | ‘*’ | ‘/’ | ‘^’ | ‘%’ | ‘..’ | 
+		 ‘<’ | ‘<=’ | ‘>’ | ‘>=’ | ‘==’ | ‘~=’ | 
+		 and | or
+	unop ::= ‘-’ | not | ‘#’
+

@@ -1,0 +1,167 @@
+\section{Parsning}
+
+Implementeringen av ett programmeringsspråk finns i flera varianter och en
+vanlig sådan är kompilatorn. Denna implementation läser indata och
+producerar sedan ett körbart program utgående från de instruktioner den fått.
+Själva processen av kompilering består av flera faser och komponenter. Den
+första komponenten är en parser som läser indata och konstruerar en
+fördefinierad struktur av de regler som givits. Vid detta skede bryr sig
+programmet inte ännu om vad som skall göras utan den försöker enbart identifiera
+de olika reglerna och granska att dess syntax är korrekt. Parsern körs normalt
+som en komponent inne i en tolk vars funktion i sin tur är att förstå och tolka
+innebördet hos en regel. När parsern är klar med sin analys returnerar den
+strukturen till tolken som i sin tur returnerar sin omformning av strukturen
+tillbaka till huvudkomponenten, kompilatorn. Kompilatorn fungerar som en
+översättare som slutligen genererar den kod som datorns processor kan förstå.
+En översikt av dessa komponenter och dess funktioner kan hittas i
+figur~\ref{fig:compiler} \citep[s. 16]{pt10}.
+
+\begin{figure}[ht]
+  \includegraphics[width=\textwidth]{figures/output/language-stages.pdf}
+  \caption{Översikt av komponenterna i en kompilator.}
+  \label{fig:compiler}
+\end{figure}
+
+Parsnings processen kan delas upp i två skilda faser, först en s.k.
+lexikal analys som identifierar lexikala element, mer kända som tokens. Tokens
+är identifierbara teckensträngar med speciell betydelse. De kategoriseras
+enligt typer så som nyckelord, konstanter, parametrar osv. \citep[s. 6]{aa06}.
+
+Den andra fasen som sker efter att tokens är identifierade är den syntaktiska
+analysen var elementen sammansätts till helhets uttryck som utgör sin specifika
+funktion.
+
+\subsection{Lexikal analys}
+
+Eftersom elementen i en lexikal analys kan beskrivas med en reguljär grammatik
+använder man sig ofta av en ändlig automat för att läsa den. Denna typ av
+automat brukar man kalla för lexer. Automaten börjar i ett specifikt start
+läge var den väntar på ett tecken att läsa. När ett tecken läses går den genom
+en serie alternativa lösningar den har för att minska mängden slutgiltiga
+lösningar. När därpå följande tecken läses in fortsätter den att härleda sig
+vidare tills den når en slutgiltig lösning, eller alternativt inte känner igen
+elementet och kastar ett felmeddelande. När lösningen är hittad skickar lexern
+elementet tillbaka till parsern och återgår till sitt utgångsläge för att
+vänta på nästa tecken. På detta sätt kan lexern, som har en effektiv
+algoritm, kasta bort onödig information så som mellanslag och kommentarer för
+att sedan ge uttryckets riktiga element vidare till parsern som nu enkelt vet
+om en teckensträng är en nyckelordsterminal eller ett nummer \citep[s.
+51]{sm09}.
+
+\subsection{Syntastisk analys}
+
+\begin{figure}[ht]
+  \includegraphics[width=8cm]{figures/output/tree.pdf}
+  \caption{Den syntastiska uppdelningen av en kod-sats}
+\end{figure}
+
+\subsection{Parser typer}
+
+Som det nämnts tidigare använder sig de flesta parsers sig av en lexer för att
+göra en lexikal analys av de tokens som ges som indata. När parsern får dessa
+tokens påbörjar den en syntaktisk analys som kan implementeras på diverse
+olika sätt. Huvudsakligen existerar de i två typer. Antingen härleder de
+regler från vänster och kallas då LL parsers eller så härleder de regler från
+höger och kallas LR parsers \citep[s. 67]{sm09}.
+
+\subsubsection{LL parser}
+
+LL parsers kan man skriva förhand eftersom de i allmänhet följer en människas
+tankegång. De börjar med att gissa sig till en rot-regel, likt en ändlig
+automat, och förväntar sig sedan att löv-reglerna skall passa in en efter en.
+Om det misslyckas kan den gå till nästa alternativa regel och fortsätter
+fram tills den bevisat sin gissning. Denna typ av strategi kallas även för en
+uppifrån-och-ner strategi.
+
+\subsubsection{LR parser}
+
+LR parsers genereras huvudsakligen av maskiner eftersom de är svårare att
+visualisera. Dessa parsers börjar med att läsa löv-reglerna, alltså de minsta
+identifierbara reglerna och ansluter dem sedan till varandra fram till det att
+den nått en slutgiltig rot-regel. Detta kallas även för en nerifrån-och-upp
+strategi.
+
+\subsubsection{Recursive descent parser}
+
+\ldots
+
+\subsection{Tekniker}
+
+\subsubsection{Left factoring}
+
+Hur gör man left factoring
+
+\subsubsection{Prediction}
+
+Hur fungerar en predictive parser.
+
+
+% \section{Diskussion}
+% 
+% Med hjälp av denna överblick kan det konstateras att de två huvudsakliga
+% grammatikerna man behöver förstå och kunna vid implementeringen av ett
+% programmeringsspråk är den reguljära grammatiken samt den kontextfria
+% grammatiken. Om man använder sig av en grammatik utanför dessa kan man lätta
+% skapa ett komplext språk som blir svårt att implementera, vilket C++ är ett
+% exempel på.
+% 
+% Eftersom parsningsfasen inte innehåller en semantisk analys av ett uttryck kan
+% det även konstateras att uttryck inte behöver vara giltigt bara pga. att dessa
+% syntax är korrekt. Ytterligare krävs det en tolk för att fastställa att
+% uttrycket verkligen är korrekt.
+% 
+% Under åren har det utvecklats många typer av LL parsers och LR parsers och vi
+% har enbart beskrivit grundtanken bakom dess struktur. Eftersom det i dagens
+% läge även existerar ett flertal verktyg för att generera parsers utgående från
+% en BNF grammatik kan man fråga sig om det lönar sig att skriva parsers
+% förhand, och vad detta i så fall ger för fördel. Detta är ett ämne jag
+% personligen kommer att forska mer om i mitt examensarbete som kommer beskriva
+% implementationen av en manuellt skriven parser för programmeringsspråket Lua.
+
+
+% Formella språk och mer specifikt programmeringsspråk beskrivs ofta mha. en
+% formell grammatik. Dessa består av en serie regler som beskriver hur man
+% kombinerar tecken för att skapa ett giltigt uttryck. De beskriver dock inte
+% semantiken av dessa uttryck utan enbart hur dess giltiga syntax ser ut.
+%
+% Syntax grammatiken till ett formellt språk är uppbyggt av finita serier
+% terminaler, icke-terminaler och produktions regler. Terminaler uttrycker
+% konstanta strängvärden så som alfabetiska bokstäver och siffror medan
+% icke-terminaler uttrycker en varierande serie av terminaler så som t.ex. heltal
+% eller strängar. Produktions reglerna är sammansättnings definitionen för
+% icke-terminalernas värde.
+%
+% Syntax grammatiken beskriver alltså hur ett språk skall läsas utgående från
+% dess utformning. Denna analyserings form kallas syntaktisk analys eller
+% parsning. Trots att ett språk läses syntaktiskt korrekt betyder det dock inte
+% att det är korrekt. Det återstår en semantisk grammatik som beaktar
+% innebördet hos symboler och strukturer. Denna form av grammatik kommer dock
+% inte tas upp och hädanefter är alla hänvisningar till grammatik angående
+% syntax grammatik.
+
+%notationen uttrycker icke-terminaler namnet på en produktionsregel, och därmed
+
+% Syntax grammatiken till ett språk beskrivs ofta med hjälp av ett metaspråk och
+% ett av de vanligaste inom programmeringsspråk grammatiker är BNF (Backus-Naur
+% Form). Det existerar i varianter och I denna uppsats kommer jag att använda
+% en variant av EBNF (Extended BNF) för att beskriva grammatik på ett läsvänligt
+% sätt. Definitionen av symbolerna kan hittas i tabell~\ref{tab:ebnf}.
+
+% \begin{table}[ht]
+%   {\renewcommand{\arraystretch}{1.2}
+%   \caption{Syntax grammatik för BNF grammatiker i denna uppsats.}
+%   \begin{tabular}{| l | l |}
+%     \hline
+%     Definition & = \\
+%     Sammansättning & \\
+%     Alternering & | \\
+%     Valfrihet & [ \ldots ] \\
+%     Repetition & \{ \ldots \} \\
+%     Gruppering & ( \ldots ) \\
+%     \hline
+%   \end{tabular}
+%   \label{tab:ebnf}}
+% \end{table}
+
+% vim: set tw=78:ts=2:sw=2:et:fdm=marker:wrap:wm=78:ft=tex
+% vim: spell spelllang=sv
