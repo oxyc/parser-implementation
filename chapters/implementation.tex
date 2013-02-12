@@ -1,44 +1,354 @@
 \section{Implementation}
 
-\subsection{Lua}
+Implementation är uppdelad i fyra komponenter. När parsern startas börjar
+en syntaktisk analysator parsa input från rot-noden, dvs. från program-noden.
+Det första som görs är en kallelse till den andra komponenten, lexern. Lexern
+läser input tecken för tecken och tokeniserar värden som sedan returneras
+till den syntaktiska analysatorn. Utanför lexern hanteras inte enskilda tecken
+mer utan enbart tokens. Utöver dessa två komponenter finns en separat
+uttrycksparser samt ett delegerare som producerar ett syntax träd vilket
+slutligen returneras till programmet som kallat på parsern i första hand.
 
-Vad är Lua och hur utmärks det.
+\subsection{Lexer}
 
-\subsubsection{Funktionalitet}
+Lexern läser input enligt en reguljär grammatik och gör detta som en
+deterministisk ändlig automat. När parsningen av en token börjar hämtas det
+aktuella tecknet i input strängen och går sedan genom en serie villkor för att
+bestämma vilken var token slutar och av vilken typ den är. När en token tar
+slut har automaten nått sitt slutliga tillstånd och informationen returneras
+varefter automaten återgår till startläget för att vänta på nästa förfrågan.
 
-Vilka funktioner har lua.
+\subsubsection{Identifierare och nyckelord}
 
-\subsubsection{Datastrukturer}
+Beskriv identifier start, identifier part, prestanda. Notering om varför
+variabler inte börjar med siffror.
 
-Beskriv hur allt är tables och hur det kan användas till OOP.
+\subsubsection{Kommentarer och blanksteg}
 
-\subsubsection{Grammatik}
+Hur kommentarer och blanksteg ignoreras. Kommenterar lagras avskiljt.
 
-Beskriv luas grammatik och dess möjliga problem. Hänvisa till bilaga.
+\subsubsection{Litteraler och symboler}
 
-\subsection{Design}
+Beskriv string vs long string. Hex och exponenter. Dec och exponenter med JS
+native funktioner, escape sequences.
 
-LL(1)
+\subsection{Syntaktisk analysator}
 
-\subsection{Modifiering av grammatik}
+Den syntaktiska analysatorn är en rekursivt nedstigande parser. Den börjar
+från rot-noden, i Lua länd som \textit{chunk}. Denna nod består av ett block
+som i sin tur består av en obestämnd mängd satser. Varje nodtyp, eller enligt
+grammatiken regel är implementerad som en egen funktion som rekursivt kallar
+på andra regel funktioner. När input strängen tagit slut har parsern också
+returnerat ett träd av information till rot-noden som sedan returneras till
+programmet som begärt informationen.
 
-Hur modifierar vi grammatiken för en LL(1) parser
+Parsern är implementerad som en LL(1) parser med minne för en aktuell token,
+samt en lookahead token. Med hjälp av dessa två tokens kan hela Lua
+grammatiken syntaktiskt analyseras.
 
-\subsubsection{Lexer}
+Mycket av den syntaktiska analysatorns grammatik är samma som den ursprungliga
+Lua grammatiken, dock har vissa finjusteringar gjorts för att bland annat
+kunna identifiera variabel deklarationer från funktionskallelser. Dessa två
+sats-typer skulle normalt kräva fler lookahead tokens för att kunna
+identifieras korrekt. Implementationen har istället implementerat
+funktionalitet för memoisation. Detta innebär att det första alternativet
+testas och om det misslyckas används istället det andra alternativet.
 
-\ldots
+\subsubsection{EBNF notation till JavaScript}
 
-\subsubsection{Parser}
+Hur översätts notationen, exempel på if / while.
 
-Beskriv hur parsern skiljer sig från luas egna.
+\subsubsection{Satser}
 
-\subsubsection{Uttrycks parser}
+<stat> implementationen.
 
-Likna parsern till Luas egna.
+% När grammatiken av Lua börjar analyseras med tanke på en LL grammatik hittas
+% det första problemet med hur satser identifieras. I flera situationer kan inte
+% satsen identifieras utgående från första terminalen. Här kunde man exempelvis
+% använda sig av en stor switch-sats med en förutsägningsfunktion för
+% mångtydigheterna. För att försöka hålla komplexiteten av funktionerna liten
+% har jag dock valt att spjälka varje alternering till en egen funktion samt
+% kombinera vissa av dessa till en mellanregel var ytterligare identifiering
+% sker. För att lösa mångatydigheten med funktionskallelser och
+% variabeldeklarationer kombineras även dessa till en sista utväg för
+% sats-regeln. Ytterligare optimerar jag sats-regeln med att ordna reglerna
+% enligt popularitets data (Bilaga 2) jag analyserat från ett exempel program.
+%
+% Den slutgiltiga sats-regeln översatt till JavaScript visas i
+% figur~\ref{parsestatement} och EBNF notationen ser ut enligt följande:
+%
 
-\subsubsection{Resultat träd}
+% \setlength{\grammarindent}{5em}
+% \begin{grammar}
+%   \singlespace\small%
+%   \fontfamily{lmr}\selectfont
+%   <stat> ::= "local" <localstat>
+%     \alt "if" <ifstat>
+%     \alt "return" <returnstat>
+%     \alt "function" <functionstat>
+%     \alt "while" <whilestat>
+%     \alt "for" <forstat>
+%     \alt "repeat" <repeatstat>
+%     \alt "break" <breakstat>
+%     \alt "do" <dostat>
+%     \alt "goto" <gotostat>
+%     \alt "::" <labelstat>
+%     \alt ";"
+%     \alt <assignment>
+%     <if> | <return> | <function> | <while> | <for> |
+%   <repeat> | <break> | <do> | <goto> | <label> | ";" | <assignment or call>
+% \end{grammar}
+%
+% \begin{figure}[ht]
+%   \lstinputlisting[title="",language=Javascript]%
+%     {figures/tex/parse-statement.js}
+%   \caption{Motsvarelesen till <stat> regeln skriven i JavaScript.}
+%   \label{fig:parsestatement}
+% \end{figure}
 
-Beskriv Mozilla Parser API, och funktionaliteten med separat AST funktioner.
+% De flesta reglerna är enkla och fortsätter enligt mönstret.
+%
+% \begin{grammar}
+%   \singlespace\small%
+%   \fontfamily{lmr}\selectfont
+%   <local> ::= "::" <identifier> "::"
+%
+%   <break> ::= "break"
+%
+%   <if> ::= "if" <exp> "then" <block> \{"elseif" <exp> "then" <block>\} ["else"
+%   <block>] "end"
+% \end{grammar}
+%
+% Vissa regler kräver dock något mer invecklade sammansättningar.
+%
+% \begin{grammar}
+%   \singlespace\small%
+%   \fontfamily{lmr}\selectfont
+%   <for> ::= "for" Name "=" <exp> "," <exp> ["," <exp>] "do" <block> "end"
+%     \alt "for" Name \{"," Name\} "in" <exp> \{"," <exp>\} "do" <block> "end"
+%
+%   <local> ::= "local" "function" Name <funcdecl>
+%     \alt "local" Name \{"," Name\} ["=" <exp> \{"," <exp>\}
+%
+%   <assignment or statement> ::= <prefixexp> \{"," <prefixexp>\} "=" <exp> \{","
+%     <exp>\}
+%     \alt <prefixexp> <args> | <prefixexp> ":" Name <args>
+% \end{grammar}
+%
+% Den största föränringer som gjorts är av \textit{prefixexp} eller
+% prefixuttryck. Orsaken till dess förändirng är uttrycksparsern.
+
+
+\subsection{Uttrycksparser}
+
+%Likna parsern till Luas egna.
+Lua grammatikens uttrycksregel, \textit{expr}, utnyttjar vänster rekursion,
+som inte är möjligt i rekursivt nedstigande parsers eftersom de hamnar i en
+oändlig loop. Detta ser vi i alternativet var ett uttryck kan vara ett uttryck
+kombinerat med en binär operator samt ett annat uttryck.
+
+\setlength{\grammarindent}{5em}
+\begin{grammar}
+  \singlespace\small%
+  \fontfamily{lmr}\selectfont
+  <exp> ::= \ldots | <exp> <binop> <exp> | \ldots
+\end{grammar}
+
+Eftersom uttrycks regeln även består av en serie andra icke-terminaler vars
+funktioner är svåra att få ett grepp om kommer vi att expandera och analysera
+alla delregler för att slutligen få en fungerande och hoppeligen mer
+organiserad regel för uttryck.
+
+Processen för att införa detta kommer bestå av tre steg, var det det första
+visar den ursprungliga regeln, den andra visar resultatet från vänster
+faktoreringen och den tredje visar regeln skriven utan epsilon.
+
+\subsubsection{Gruppering av uttryck}
+
+För att lättare arbeta med definitionen grupperar vi in uttryck i binära och
+unära operatioer, prefix uttryck samt primära uttryck. Primära uttryck består
+av de kvarstående alternaten, huvudsakligen datatyper.
+
+\begin{description}
+  \setlength{\grammarindent}{5em}
+  \item[Ursprungsregel] \hfill
+    \begin{grammar}
+      \singlespace\small%
+      \fontfamily{lmr}\selectfont
+      <exp> ::= <primaryexp> | <prefixexp> | <exp> <binop> <exp> | <unop> <exp>
+
+      <primaryexp> ::= \ldots
+    \end{grammar}
+
+  \item[Eliminering av vänster rekursion] \hfill
+    \begin{grammar}
+      \singlespace\small%
+      \fontfamily{lmr}\selectfont
+      <exp> ::= <primaryexp> <exp'> | <prefixexp> <exp'> | <binop> <exp> | <unop> <exp>
+
+      <exp'> ::= <binop> <exp> | $\epsilon$
+    \end{grammar}
+
+  \item[Resultat] \hfill
+    \begin{grammar}
+      \singlespace\small%
+      \fontfamily{lmr}\selectfont
+      <exp> ::= ( <unop> <exp> | <primaryexp> | <prefixexp> ) \{ <binop> <exp> \}
+    \end{grammar}
+\end{description}
+
+\subsubsection{Analys av prefix uttryck}
+
+\begin{description}
+  \setlength{\grammarindent}{8em}
+  \item[Ursprungsregel] \hfill
+    \begin{grammar}
+      \singlespace\small%
+      \fontfamily{lmr}\selectfont
+      <prefixexp> ::= <var> | <functioncall> | "(" <exp> ")"
+
+      <var> ::= Name | <prefixexp> "[" <exp> "]" | <prefixexp> "." Name
+
+      <functoincall> ::= <prefixexp> <args> | <prefixexp> ":" Name <args>
+
+      <args> ::= "(" [ <explist> ] ")" | <tableconstructor> | String
+    \end{grammar}
+
+    Den fullständiga regeln för argument kan hittas i bilaga 1 och vi kan
+    konstatera att regeln inte behöver bearbetas mer. Vi expanderar
+    ytterligare underreglerna för att få en bättre överblick.
+
+    \begin{grammar}
+      \singlespace\small%
+      \fontfamily{lmr}\selectfont
+      <prefixexp> ::= Name | <prefixexp> "[" <exp> "]" | <prefixexp> "." Name
+        \alt <prefixexp> <args> | <prefixexp> ":" Name <args>
+        \alt "(" <exp> ")"
+    \end{grammar}
+
+  \item[Eliminering av vänster rekursion] \hfill
+    \begin{grammar}
+      \singlespace\small%
+      \fontfamily{lmr}\selectfont
+      <prefixexp> ::= Name <prefixexp'> | "(" <exp> ")" <prefixexp'>
+
+      <prefixexp'> ::= "[" <exp> "]" | "." Name <args> | ":" Name <args> |
+      $\epsilon$
+    \end{grammar}
+
+  \item[Resultat] \hfill
+    \begin{grammar}
+      \singlespace\small%
+      \fontfamily{lmr}\selectfont
+      <prefixexp> ::= ( Name | "(" <exp> ")" ) \{ "[" exp "]" | "." Name |
+          ":" Name <args> | <args> \}
+    \end{grammar}
+\end{description}
+
+\subsubsection{Sammanknytning}
+
+Med hjälp av dessa modifieringar ha vi nu en uttrycks regel som inte använder
+sig av vänster rekursion och kan därmed användas i en rekursivt nedstigande
+parser.
+
+\setlength{\grammarindent}{6em}
+\begin{grammar}
+  \singlespace\small%
+  \fontfamily{lmr}\selectfont
+  <exp> ::= ( <unop> <exp> | <primary> | <prefixexp> ) \{ <binop> <exp> \}
+
+  <primary> ::= "nil" | "false" | "true" | Number | String | "..." |
+      <functiondef> | <tableconstructor>
+
+  <prefixexp> ::= ( Name | "(" <exp> ")" ) \{ "[" exp "]" | "." Name |
+      ":" Name <args> | <args> \}
+\end{grammar}
+
+\subsubsection{Binärt företrädande}
+
+I Lua manuelen \citep{luaref} nämns det att grammatiken inte beskriver binärt företrädande,
+dvs. logiken som bestämmer att multiplikation skall utföras innan addition.
+Denna prioritering kan vi dock hitta i källkoden av \cite{lparse}.
+
+En implementationsmöjlighet som Lua själv använder är att spjälka ut
+funktionen som parsar uttryck till en ny funktionen som tar emot vänstra
+operandens prioritet som argument. Funktionen itererar sedan över de binära
+operationerna som följer, och lägger rekursivt till dom som binära operationer
+i den vänstra operanden fram till det att en operator har lägre prioritet
+eller inte är en operator. När detta sker har hela binära uttrycket hittats
+och strukturerats i ett träd enligt prioritet. Denna algoritm kallas även för
+operator-precedence parsing och är en form av nerifrån-och-upp parsning.
+Pseudokoden för detta visas i figur~\ref{binprec}.
+
+\begin{figure}[ht]
+  \lstinputlisting[title="",language=Javascript]%
+    {figures/tex/binary-precedence.js}
+  \caption{operator-precedence parser}
+  \label{fig:binprec}
+\end{figure}
+
+
+\subsubsection{Höger associativa regler}
+
+Associativa regler innebär hur uttryck grupperas när parenteser inte
+existerar. Ett exempel på detta är upphöjt till var grupperingen spelar stor
+betydelse. Om uttrycket \textit{5\^{}4\^{}3\^{}2} läses från vänster likt
+addition skulle gruppering bli \textit{((5\^{}4)\^{}3)\^{}2}, men eftersom
+upphöjt till har en höger associativ regel skall grupperingen egentligen vara
+\textit{5\^{}(4\^{}(3\^{}(2)))}, vilket ger ett annat resultat. Alla
+operatorer förutom \^{} och .. är vänster associativa i Lua. Implementationen
+för detta hittas i figur~\ref{rightassociative} och utgörs av att subtrahera
+1 från opretor prioriteten om en höger associativ regel hitta innan den
+högra operanden parsas. Detta orsakar en omvändning i grupperingen.
+
+\begin{figure}[ht]
+  \lstinputlisting[title="",language=Javascript]%
+    {figures/tex/right-associative.js}
+  \caption{Implementation för höger associativa regler}
+  \label{fig:rightassociative}
+\end{figure}
+
+\subsubsection{Resultat}
+
+Resultatet av denna omvandling visar sig vara en nära exakt kopia av Luas egna
+uttrycks parser med vissa skillnader för operator associationer. Det kan
+konstateras att skaparna användt sig av en enkel vänster faktorering för att
+omvandla sin tidigare yacc skapade parser till en handskriven rekurisvt
+nedstigande parser.
+
+%
+% \setlength{\grammarindent}{5em}
+% \begin{grammar}
+%   \singlespace\small%
+%   \fontfamily{lmr}\selectfont
+%   <exp> ::= "nil" | "false" | "true" | Number | String | "..." |
+%           \alt "function" <funcbody>
+%           \alt <prefixexp>
+%           \alt Name
+%           \alt
+%           \alt "{" <fieldlist] "}"
+%           \alt <exp> <binop> <exp>
+%           \alt <unop> <exp>
+%
+%   <functiondef> ::= "function" <funcbody>
+%
+%   <function
+% \end{grammar}
+
+% \setlength{\grammarindent}{5em}
+% \begin{grammar}
+%   \singlespace\small%
+%   \fontfamily{lmr}\selectfont
+%   <exp> ::= "nil" | "false" | "true" | Number | String | "..." | <functiondef>
+%           | <prefixexp> | <tableconstructor> | <exp> <binop> <exp>
+%           | <unop> <exp>
+%
+%   <functiondef> ::= "function" <funcbody>
+%
+%   <function
+% \end{grammar}
+
+\subsection{Syntax träd}
 
 Vad är AST?
 
@@ -47,13 +357,25 @@ Vad är AST?
   \caption{Abstrakt syntax träd som representation av en parsnings analys.}
 \end{figure}
 
-\subsection{JavaScript kodmönster}
+\subsubsection{Representation}
 
-\subsubsection{Imperativt paradigm}
+Beskriv Mozilla Parser API.
 
-OOP vs Imperativt.
+Vilken representation som används
 
-\subsubsection{Modul laddare}
+\subsubsection{Delegerare}
 
-Require.JS, AMD, Node.JS, Browsers, vad det kan användas till.
+Varför delegerare.
 
+% \subsection{JavaScript kodmönster}
+%
+% \subsubsection{Imperativt paradigm}
+%
+% OOP vs Imperativt.
+%
+% \subsubsection{Modul laddare}
+%
+% Require.JS, AMD, Node.JS, Browsers, vad det kan användas till.
+
+% vim: set tw=78:ts=2:sw=2:et:fdm=marker:wrap:wm=78:ft=tex
+% vim: spell spelllang=sv

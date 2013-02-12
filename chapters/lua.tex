@@ -1,0 +1,71 @@
+
+\section{Lua}
+
+Lua är ett skriptspråk som kombinerar procedurell programmering med
+funktionalitet från funktionell programmering och objektorienterad
+programmering \citep{luaimp}.
+
+Målen bakom Lua har definierats och anses vara uppnådda av \cite{luaimp}.
+Dessa mål har varit att ha en enkel syntax med en liten grupp av
+kodstrukturer, att vara snabbt i såväl kompilering som exekvering, att kunna
+köras på så många platformer som möjligt och slutligen att vara effektivt för
+inbäddning i program. På grund av dessa mål är Lua ett bra alternativ för
+konfigurationsspråk och används idag som sådant i bland annat Adobes Photoshop
+Lightroom och World of Warcraft \citep{lua}.
+
+\subsection{Funktionalitet}
+
+Trots att ett av Luas mål är dess enkelhet har språket en stor mängd
+funktionalitet som fås av dess flexibilitet och val av datastruktur.
+
+En överblick av Luas funktionalitet är \citep{luaimp}:
+
+\begin{description}
+  \item[Dynamisk typning] \hfill \\
+    Lua består av 8 datatyper: \textit{nil, boolean, number, string, table,
+      function}. Eftersom Lua använder sig av dynamisk typning behöver
+    programmeraren dock inte specificera vilken datatyp som används.
+
+  \item[Första ordningens datatyper] \hfill \\
+    Alla Luas datatyper är värden av första ordningen. Detta innebär att
+    programmeraren kan använda sig av logik från funktionell programmering och
+    därmed använda sig av funktioner och tabeller som returvärden och
+    funktionsargument.
+
+  \item[Associativ array] \hfill \\
+    Lua har enbart en datastruktur, tabeller, och detta är en associativ
+    array. En associativ array är dynamiskt växande, kan indexeras av vilken
+    datatyp som helst (förutom \textit{nil}) och kan också hålla vilket värde
+    som helst. Med hjälp av denna flexibilitet kan tabeller användas både som
+    en array och som en hashtabell.
+
+  \item[Arv] \hfill \\
+    Trots att Lua inte är ett strikt objektorienterat språk kan klasser och
+    arv implementeras med metatabeller och metametoder. Varje värde i Lua har
+    dessa och de kan användas för att bygga upp ett prototyp arv likt
+    JavaScript.
+
+  \item[Closures] \hfill \\
+    Lua har lexikalt scope vilket tillsammans med första ordningens funktioner
+    möjliggör användningen av closures. Under exekvering av en funktion skapar
+    Lua en closure om innehåller referenser till dess inrevariabler, dess
+    miljö samt dess yttrevariabler. Detta möjliggör ytterligare funktionalitet
+    för funktionell programmering.
+\end{description}
+
+\subsection{Grammatik}
+
+Luas grammatik existerar i en EBNF notation som inkluderats i dess
+ursprungliga form i Bilaga 1.
+
+När Lua övergick från en genererad parser till en handskriven rekursivt
+nedstigande parser i version 3.0 \citep{luaimp} gjordes dock några
+förändringar till grammatiken som inte dokumenterats. Uttrycksparsern har
+exempelvis omstrukturerats totalt för att kunna beskrivas som en LL(1) och
+vara effektiv \citep[s. 175]{bf09}.
+
+Vid analys av grammatiken kan det konstateras att mycket av grammatiken går att
+implementera i LL(1) utan större förändringar. De problem som uppstår är en
+vänster rekursion i uttrycksregeln samt ett lookahead problem för att
+identifiera variabel deklarationer från funktionskallelser. Dessa problem
+kommer hanteras vid implementationsbeskrivningen för parser komponenterna.

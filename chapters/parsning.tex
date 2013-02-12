@@ -64,14 +64,20 @@ olika sätt. Huvudsakligen existerar de i två typer. Antingen härleder de
 regler från vänster och kallas då LL parsers eller så härleder de regler från
 höger och kallas LR parsers \citep[s. 67]{sm09}.
 
+När man pratar om parsers nämner man ofta hur långt fram den kan se innan den
+gör ett beslut, dvs. hur många tokens framåt den kan se. Detta antal skriver
+man inom en parentes efter parsertypen, dvs. för att uttrycka den vanligaste
+formen av parser som är en LR parser som ser en token framåt skriver man
+LR(1) \citep[s. 69]{sm09}.
+
 \subsubsection{LL parser}
 
-LL parsers kan man skriva förhand eftersom de i allmänhet följer en människas
+LL parsers går att skriva förhand eftersom de i allmänhet följer en logisk
 tankegång. De börjar med att gissa sig till en rot-regel, likt en ändlig
 automat, och förväntar sig sedan att löv-reglerna skall passa in en efter en.
 Om det misslyckas kan den gå till nästa alternativa regel och fortsätter
-fram tills den bevisat sin gissning. Denna typ av strategi kallas även för en
-uppifrån-och-ner strategi.
+fram tills den bevisat en gissning. Denna typ av strategi kallas även för en
+uppifrån-och-ner strategi \citep[s. 67]{sm09}.
 
 \subsubsection{LR parser}
 
@@ -79,37 +85,96 @@ LR parsers genereras huvudsakligen av maskiner eftersom de är svårare att
 visualisera. Dessa parsers börjar med att läsa löv-reglerna, alltså de minsta
 identifierbara reglerna och ansluter dem sedan till varandra fram till det att
 den nått en slutgiltig rot-regel. Detta kallas även för en nerifrån-och-upp
-strategi.
+strategi \citep[s. 67]{sm09}.
 
-\subsubsection{Recursive descent parser}
+Både LL parsers och LR parsers används i kompilatorer men LR är mer
+vanligt \citep[s. 67]{sm09}. En orsak är att LR parsers täcker en
+större andel av grammatiker och därmed använder ofta programvara som genererar
+parsers sig ofta av av nerifrån-och-upp strategin \citep[s. 61]{aa06}.
 
-\ldots
+\subsubsection{Rekursivt nedstigande parser}
+
+En form av LL parsers som är vanlig för handskrivna parsers är den rekurisvt
+nedstigande parsern. Den fungerar genom att knyta varje icke-terminal i
+grammatik till en egen funktion som ansvarar för att identifiera dess
+grammatiska löv. För varje icke-terminal i sin egen regel kallar den rekursivt
+vidare på dess anknytande funktioner fram till det att rot funktionen får hela
+syntax trädet returnerat \citep[s. 24]{pt10}.
+
+@TODO epsilon
+
+@TODO
 
 \subsection{Tekniker}
 
-\subsubsection{Left factoring}
+\subsubsection{Vänster faktorering}
 
-Hur gör man left factoring
+Hur gör man left factoring @TODO detta är snabbt flyttat från en annan sektion
+hit och kommer beskriva processen för left factoring.
 
-\subsubsection{Prediction}
+\setlength{\grammarindent}{5em}
+\begin{grammar}
+  \singlespace\small%
+  \fontfamily{lmr}\selectfont
+  <exp> ::= \ldots | <exp> <binop> <exp> | \ldots
+\end{grammar}
 
-Hur fungerar en predictive parser.
+Om denna regel skulle implementeras skulle den se ut enligt
+figur~\ref{exp-recursion} och vi kan se hur funktionen alla skulle komma
+vidare.
 
+\begin{figure}[ht]
+  \lstinputlisting[title="",language=Javascript]%
+    {figures/tex/exp-recursion.js}
+  \caption{Direkt implementation av binära operationer enligt Lua grammatiken.}
+  \label{fig:exp-recursion}
+\end{figure}
+
+\subsubsection{Backtracking}
+
+I vissa fall är det användbart att inte ha en begränsad framåtblick och då kan
+man använda sig av en teknik som heter backtracking som tillåter parsern att
+se en obegränsad mängd tokens framåt. Implementationen av en backtracker
+varierar men i simpel form fungerar det genom att när mångtydlighet uppstår
+välja ett alternativ och sedan ha möjligheten att återgå till ett tidigare
+tillstånd när alternativet bevisats rätt eller fel \citep[s. 55]{pt10}.
+
+För att uttrycka att en parser kan se en obegränas mängd tokens framåt anger
+man antalet som k i formen LL(k) eller LR(k).
+
+\subsubsection{Memoisation}
+
+Kort om vad memoisation är.
+
+\subsection{Parser genererare}
+
+Vad är parser genererare
+
+\subsubsection{Jison}
+
+Exempel på parser genererare, samt projekt som använder det.
+
+https://github.com/josevalim/luascript/blob/master/lib/lua/compiler/parser.jison
+
+\subsubsection{Fördelar och nackdelar}
+
+Diskutera vad som allmänt ses som fördelar och nackdelar. Citera skaparna av
+lua om varför de böt från yac i 3.0.
 
 % \section{Diskussion}
-% 
+%
 % Med hjälp av denna överblick kan det konstateras att de två huvudsakliga
 % grammatikerna man behöver förstå och kunna vid implementeringen av ett
 % programmeringsspråk är den reguljära grammatiken samt den kontextfria
 % grammatiken. Om man använder sig av en grammatik utanför dessa kan man lätta
 % skapa ett komplext språk som blir svårt att implementera, vilket C++ är ett
 % exempel på.
-% 
+%
 % Eftersom parsningsfasen inte innehåller en semantisk analys av ett uttryck kan
 % det även konstateras att uttryck inte behöver vara giltigt bara pga. att dessa
 % syntax är korrekt. Ytterligare krävs det en tolk för att fastställa att
 % uttrycket verkligen är korrekt.
-% 
+%
 % Under åren har det utvecklats många typer av LL parsers och LR parsers och vi
 % har enbart beskrivit grundtanken bakom dess struktur. Eftersom det i dagens
 % läge även existerar ett flertal verktyg för att generera parsers utgående från

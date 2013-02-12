@@ -1,11 +1,16 @@
-Lua uses a hand-written scanner and a hand-written recursive descent parser.Until version 3.0, Lua used a parser produced by yacc [13], which proved a valu-able tool when the language's syntax was less stable. However, the hand-writtenparser is smaller, more ecient, more portable, and fully reentrant. It also pro-vides better error messages.
+Lua uses a hand-written scanner and a hand-written recursive descent
+parser.Until version 3.0, Lua used a parser produced by yacc [13], which
+proved a valu-able tool when the language's syntax was less stable.
+However, the hand-writtenparser is smaller, more ecient, more portable,
+and fully reentrant. It also pro-vides better error messages.
 http://www.lua.org/doc/jucs05.pdf
 
-Masterminds of Programming: Conversations with the Creators of Major Programming Languages
+Masterminds of Programming: Conversations with the Creators of Major
+Programming Languages
 http://books.google.fi/books?id=yB1WwURwBUQC&pg=PA175&lpg=PA175&dq=recursive+descent+parser+performance+lua&source=bl&ots=-CTI6yshiE&sig=kigDceMW1pMe_Gnd1TdqNTJ-jNc&hl=en&sa=X&ei=HUK5UMKhB6mC4AT8jYCACQ&redir_esc=y#v=onepage&q=recursive%20descent%20parser%20performance%20lua&f=false
-"It is quite easy to write a good scanner by hand and that single change improved Lua performance by something like 30%" - Roberto
+"It is quite easy to write a good scanner by hand and that single change
+improved Lua performance by something like 30%" - Roberto
 
 "A top down parser also allows for better error messages" -Luiz
-
 http://code.google.com/searchframe#W9JxUuHYyMg/trunk/src/parser.cc&q=WhileStatement%20package:v8%5C.googlecode%5C.com&ct=rc&cd=5&sq=
 http://www.lua.org/source/5.2/lparser.c.html
