@@ -1,38 +1,41 @@
-\section{Språk teori}
+\section{Språkteori}
 
-För att en dator skall ha möjlighet att förstå innebördet i ett uttryck krävs
+För att en dator skall ha möjlighet att förstå innebörden i ett uttryck krävs
 det att uttrycket är uppbyggt med en konsekvent utformning av såväl dess
-syntax och dess semantik. Detta krav existerar inte i de naturliga språk så
-som svenska utan är unikt för en specifik typ av språk, de formella språken.
-Formella språk är uppbyggda enligt matematiska regler som definierar sitt
-alfabet och hur det kan kombineras för att skapa uttryck. Teorin härstammar
-från språkvetenskap men har idag en stor betydelse inom datavetenskap eftersom
-det utnyttjas för att konstruera programmeringsspråk \citep[s. 41]{sm09}.
+syntax och dess semantik. Detta krav existerar inte i naturliga språk som
+svenska utan existerar för en specifik typ av språk, de formella språken.
+Formella språk är uppbyggda enligt matematiska regler som definierar språkets
+alfabet och hur alfabetsymboler kan kombineras för att skapa uttryck. Teorin
+härstammar från språkvetenskap men har idag en stor betydelse inom
+datavetenskap eftersom den utnyttjas för att konstruera programmeringsspråk
+\citep[s. 41]{sm09}.
 
 \subsection{Backus-Naur Form}
 
 Inom datavetenskap är syntax den kombination av tecken som är giltig för att
-skapa ett uttryck. Uttryckets funktion kan vara av flera former, t.ex. kan det
+skapa ett uttryck. Uttryckets funktion kan variera, t.ex. kan funktionen
 vara en del av ett flöde som skapar ett datorprogram, eller enbart format för
-att uttrycka konfigurationer. Processen av att läsa denna syntax och granska
-om den är giltig kallas för syntaktisk analys eller parsning.
+att uttrycka konfigurationer. Processen att läsa denna syntax och granska
+om den är giltig kallas syntaktisk analys eller parsning.
 
 När man beskriver syntaxen av ett språk använder man sig av ett metaspråk för
 att definiera de syntaktiska regler man är tillåten att använda. Det finns ett
 flertal metaspråk men ett av de vanligaste inom programmeringsspråk är
-Backus-Naur Form (BNF) \citep[s. 27]{gd08}. Notationen är
-uppbyggd enligt produktionsregler som var för sig definierar en sammansättning
-av terminaler och icke-terminaler tillåtna för sin regel. Terminaler är ett
-begränsat alternativ teckensträngar, som kan liknas till ord i ett språk.
-Icke-terminaler är serier av terminaler som utgör en giltig produktionsregel,
-eller en språklig mening. Ytterligare existerar vissa symboler för att
-uttrycka vilken typ av sammansättningsfunktion som är tillåten.
+Backus-Naur Form (BNF) \citep[s. 27]{gd08}. Notationen är uppbyggd enligt
+produktionsregler som var för sig definierar en tillåten sammansättning av
+teckensträngar som kallas terminaler eller icke-terminaler. Terminaler är
+teckensträngar som inte refererar vidare till andra teckensträngar medan
+icke-terminaler är sekvenser av terminaler som bildar giltiga
+produktionsregler, eller språkliga meningar. Ytterligare existerar vissa
+symboler för att uttrycka vilken typ av sammansättningsfunktion är tillåten.
+% @TODO liknelsen med meningar är något oklart.
 
-BNF i sig existerar dessutom i flera varianter var vissa är mer strikta och ämnade till att
-läsas av maskiner, medan vissa försöker visualisera elementen för en mänsklig
-läsare. Extended BNF (EBNF) som är en utökad variant av den ursprungliga BNF
-notationen skriver icke-terminaler inom vinkelparentes i formen
-${\langle}regel{\rangle}$. En produktionsregels namn, som är en icke-terminal,
+BNF i sig existerar dessutom i flera varianter där vissa variänter är strikta och
+ämnade att läsas av maskiner, medan andra varianter försöker visualisera elementen
+för en mänsklig läsare. Extended BNF (EBNF) som är en utökad variant av den
+ursprungliga BNF-notationen skriver icke-terminaler inom vinkelparentes i
+formen ${\langle}regel{\rangle}$. En produktionsregels namn, som är en
+icke-terminal,
 skrivs längst till vänster följt av symbolerna $::=$ samt själva regeln.
 Terminalerna skrivs med fet stil och sammansättningarna skrivs med normal
 stil samt regelns specifika syntax. De vanliga funtionerna är alternering, som
@@ -47,7 +50,7 @@ valfrihet som skrivs med en hakparentes ($[ \ldots ]$) runt uttrycket
 När man skriver grammatiken till ett språk beaktar man alltid vilka
 typer av regler man vill tillåta i specifikationen. Utgående från valet man
 gör kommer grammatiken och därmed också språket tillhöra en av fyra språkliga
-delmängder som sträcker sig från simpel till komplicerad \citep[s. 19]{gd08}.
+delmängder som sträcker sig från enkel till komplicerad \citep[s. 19]{gd08}.
 
 \begin{figure}[ht]
   \includegraphics[width=5cm]{figures/output/chomsky.pdf}
@@ -57,45 +60,44 @@ delmängder som sträcker sig från simpel till komplicerad \citep[s. 19]{gd08}.
 Denna indelning kallas för Chomskyhierarkin och används bl.a. för att ta reda
 på vilken typ av automat som krävs för att läsa språket.
 
-Delmängderna börjar från den simplaste typen, reguljär grammatik. Den
+Delmängderna börjar från den enklaste typen, reguljär grammatik. Den
 reguljära grammatiken är sedan en delmängd av den kontextfria grammatiken som i
 sin tur är delmängd till den kontextkänsliga grammatiken. Slutligen tillhör
 alla de tidigare nämnda även den obegränsade grammatiken som kan
 beskriva alla grammatiker vilka accepteras av en Turingmaskin.
 
 De två huvudsakliga grupperna i dagens programmeringsspråk är dock de två
-minsta, reguljära grammatiker samt kontextfria grammatiker \citep[s.
+innersta, reguljära grammatiker samt kontextfria grammatiker \citep[s.
 100]{sm09}. Dessa är möjliga att skriva både för hand och av maskiner och har
 därför blivit mycket vanliga i design av programmeringsspråk. Majoriteten av
 språk använder sig av en kontextfri syntax grammatik. Ett undantag är C++ vars
 uttryck inte kan definieras enbart utgående från syntaxen utan kräver också en
 semantisk analys av ett flertal uttryck. På grund av detta är C++ grammatiken
-kontextkänslig och därmed också svår att parsa. I flera fall har parser
-implementationer valt att ignorera mångtydigheterna på grund av dess
-komplexitet och dess lilla användning \citep[s. 2]{rt05}.
+kontextkänslig och därmed också svår att parsa. I flera fall har
+parserimplementationer valt att ignorera mångtydigheterna på grund av deras
+komplexitet och deras obetydliga användning \citep[s. 2]{rt05}.
 
 \subsubsection{Reguljär grammatik}
 
-Den minsta delmängden i Chomskyhierarkin är reguljär grammatik och kan uttryckas
+Den innersta delmängden i Chomskyhierarkin är reguljär grammatik och kan uttryckas
 enbart mha. reglerna \textit{sammanfogning}, \textit{alternering} och
 \textit{repetition}. I programmeringsspråk används ofta en reguljär grammatik
-för att identifiera tokens och går att läsa med en ändlig automat \citep[s.
-100]{sm09}.
+för att identifiera s.k. lexikala element och går att läsa med en ändlig
+automat \citep[s. 100]{sm09}.
 
-För att beskriva alla variationer av ett nummer i en kalkylator kan man
-använda sig av EBNF grammatiken i figur~\ref{fig:reg}. Ett nummer definieras
-som alterneringen av ett heltal och ett reellt tal. Ett
-heltal måste bestå av minst en siffra medan ett reellt tal kan bestå
-av antingen ett heltal samt en exponent eller ett decimaltal och en valfri
-exponent. Detta innebär att uttrycken \textit{0.14E-2} och \textit{3} är
-giltiga medan uttrycket \textit{222e} inte är giltigt eftersom en exponent
-måste avslutas med ett heltal. Dessutom måste man tänka på att ett giltigt
-decimaltal inte nödvändigtvis behöver börja med en siffra utan kan börja med
-en punkt, dock måste det antingen börja med en siffra eller avslutas med en
-siffra eftersom ett uttryck enbart innehållande en punkt inte kan räknas som
-giltigt. Alla dessa regler kan bli komplicerade att hålla reda på och därför
-underlättar det att arbeta med BNF notationer för att inte mista giltiga
-uttryck.
+För att beskriva alla variationer av ett tal i en kalkylator kan man
+använda sig av EBNF grammatiken i figur~\ref{fig:reg}. Ett tal definieras som
+alterneringen av ett heltal och ett reellt tal. Ett heltal måste bestå av
+minst en siffra medan ett reellt tal kan bestå av antingen ett heltal samt en
+exponent eller ett decimaltal och en valfri exponent. Detta innebär att
+uttrycken \textit{0.14E-2} och \textit{3} är giltiga medan uttrycket
+\textit{222e} inte är giltigt eftersom en exponent måste avslutas med ett
+heltal. Dessutom måste man tänka på att ett giltigt decimaltal inte
+nödvändigtvis behöver börja med en siffra utan kan börja med en punkt, dock
+måste det antingen börja med en siffra eller avslutas med en siffra eftersom
+ett uttryck enbart innehållande en punkt inte kan räknas som giltigt. Alla
+dessa regler kan bli komplicerade att hålla reda på och därför underlättar det
+att arbeta med BNF notationer för att inte mista giltiga uttryck.
 
 \begin{figure}[ht]
   \begin{grammar}
@@ -121,17 +123,18 @@ uttryck.
 
 \subsubsection{Kontextfri grammatik}
 
-Tillåter man ytterligare \textit{rekursion} som en giltig regel är grammatiken
+Tillåter man ytterligare \textit{rekursion} i en giltig regel är grammatiken
 inte längre reguljär, utan klassas som en kontextfri grammatik och måste
-läsas av parser \citep[s. 100]{sm09}. Rekursion innebär att en produktionsregel kan innehålla sig
-själv som en icke-terminal i regel definitionen. Denna funktionalitet är
-användbar när ett uttryck skall vara flexibelt, exempelvis i en aritmetisk
-kalkylator var ett uttryck kan bestå av en siffra, en matematisk operation
-samt en oändlig uppsättning av dessa.
+läsas av parser \citep[s. 100]{sm09}. Rekursion innebär att en
+produktionsregel kan innehålla sig själv som en icke-terminal i
+regeldefinitionen. Denna funktionalitet är användbar när ett uttryck skall
+vara flexibelt, exempelvis i en aritmetisk kalkylator var ett uttryck kan
+bestå av en siffra, en matematisk operation samt en oändlig uppsättning av
+dessa.
 
 I figur~\ref{fig:cfg} har vi ett exempel på en kalkylator som kan uttrycka
 alla dessa funktionaliteter genom att rekursivt hänvisa till sig själv och
-därmed tillåta uttryck så som \textit{1 + (2 / 7) * -3}.
+därmed tillåta uttryck så som \mbox{\textit{1 + (2 / 7) * -3}}.
 
 \begin{figure}[ht]
   \begin{grammar}
@@ -144,7 +147,7 @@ därmed tillåta uttryck så som \textit{1 + (2 / 7) * -3}.
     <operator> ::= + | - | * | /
 
   \end{grammar}
-  \caption{BNF grammatik för en kalkylator.}
+  \caption{EBNF grammatik för en kalkylator.}
   \label{fig:cfg}
 \end{figure}
 

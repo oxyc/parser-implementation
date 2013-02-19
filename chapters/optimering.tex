@@ -10,54 +10,55 @@ Beskriv processen för test samt sample standard deviation.
 
 Beskriv varför v8.
 
-\subsubsection{Sampling}
+\subsubsection{Provatgning}
 
-Beskriv samplings verktyget och hur datat läses.
+Beskriv provtagningsverktyget och hur datat läses.
 
 \begin{figure}[ht]
   \includegraphics[width=13cm]{figures/output/functions.pdf}
-  \caption{Översikt av de mest prestanda krävande funktionera}
+  \caption{Översikt av de mest prestandakrävande funktionerna.}
 \end{figure}
 
-\subsection{Optimerings tekniker för V8}
+\subsection{Optimeringstekniker för V8}
 
-Javascript motorn V8 innehåller en optimerings kompilator kallad Crankshaft,
+Javascript-motorn V8 innehåller en optimeringskompilator kallad Crankshaft,
 vars syfte är att identifiera kod som körs mycket för att sedan spendera sin
-tid på att optimera dom istället för de mindre väsentliga funktionerna. Detta
-fungerar genom att baskompilern börjar med att kompilera koden varefter en
-runtime profiler övervakar körningen av programmet och identifierar den kod
-som körs aktivt. När de väsentliga programdelarna är identifierade
-optimeras och omkompileras de ivrigt av optimerings kompilatorn. Innebördet
-med att de omkompileras ivrigt är att det ytterligare finns en komponent som
-kan återgå till baskompilatorns version om det visar sig att koden slutligen
-inte var optimerbar \citep{mk10}. Denna åtgärd kallas för deoptimization och
-inträffar aktivt i körningen av javascript eftersom språket är dynamiskt och
-en deoptimization sker varje gång en datatyp förändras. Ytterligare existerar
-det vissa specifika strukturer som kompilatorn inte kan optimera, exempelvis
-try/catch-satser och vissa typer av switch-satser. Även här görs en
-deoptimization men den kallas nu för en bailout. (@TODO terminology?)
+tid på att optimera den istället för mindre väsentliga funktioner. Detta
+fungerar så att baskompilatorn börjar med att kompilera koden varefter en
+s.k. \textit{``runtime-profiler''} övervakar körningen av programmet och
+identifierar den kod som körs aktivt. När de väsentliga programdelarna är
+identifierade optimeras och omkompileras de ivrigt av optimeringskompilatorn.
+Innebörden med att kod omkompileras ivrigt är att kompilatorn inte kan vara
+säker på att optimeringen är möjlig att genomföra men försöker i alla fall. Om
+det visar sig att optimeringen inte var möjlig, finns det ytterligare en
+komponent i V8 som kan återgå till baskompilatorns ursprungliga version
+\citep{mk10}. Denna åtgärd kallas för avoptimering och inträffar aktivt i
+körningen av javascript eftersom språket är dynamiskt och en avoptimering sker
+varje gång en datatyp konverteras. Ytterligare existerar det vissa specifika
+strukturer som kompilatorn inte kan optimera, exempelvis try/catch-satser och
+vissa typer av switch-satser. Även här görs en avoptimering men den kallas
+nu för en s.k. bailout.
 
-V8 och därmed även Node.JS har diverse kommandorads flaggor som hjälper
-identifiera funktioner var detta sker samt ge information om varför det sker.
+V8 och därmed även Node.JS har diverse kommandoradsflaggor som hjälper att
+identifiera funktioner var detta sker samt ger information om varför det sker.
 
-\subsubsection{Undvikandet av bailouts}
+\subsubsection{Undvikande av bailouts}
 
-Trots att bailouts möjliggör en allmän prestanda förbättring hos V8 är det
-vettigt att undvika de bailouts som görs eftersom de vid varje exekvering
-kommer återupprepa sig och processen med att återgå till den ursprungliga
-kompilerings versionen kostar en del prestanda.
+Trots att bailouts möjliggör en allmän prestandaförbättring hos
+V8 är det klokt att undvika avoptimeringen eftersom den kostar en del
+prestanda och kommer att återupprepas vid varje exekvering.
 
-Kommandorads flaggan \textit{--trace_bailout} matar ut en lista på funktioner
+Kommandoradsflaggan \textit{--trace_bailout} matar ut en lista på funktioner
 samt orsaken till varför en bailout gjorts. Genom att exekvera en parsning med
 flaggan aktiverad går det att identifiera två funktioner som gör en bailout,
-bägge på grund av ooptimerbara switch statements var en icke-literal label
-användts.
+bägge på grund av ooptimerbara switch-satser där en icke-litteral label har
+används.
 
-Funktionerna som orsakat dessa bailouts är \textit{isUnary()} samt
+Funktionerna som har orsakat dessa bailouts är \textit{isUnary()} samt
 \textit{parsePrimaryExpression()} som bägge består av en switch-sats som utför
 olika operationer beroende på om en given token är lika med ett visst
 variabelvärde.  Detta är ett enkelt problem att lösa eftersom bailouten inte
-sker för if-sats motsvarigheten och därför kan koden optimeras enligt
+sker för ``if-sats''-motsvarigheten och därmed kan koden optimeras enligt
 \nobreak{figur~\ref{fig:bailout}}.
 
 \lstloadlanguages{JavaScript}
@@ -75,60 +76,63 @@ sker för if-sats motsvarigheten och därför kan koden optimeras enligt
   \label{fig:bailout}
 \end{figure}
 
-\subsubsection{Inlining}
+\subsubsection{Function inlining}
 
-@TODO expandera kanske? Hur översätta literaler?
+Crankshaft använder sig även av optimeringstekniken
+\textit{``function inlining''}. Detta innebär att kompilatorn ersätter ett
+funktionsanrop med själva funktionsinnehållet och sparar därmed kostnaden av
+själva funktionsanropet och dess returnering. Dessutom möjliggörs ytterligare
+optimeringsmöjligheter eftersom koden nu är mer kompakt och introducerar
+satser som möjligen kan kombineras med omliggande kod.
 
-Crankshaft använder sig även av optimeringstekniken funktion inlining. Detta
-innebär att kompilatorn ersätter ett funktionsanrop med själva
-funktionsinnehållet och sparar därmed kostnaden av själva funktions anropet
-och dess returnering. Dessutom möjliggör det ytterligare optimeringstekniker
-eftersom koden nu är mer kompakt och introducerar satser som möjligen kan
-kombineras med omliggande kod.
+V8 har dock vissa begränsningar för vilka funktioner som lämpar sig för
+\textit{``function inlining''}.  Bland annat får källkoden inte överstiga 600
+byte och funktioner kan inte heller innehålla en array som definierats med den
+litterala syntaxen istället för med konstruktorn. I V8-motorn som kommer med
+Node.JS v0.8 fungerar inte \textit{``function inlining''} hos objekt som
+skapats med den litterala syntaxen.
 
-V8 har dock vissa begränsningar för vilka funktioner som går att inlinea.
-Bland annat får källkoden inte överstiga 600 bytes (hur skall jag referera
-till v8 koden?) och funktioner kan inte heller innehålla array literaler. I V8
-motorn som kommer med Node.JS v0.8 går det inte heller att inlinea funktioner
-som innehåller objekt literaler.
+% @TODO add v8 references
 
-Lexer implementationen som gjorts använde till att börja med två separata
-funktioner som skapade och avslutade token noder. Eftersom noderna var
-uppgjorda av objekt kunde dessa inte inlineas och därmed introducerades en
-funktionskallelse extra för varje token som hittades under en parsning. På
-grund av jag inte ansåg detta påverka läsligheten eller komplexiteten av koden
-ansåg jag det vara värt att expandera skapandet och avslutandet av noderna i
-varje enskild token funktion.
+Lexer-implementationen som gjorts använde till att börja med två separata
+funktioner som skapade och avslutade token-noder. Eftersom noderna var
+uppgjorda av objekt kunde dessa inte \textit{``function inlining''} inte
+utnyttjas och därmed introducerades ett extra funktionsanrop för varje token
+som hittades under en parsning. På grund av jag inte ansåg detta påverka
+läsligheten eller komplexiteten av koden ansåg jag det vara värt att expandera
+skapandet och avslutandet av noderna i varje enskild token-funktion.
 
 \subsubsection{Teckenkoder istället för reguljära uttryck}
 
-Med användning av samplings verktyget i V8 är det möjligt att få en överblick
-av vilka funktioner och operationer som är mest aktiva under en exekvering.
-Genom att analysera detta resultat uppgavs det att 39.2\% av en hel exekvering
-går åt till reguljära uttryck som används för att identifiera whitespace och
+Med användning av provtagningsverktyget i V8 är det möjligt att få en överblick
+i vilka funktioner och operationer som är mest aktiva under en exekvering.
+Genom att analysera detta resultat framgick att 39.2\% av en hel exekvering
+går åt till reguljära uttryck som används för att identifiera blanksteg och
 giltiga identifierare.
 
 Eftersom dessa operationer ansvarade för en extremt stor del av
 parsningsprocessen omvandlades de till binära operationer som jämför
-teckenkoder istället. Orsaken till att teckenkoder används istället för string
-literals är att en kompilator måste omvandla tecken till siffror för att göra
-jämförelser, denna operation visar sig ha en betydande prestanda skillnad i
-äldre V8 versioner samt övriga webbläsare
-(hur ska dessa refereras? http://jsperf.com/charcodeat-vs-string-comparison/2).
+teckenkoder istället. Orsaken till att teckenkoder används istället för sträng
+litteraler är att en kompilator måste omvandla tecken till siffror för att göra
+jämförelser. Denna operation visar sig ha en betydande prestanda skillnad i
+äldre V8 versioner samt i övriga webbläsare.
 
-\subsubsection{Optimering av sträng funktioner}
+% @TODO (hur ska dessa refereras? http://jsperf.com/charcodeat-vs-string-comparison/2).
 
-Efter att de tidigare optimeringarna genomförts sticker nu 2 huvudsakliga
-funktioner ut i samplings analysen. StringAddStub som är en maskinkods metod
-för att sammanfoga strängar och CompareICStub som i en metod för att jämföra
-strängar tar plats 3 och 4 med 8.3\% respektive 7.9\% av parsningsprocessen.
+\subsubsection{Optimering av sträng-funktioner}
 
-StringAddStub orsakas av att lexern sammanfoga token värden för kommentarer,
-nummer och identifierare genom att iterera över varje tecken så länge som en
-avgränsare inte hittas. Denna procedur går att försimpla genom att istället
-räkna var värdet börjar och sedan iterera fram till avgränsaren och vid det
-skedet skära ut värdet från dess start position till positionen var
-avgränsaren enligt exempel figur~\ref{fig:stringAddStub}.
+Efter att de tidigare optimeringarna genomförts betonas nu 2 huvudsakliga
+funktioner ut i provtagningsanalysen. Dessa funktioner, dvs.
+\textit{StringAddStub} som är en maskinkodmetod för att sammanfoga strängar
+och \textit{CompareICStub} som är en metod för att jämföra strängar upptar
+8.3\% respektive 7.9\% av parsningsprocessens exekveringstid.
+
+\textit{StringAddStub} orsakas av att lexern sammanfogar token-värden för
+kommentarer, tal och identifierare genom att iterera över varje tecken så
+länge som en avgränsare inte påträffas. Denna procedur går att försenkla genom
+att istället räkna var värdet börjar och sedan iterera fram till avgränsaren
+och i det skedet identifier värdet från dess startposition till avgränsarens
+position enligt exemplet i figur~\ref{fig:stringAddStub}.
 
 \lstloadlanguages{JavaScript}
 \begin{figure}[ht]
@@ -140,20 +144,20 @@ avgränsaren enligt exempel figur~\ref{fig:stringAddStub}.
     \lstinputlisting[title=b) Procedur efter,language=Javascript]%
       {figures/tex/stringaddstub-post.js}
   \end{minipage}
-  \caption{Procedur förändring från sträng sammanfogning till sträng
-  utskärning.}
+  \caption{Procedur förändring från strängsammanfogning till identifiering.}
   \label{fig:stringAddStub}
 \end{figure}
 
-Vid vidare analys av sampling informationen gick det att utläsa att den
-huvudsakliga orsaken för den långsamma CompareICStub operation var en funktion
-som inlineats i uttrycks parsern. Funktionen ansvarar för att ange prioriteten
-av en given binära operator utgående från en switch-sats med sträng
-jämförelser. Eftersom funktionen körs för varje uttryck som hittas valde jag
-att speciellt uppoffra läsligheten med att istället jämföra teckenkoder i
-formen av ett träd enligt figur~\ref{fig:switchtree}. Efter att
-optimeringen gjorts validerade jag ännu funktionen var tillräkligt liten för
-att bli inlined, vilket den visade sig vara.
+% @TODO särskriva? @TODO vad ha göran skrivit @TODO träd
+Vid vidare analys av provtagningsinformationen gick det att utläsa att den
+huvudsakliga orsaken för den långsamma \textit{CompareICStub}-operationen var
+en \textit{``function inlining''} i uttrycks parsern. Funktionen ansvarar för
+att ange prioriteten av en given binär operator utgående från en switch-sats
+med strängjämförelser. Eftersom funktionen körs för varje uttryck som hittas
+valde jag att uppoffra läsligheten med att istället jämföra teckenkoder i
+form av ett träd enligt figur~\ref{fig:switchtree}. Efter att optimeringen
+gjorts validerade jag ännu att funktionen var tillräkligt liten för
+\textit{``function inlining''}, vilket den visade sig vara.
 
 \begin{figure}[ht]
   \lstinputlisting[title="",language=Javascript]%
@@ -162,32 +166,34 @@ att bli inlined, vilket den visade sig vara.
     strängar.} \label{fig:switchtree}
 \end{figure}
 
-\subsubsection{Garbage Collection}
+\subsubsection{Skräpinsamling}
 
-V8 består av två typer av garbage collectors som den väljer mellan att använda
-under en exekvering. Den första är en scavanger som arbetar snabbt men enbart
+V8 består av två typer av skräpinsamlare som den väljer mellan att använda
+under en exekvering. Den första är en s.k. scavanger som arbetar snabbt men enbart
 på indirekt skapade objekt, dvs. objekt utan nyckelordet new. Den andra typen
-av collector använder sig av en mark-sweep algoritm som även granskar indirekt
-skapade objekt men är betydligt långsammare\citep{ma10}.
+använder sig av en s.k. mark-sweep algoritm som även granskar indirekt skapade
+objekt men är betydligt långsammare \citep{ma10}.
 
-Eftersom parsern implementerats med hjälp av scopes och funktioner istället
-för med ett objektorienterat paradigm är all allokering indirekt och därmed
-finns det ingen oro om att minne skall läcka så länge som mer avancerade
-closure användningar inte används. När en funktion körts färdigt blir alla
-variabler som definierats inne i funktionen utom räckhåll för programmet och
-därmed kommer de tas bort vid nästa scavanger runda. På grund av att minnet
-knyts med hjälp av scopes är det därför viktigt att undvika globala variabler
-samt se till att hela programmet är knytet till ett eget scope som utomstående
+Eftersom parsern implementerats med hjälp av s.k. scopes och funktioner istället
+för med en objektorienterad paradigm är all allokering indirekt. Därmed finns
+det ingen oro om att minne skall läcka så länge som mer avancerade closure
+inte används. När en funktion körts färdigt blir alla variabler som
+definierats inne i funktionen utom räckhåll för programmet och därmed kommer
+de att tas bort vid nästa scavanger-runda. På grund av att minnet reserveras
+med hjälp av scopes är det därför viktigt att undvika globala variabler
+samt att se till att hela programmet är knytet till ett eget scope som utomstående
 objekt inte har tillgång till.
 
-Med hjälp av kommandorads flagga \textit{--trace_gc} kan vi se vilken typ av
-garbage collection som görs samt hur länge den tagit.
+Med hjälp av kommandoradsflagga \textit{--trace_gc} kan vi se vilken typ av
+skräpinsamling som görs samt hur länge den pågått.
 
-Utgående från resultatet ser vi att det sker 215 scavange collections som alla
+Utgående från resultatet ser vi att det sker 215 scavange-samlingar som alla
 tar under 1ms att utföra, samt en mark-sweep som utförs tidigt i exekveringen
 och kräver 7ms tid. Utgående från detta kan det konstateras att
-implementationen inte har läcker minne och att scavange collectorn kan
-upprätthålla programmet utan mer än en inledande mark-sweep.
+implementationen inte läcker minne och att scavange-samlaren kan upprätthålla
+programmet utan mer än en inledande mark-sweep.
+
+% @TODO oförståeligt
 
 \subsection{Resultat}
 
@@ -195,7 +201,7 @@ Beskriv vart vi kommit och varför vi inte kan optimera mer.
 
 \begin{figure}[ht]
   \includegraphics[width=15cm]{figures/output/commits.pdf}
-  \caption{Översikt av de mest prestanda påverkande kod commitsen}
+  \caption{Översikt av de mest prestandapåverkande kod commitsen}
 \end{figure}
 
 % vim: set tw=78:ts=2:sw=2:et:fdm=marker:wrap:wm=78:ft=tex

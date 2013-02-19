@@ -13,7 +13,7 @@ innebördet hos en regel. När parsern är klar med sin analys returnerar den
 strukturen till tolken som i sin tur returnerar sin omformning av strukturen
 tillbaka till huvudkomponenten, kompilatorn. Kompilatorn fungerar som en
 översättare som slutligen genererar den kod som datorns processor kan förstå.
-En översikt av dessa komponenter och dess funktioner kan hittas i
+En översikt av dessa komponenter och dess funktioner visas i
 figur~\ref{fig:compiler} \citep[s. 16]{pt10}.
 
 \begin{figure}[ht]
@@ -22,14 +22,13 @@ figur~\ref{fig:compiler} \citep[s. 16]{pt10}.
   \label{fig:compiler}
 \end{figure}
 
-Parsnings processen kan delas upp i två skilda faser, först en s.k.
-lexikal analys som identifierar lexikala element, mer kända som tokens. Tokens
+Parsningsprocessen kan delas upp i två skilda faser, först en s.k.
+lexikal analys som identifierar lexikala element, som kallas tokens. Tokens
 är identifierbara teckensträngar med speciell betydelse. De kategoriseras
-enligt typer så som nyckelord, konstanter, parametrar osv. \citep[s. 6]{aa06}.
+enligt typer såsom nyckelord, konstanter, parametrar osv. \citep[s. 6]{aa06}.
 
 Den andra fasen som sker efter att tokens är identifierade är den syntaktiska
-analysen var elementen sammansätts till helhets uttryck som utgör sin specifika
-funktion.
+analysen där elementen sammansätts till helhetsuttryck.
 
 \subsection{Lexikal analys}
 
@@ -40,66 +39,66 @@ läge var den väntar på ett tecken att läsa. När ett tecken läses går den 
 en serie alternativa lösningar den har för att minska mängden slutgiltiga
 lösningar. När därpå följande tecken läses in fortsätter den att härleda sig
 vidare tills den når en slutgiltig lösning, eller alternativt inte känner igen
-elementet och kastar ett felmeddelande. När lösningen är hittad skickar lexern
+elementet och skapar ett felmeddelande. När lösningen är hittad skickar lexern
 elementet tillbaka till parsern och återgår till sitt utgångsläge för att
 vänta på nästa tecken. På detta sätt kan lexern, som har en effektiv
-algoritm, kasta bort onödig information så som mellanslag och kommentarer för
+algoritm, avlägsna onödig information såsom mellanslag och kommentarer för
 att sedan ge uttryckets riktiga element vidare till parsern som nu enkelt vet
-om en teckensträng är en nyckelordsterminal eller ett nummer \citep[s.
+om en teckensträng är en nyckelordsterminal eller ett tal \citep[s.
 51]{sm09}.
 
-\subsection{Syntastisk analys}
+\subsection{Syntaktisk analys}
 
 \begin{figure}[ht]
   \includegraphics[width=8cm]{figures/output/tree.pdf}
-  \caption{Den syntastiska uppdelningen av en kod-sats}
+  \caption{Den syntaktiska uppdelningen av en kod-sats i Lua.}
 \end{figure}
 
-\subsection{Parser typer}
+\subsection{Parsertyper}
 
-Som det nämnts tidigare använder sig de flesta parsers sig av en lexer för att
+Som det nämnts tidigare använder de flesta parsers en lexer för att
 göra en lexikal analys av de tokens som ges som indata. När parsern får dessa
 tokens påbörjar den en syntaktisk analys som kan implementeras på diverse
-olika sätt. Huvudsakligen existerar de i två typer. Antingen härleder de
-regler från vänster och kallas då LL parsers eller så härleder de regler från
-höger och kallas LR parsers \citep[s. 67]{sm09}.
+olika sätt. Huvudsakligen existerar två typer. Antingen härleds regler från
+vänster och kallas då LL-parser eller så härleds regler från höger och kallas
+LR-parser \citep[s. 67]{sm09}.
 
-När man pratar om parsers nämner man ofta hur långt fram den kan se innan den
+När man beskriver parsers nämner man ofta hur långt fram den kan se innan den
 gör ett beslut, dvs. hur många tokens framåt den kan se. Detta antal skriver
-man inom en parentes efter parsertypen, dvs. för att uttrycka den vanligaste
-formen av parser som är en LR parser som ser en token framåt skriver man
+man inom en parentes efter parsertypen. För att uttrycka den vanligaste
+formen av parser som är en LR-parser som ser en token framåt skriver man
 LR(1) \citep[s. 69]{sm09}.
 
-\subsubsection{LL parser}
+\subsubsection{LL-parser}
 
-LL parsers går att skriva förhand eftersom de i allmänhet följer en logisk
+En LL-parser går att skriva för hand eftersom den i allmänhet följer en logisk
 tankegång. De börjar med att gissa sig till en rot-regel, likt en ändlig
 automat, och förväntar sig sedan att löv-reglerna skall passa in en efter en.
 Om det misslyckas kan den gå till nästa alternativa regel och fortsätter
 fram tills den bevisat en gissning. Denna typ av strategi kallas även för en
-uppifrån-och-ner strategi \citep[s. 67]{sm09}.
+\textit{``uppifrån-och-ner''} strategi \citep[s. 67]{sm09}.
 
-\subsubsection{LR parser}
+\subsubsection{LR-parser}
 
-LR parsers genereras huvudsakligen av maskiner eftersom de är svårare att
+LR-parsers genereras huvudsakligen av maskiner eftersom de är svårare att
 visualisera. Dessa parsers börjar med att läsa löv-reglerna, alltså de minsta
 identifierbara reglerna och ansluter dem sedan till varandra fram till det att
-den nått en slutgiltig rot-regel. Detta kallas även för en nerifrån-och-upp
-strategi \citep[s. 67]{sm09}.
+den nått en slutgiltig rot-regel. Detta kallas även för en
+\textit{``nerifrån-och-upp''} strategi \citep[s. 67]{sm09}.
 
-Både LL parsers och LR parsers används i kompilatorer men LR är mer
-vanligt \citep[s. 67]{sm09}. En orsak är att LR parsers täcker en
-större andel av grammatiker och därmed använder ofta programvara som genererar
-parsers sig ofta av av nerifrån-och-upp strategin \citep[s. 61]{aa06}.
+Både LL-parsers och LR-parsers används i kompilatorer men LR är mer
+vanligt \citep[s. 67]{sm09}. En orsak är att LR-parsers täcker en
+större andel av grammatiker och därmed använder programvara som genererar
+parsers ofta \textit{``nerifrån-och-upp''} strategin \citep[s. 61]{aa06}.
 
 \subsubsection{Rekursivt nedstigande parser}
 
-En form av LL parsers som är vanlig för handskrivna parsers är den rekurisvt
+En form av LL-parsers som är vanlig för handskrivna parsers är den rekurisvt
 nedstigande parsern. Den fungerar genom att knyta varje icke-terminal i
 grammatik till en egen funktion som ansvarar för att identifiera dess
 grammatiska löv. För varje icke-terminal i sin egen regel kallar den rekursivt
 vidare på dess anknytande funktioner fram till det att rot funktionen får hela
-syntax trädet returnerat \citep[s. 24]{pt10}.
+syntaxträdet returnerat \citep[s. 24]{pt10}.
 
 @TODO epsilon
 
@@ -135,9 +134,9 @@ vidare.
 I vissa fall är det användbart att inte ha en begränsad framåtblick och då kan
 man använda sig av en teknik som heter backtracking som tillåter parsern att
 se en obegränsad mängd tokens framåt. Implementationen av en backtracker
-varierar men i simpel form fungerar det genom att när mångtydlighet uppstår
+varierar men i enkel form fungerar den genom att när mångtydlighet uppstår
 välja ett alternativ och sedan ha möjligheten att återgå till ett tidigare
-tillstånd när alternativet bevisats rätt eller fel \citep[s. 55]{pt10}.
+tillstånd när alternativet bevisats vara korrekt eller felaktig \citep[s. 55]{pt10}.
 
 För att uttrycka att en parser kan se en obegränas mängd tokens framåt anger
 man antalet som k i formen LL(k) eller LR(k).

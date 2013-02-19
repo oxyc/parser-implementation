@@ -1,22 +1,23 @@
-\section{Implementation}
+\section{Lua-parserns implementation}
 
-Implementation är uppdelad i fyra komponenter. När parsern startas börjar
+Implementationen är uppdelad i fyra komponenter. När parsern startas börjar
 en syntaktisk analysator parsa input från rot-noden, dvs. från program-noden.
-Det första som görs är en kallelse till den andra komponenten, lexern. Lexern
+Det första som görs är ett anrop till den andra komponenten, lexern. Lexern
 läser input tecken för tecken och tokeniserar värden som sedan returneras
 till den syntaktiska analysatorn. Utanför lexern hanteras inte enskilda tecken
 mer utan enbart tokens. Utöver dessa två komponenter finns en separat
-uttrycksparser samt ett delegerare som producerar ett syntax träd vilket
-slutligen returneras till programmet som kallat på parsern i första hand.
+uttrycksparser samt ett delegerare som producerar ett syntaxträd vilket
+slutligen returneras till programmet som anropat parsern i första hand.
 
 \subsection{Lexer}
 
 Lexern läser input enligt en reguljär grammatik och gör detta som en
 deterministisk ändlig automat. När parsningen av en token börjar hämtas det
-aktuella tecknet i input strängen och går sedan genom en serie villkor för att
-bestämma vilken var token slutar och av vilken typ den är. När en token tar
-slut har automaten nått sitt slutliga tillstånd och informationen returneras
-varefter automaten återgår till startläget för att vänta på nästa förfrågan.
+aktuella tecknet i input strängen och lexern går sedan genom en serie villkor
+för att bestämma var en token slutar och av vilken typ den är. När en
+token slutat har automaten nått sitt slutliga tillstånd och informationen
+returneras varefter automaten återgår till startläget för att vänta på nästa
+förfrågan.
 
 \subsubsection{Identifierare och nyckelord}
 
@@ -34,25 +35,30 @@ native funktioner, escape sequences.
 
 \subsection{Syntaktisk analysator}
 
-Den syntaktiska analysatorn är en rekursivt nedstigande parser. Den börjar
-från rot-noden, i Lua länd som \textit{chunk}. Denna nod består av ett block
-som i sin tur består av en obestämnd mängd satser. Varje nodtyp, eller enligt
-grammatiken regel är implementerad som en egen funktion som rekursivt kallar
-på andra regel funktioner. När input strängen tagit slut har parsern också
-returnerat ett träd av information till rot-noden som sedan returneras till
-programmet som begärt informationen.
+Den syntaktiska analysatorn är en rekursivt nedstigande parser som börjar sin
+parsningsprocess från rot-noden, i Lua känd som en \textit{``chunk''}.
+Denna nod består av en block-nod med en obestämd mängd satser-noder. Varje
+nodtyp, eller regel, är implementerad som en funktion som rekursivt anropar
+andra regelfunktioner och slutligen returnerar ett syntaxträd över sin
+struktur. När input strängen tagit slut har det slutgiltiga syntaxträdet
+returnerats till rot-noden och kan därefter förmedlas till programmet som
+begärt informationen.
+
+% @TODO lite komplicerad paragraf. Förmedlas?
 
 Parsern är implementerad som en LL(1) parser med minne för en aktuell token,
-samt en lookahead token. Med hjälp av dessa två tokens kan hela Lua
-grammatiken syntaktiskt analyseras.
+samt en s.k. \textit{``lookahead''} token. Med hjälp av dessa två tokens kan
+hela Lua-grammatiken syntaktiskt analyseras.
 
 Mycket av den syntaktiska analysatorns grammatik är samma som den ursprungliga
-Lua grammatiken, dock har vissa finjusteringar gjorts för att bland annat
-kunna identifiera variabel deklarationer från funktionskallelser. Dessa två
-sats-typer skulle normalt kräva fler lookahead tokens för att kunna
+Lua-grammatiken. Dock har vissa finjusteringar gjorts för att bland annat
+kunna åtskilja variabeldeklarationer från funktionsanrop. Dessa två sats-typer
+skulle normalt kräva fler \textit{``lookahead''} tokens för att kunna
 identifieras korrekt. Implementationen har istället implementerat
 funktionalitet för memoisation. Detta innebär att det första alternativet
 testas och om det misslyckas används istället det andra alternativet.
+
+% @TODO sista meningen låter fel.
 
 \subsubsection{EBNF notation till JavaScript}
 
@@ -142,10 +148,12 @@ Hur översätts notationen, exempel på if / while.
 \subsection{Uttrycksparser}
 
 %Likna parsern till Luas egna.
-Lua grammatikens uttrycksregel, \textit{expr}, utnyttjar vänster rekursion,
-som inte är möjligt i rekursivt nedstigande parsers eftersom de hamnar i en
-oändlig loop. Detta ser vi i alternativet var ett uttryck kan vara ett uttryck
+Lua-grammatikens uttrycksregel, \textit{expr}, utnyttjar vänsterrekursion,
+vilket inte är möjligt i rekursivt nedstigande parsers eftersom de hamnar i en
+oändlig upprepning. Detta ser vi i alternativet där ett uttryck kan vara ett uttryck
 kombinerat med en binär operator samt ett annat uttryck.
+
+% @TODO make sure to explain vänster-rekursion.
 
 \setlength{\grammarindent}{5em}
 \begin{grammar}
@@ -154,20 +162,24 @@ kombinerat med en binär operator samt ett annat uttryck.
   <exp> ::= \ldots | <exp> <binop> <exp> | \ldots
 \end{grammar}
 
-Eftersom uttrycks regeln även består av en serie andra icke-terminaler vars
+Eftersom uttrycksregeln även består av en serie andra icke-terminaler vilkas
 funktioner är svåra att få ett grepp om kommer vi att expandera och analysera
-alla delregler för att slutligen få en fungerande och hoppeligen mer
+alla delregler för att slutligen få en fungerande och förhoppningsvis mer
 organiserad regel för uttryck.
 
-Processen för att införa detta kommer bestå av tre steg, var det det första
-visar den ursprungliga regeln, den andra visar resultatet från vänster
-faktoreringen och den tredje visar regeln skriven utan epsilon.
+Processen för att införa detta kommer bestå av tre steg, där det det första
+steget visar den ursprungliga regeln, det andra steget visar resultatet från
+vänsterfaktoreringen och det tredje steget visar regeln skriven utan epsilon.
+
+% @TODO berätta om epsilon
 
 \subsubsection{Gruppering av uttryck}
 
-För att lättare arbeta med definitionen grupperar vi in uttryck i binära och
-unära operatioer, prefix uttryck samt primära uttryck. Primära uttryck består
-av de kvarstående alternaten, huvudsakligen datatyper.
+För att lättare arbeta med definitioner indelas uttryck i binära och unära
+operationer, prefix uttryck samt primära uttryck. Primära uttryck består av de
+kvarstående alternativen, huvudsakligen datatyper.
+
+% @TODO lite oklart
 
 \begin{description}
   \setlength{\grammarindent}{5em}
@@ -180,7 +192,7 @@ av de kvarstående alternaten, huvudsakligen datatyper.
       <primaryexp> ::= \ldots
     \end{grammar}
 
-  \item[Eliminering av vänster rekursion] \hfill
+  \item[Eliminering av vänsterrekursion] \hfill
     \begin{grammar}
       \singlespace\small%
       \fontfamily{lmr}\selectfont
@@ -197,7 +209,7 @@ av de kvarstående alternaten, huvudsakligen datatyper.
     \end{grammar}
 \end{description}
 
-\subsubsection{Analys av prefix uttryck}
+\subsubsection{Analys av prefixuttryck}
 
 \begin{description}
   \setlength{\grammarindent}{8em}
@@ -214,9 +226,12 @@ av de kvarstående alternaten, huvudsakligen datatyper.
       <args> ::= "(" [ <explist> ] ")" | <tableconstructor> | String
     \end{grammar}
 
-    Den fullständiga regeln för argument kan hittas i bilaga 1 och vi kan
-    konstatera att regeln inte behöver bearbetas mer. Vi expanderar
-    ytterligare underreglerna för att få en bättre överblick.
+    Den fullständiga regeln för \bnfrule{args} finns i bilaga 1, men för
+    att hålla grammatiken enkel utelämnas dess helhet här och vi konstaterar
+    endast att regeln inte behöver bearbetas mer. Vi expanderar de övriga
+    underreglerna för att få en bättre överblick.
+
+    % @TODO något oklart?
 
     \begin{grammar}
       \singlespace\small%
@@ -226,7 +241,7 @@ av de kvarstående alternaten, huvudsakligen datatyper.
         \alt "(" <exp> ")"
     \end{grammar}
 
-  \item[Eliminering av vänster rekursion] \hfill
+  \item[Eliminering av vänsterrekursion] \hfill
     \begin{grammar}
       \singlespace\small%
       \fontfamily{lmr}\selectfont
@@ -247,8 +262,8 @@ av de kvarstående alternaten, huvudsakligen datatyper.
 
 \subsubsection{Sammanknytning}
 
-Med hjälp av dessa modifieringar ha vi nu en uttrycks regel som inte använder
-sig av vänster rekursion och kan därmed användas i en rekursivt nedstigande
+Med hjälp av dessa modifieringar har vi nu en uttrycksregel som inte använder
+sig av vänsterrekursion och kan därmed användas i en rekursivt nedstigande
 parser.
 
 \setlength{\grammarindent}{6em}
@@ -304,16 +319,16 @@ högra operanden parsas. Detta orsakar en omvändning i grupperingen.
 \begin{figure}[ht]
   \lstinputlisting[title="",language=Javascript]%
     {figures/tex/right-associative.js}
-  \caption{Implementation för höger associativa regler}
+  \caption{Implementation för högerassociativa operatorer.}
   \label{fig:rightassociative}
 \end{figure}
 
 \subsubsection{Resultat}
 
 Resultatet av denna omvandling visar sig vara en nära exakt kopia av Luas egna
-uttrycks parser med vissa skillnader för operator associationer. Det kan
-konstateras att skaparna användt sig av en enkel vänster faktorering för att
-omvandla sin tidigare yacc skapade parser till en handskriven rekurisvt
+uttrycksparser med vissa skillnader för operatorassociativitet. Det kan
+konstateras att skaparna använt sig av en enkel vänsterfaktorering för att
+omvandla sin tidigare yacc-skapade parser till en handskriven rekursivt
 nedstigande parser.
 
 %
@@ -354,7 +369,7 @@ Vad är AST?
 
 \begin{figure}[ht]
   \includegraphics[width=10cm]{figures/output/abstract-tree.pdf}
-  \caption{Abstrakt syntax träd som representation av en parsnings analys.}
+  \caption{Abstrakt syntaxträd som representation av en parsningsanalys.}
 \end{figure}
 
 \subsubsection{Representation}
