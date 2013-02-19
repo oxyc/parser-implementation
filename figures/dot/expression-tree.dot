@@ -1,0 +1,27 @@
+digraph G {
+  node [fontname=Sans,fontsize=13,style=filled,color=white,fontcolor=black]
+
+  expr -> left1;
+  expr -> right1;
+  expr [label="1 + 2 - 3 * 4 + 5 [+]"];
+
+  left1 -> left11;
+  left1 -> left12;
+  left1 [label="1 + 2 - 3 * 4 [-]"];
+
+  left11 -> left111;
+  left11 -> left112;
+  left11 [label="1 + 2 [+]"];
+
+  left111 [label="1"];
+  left112 [label="2"];
+
+  left12 -> left121;
+  left12 -> left122;
+  left12 [label="3 * 4 [*]"];
+
+  left121 [label="3"];
+  left122 [label="4"];
+
+  right1 [label="5"];
+}
