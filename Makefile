@@ -11,7 +11,7 @@ all: document
 
 # Can't be file rule as modifications are done in partial files.
 document: $(DOCUMENT).tex
-	@pdflatex $<
+	@pdflatex -halt-on-error $<
 
 # Make sure everything is compiled
 full: figures document bibtex document document
