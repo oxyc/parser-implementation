@@ -104,20 +104,21 @@ att arbeta med BNF notationer för att inte mista giltiga uttryck.
     \singlespace\small%
     \fontfamily{lmr}\selectfont
 
-    <nummer> ::= <heltal> | <reellt tal>
+    <tal> ::= ["+" | "-"] (<heltal> | <reellt tal>)
 
     <heltal> ::= <siffra> \{<siffra>\}
 
-    <reellt tal> ::= <heltal> <exponent> | <decimaltal> [<exponent>]
+    <reellt tal> ::= <heltal> <exponent>
+      \alt <decimaltal> [<exponent>]
 
-    <decimaltal> ::= { <siffra> } ( "." <siffra> | <siffra> "." ) { <siffra> }
+    <decimaltal> ::= <heltal>.<heltal>
 
     <exponent> ::= ("e" | "E") ["+" | "-"] <heltal>
 
     <siffra> ::= "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9"
 
   \end{grammar}
-  \caption{EBNF grammatik för ett nummer.}
+  \caption{EBNF grammatik för ett tal.}
   \label{fig:reg}
 \end{figure}
 
@@ -141,7 +142,8 @@ därmed tillåta uttryck så som \mbox{\textit{1 + (2 / 7) * -3}}.
     \singlespace\small%
     \fontfamily{lmr}\selectfont
 
-    <uttryck> ::= <nummer> | ("-" | "+") <uttryck> | "(" <uttryck> ")"
+    <uttryck> ::= <tal>
+      \alt "(" <uttryck> ")"
       \alt <uttryck> <operator> <uttryck>
 
     <operator> ::= + | - | * | /
