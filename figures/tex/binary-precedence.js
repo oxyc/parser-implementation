@@ -1,19 +1,16 @@
-function parseExpression() {
-  return parseSubExpression(0);
-}
-
-function parseSubExpression(minPrecedence) {
-  var expression;
-  if (isUnary(token)) expression = unaryExpression(token, parseUnaryExpression());
-  else if (isPimary(token)) expression = parsePrimaryExpression();
-  else expression = parsePrefixExpression();
+function parseSubExpression(minPrecedence = 0) {
+  expression = parseOperand();
 
   while (true) {
-    var operator = token
-      , precedence = getPrecedence(operator);
-    if (precedence <= minPrecedence) break;
-    var right = parseSubExpression(precedence);
-    expression = binaryExpression(expression, right);
+    operator = parseToken();
+    precedence = getPrecedence(operator);
+
+    if (precedence > minPrecedene) {
+      var right = parseSubExpression(precedence);
+      expression = binaryExpression(operator, expression, right);
+    } else {
+      break
+    }
   }
-  return expression;
+  return expression
 }

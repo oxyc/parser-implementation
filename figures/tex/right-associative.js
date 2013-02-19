@@ -1,8 +1,12 @@
 while (true) {
-  var operator = token
-    , precedence = getPrecedence(operator);
-  if (precedence <= minPrecedence) break;
-  if (parseRightAssociative(operator)) precedence--;
-  var right = parseSubExpression(precedence);
-  expression = binaryExpression(expression, right);
+  operator = parseToken();
+  precedence = getPrecedence(operator);
+
+  if (precedence > minPrecedene) {
+    if (parseRightAssociative(operator)) precedence -= 1;
+    var right = parseSubExpression(precedence);
+    expression = binaryExpression(operator, expression, right);
+  } else {
+    break
+  }
 }

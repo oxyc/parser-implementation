@@ -279,42 +279,104 @@ parser.
       ":" Name <args> | <args> \}
 \end{grammar}
 
-\subsubsection{Binärt företrädande}
+\subsubsection{Operationsprioritet}
 
-I Lua manuelen \citep{luaref} nämns det att grammatiken inte beskriver binärt företrädande,
-dvs. logiken som bestämmer att multiplikation skall utföras innan addition.
-Denna prioritering kan vi dock hitta i källkoden av \cite{lparse}.
+Operationsprioritet innebär den logik som bestämmer att multiplikation
+prioriteras högre än addition och därmed grupperar uttryck såsom \textit{5 + 5
+* 2} till \textit{5 + (5 * 2)} istället för \textit{(5 + 5) * 2}. Lua-manuelen
+nämner att grammatiken inte beskriver operationsprioritet \citep{luaref} men
+en lista av prioriteterna den kan hittas i källkoden av Luas egna parser
+\citep{lparse}.
 
 En implementationsmöjlighet som Lua själv använder är att spjälka ut
-funktionen som parsar uttryck till en ny funktionen som tar emot vänstra
-operandens prioritet som argument. Funktionen itererar sedan över de binära
-operationerna som följer, och lägger rekursivt till dom som binära operationer
-i den vänstra operanden fram till det att en operator har lägre prioritet
-eller inte är en operator. När detta sker har hela binära uttrycket hittats
-och strukturerats i ett träd enligt prioritet. Denna algoritm kallas även för
-operator-precedence parsing och är en form av nerifrån-och-upp parsning.
-Pseudokoden för detta visas i figur~\ref{binprec}.
+funktionen som parsar uttryck till en ny funktionen som tar emot
+operatorprioriteten som ett argument med den lägsta prioriteten som
+ursprungsläge. Funktionen spjälker sedan uttrycket i ett vänsterled, ett
+högerled och operatorn mellan dessa. Om operatorns prioritet är höger än
+prioriteten som givits som argument parsar funktionen rekursivt operationens
+högerled och skapar en ny operationsgruppering så länge som prioriteten är
+högre. Om operatorns prioritet är lägre än eller samma som argumentets
+prioritet kommer iterationen att avbrytas och det nuvarande uttrycket att
+returneras till det högraledet. Eftersom ursprungslägets prioritet är det
+lägsta kommer alltid ett uttryck att forsätta så länge som en operator kan
+hittas.
+
+Denna algoritm kallas för \textit{``operator-precedence''} parsning och
+använder sig av \textit{``nerifrån-och-upp''} strategin. Pseudokoden för en
+implementation visas i figur~\ref{fig:binprecedence} och ett grupperingsträdet
+visas i figur~\ref{fig:expressiontree}.
 
 \begin{figure}[ht]
   \lstinputlisting[title="",language=Javascript]%
     {figures/tex/binary-precedence.js}
-  \caption{operator-precedence parser}
-  \label{fig:binprec}
+  \caption{En ``operator-precedence'' uttrycksparser.}
+  \label{fig:binprecedence}
 \end{figure}
 
+\paragraph{Algoritmexempel för uttrycket 1 + 2 - 3 * 4 + 5}
 
-\subsubsection{Höger associativa regler}
+\begin{enumerate}\itemsep1pt \parskip0pt \parsep0pt
+  \item Vänstra ledet har värdet 1 och operatorn är + med en prioritet på 1.
+  \item Eftersom prioriteten är högre än 0 anropar funktionen sig själv med den
+    nya prioriteten.
+    \begin{enumerate}
+      \item Vänstra ledet är 2 och operatorn är - med en prioritet på 1.
+      \item Eftersom prioriteten är samma som föregående returneras värdet 2.
+    \end{enumerate}
+  \item Högra ledet är 2.
+  \item En gruppering sker och vänstra ledet blir nu (1 + 2).
+  \item Operatorn är - med en prioritet på 1 som är mer än 0 så funktionen
+    anropar sig själv.
+    \begin{enumerate}
+      \item Vänstra ledet är 3 och operatorn är * med en prioritet på 2.
+      \item Eftersom 2 > 1 anropar funktionen sig själv.
+      \begin{enumerate}
+        \item Vänstra ledet är 4 och operatorn är + med en prioritet på 1.
+        \item Eftersom 1 < 2 returneras värdet 4.
+      \end{enumerate}
+      \item Högra ledet är nu 4.
+      \item En gruppering sker och vänstra ledet blir nu (3 * 4).
+      \item Operatorn är + med en prioritet på 1 som är samma som 1 så
+        funktionen returnerar värdet (3 * 4).
+    \end{enumerate}
+  \item Högra ledet är nu (3 * 4) och en gruppering sker så att vänstra ledet
+    blir ((1 + 2) - (3 * 4)).
+  \item Operatorn är + med en prioritet på 1 som är mer än 0 så funktionen
+    anropar sig själv.
+    \begin{enumerate}
+      \item Vänstra ledet är 5 och eftersom ingen operator hittas returneras
+        värdet.
+    \end{enumerate}
+  \item Högra ledet är nu 5 och grupperingen blir (((1 + 2) - (3 * 4)) + 5).
+  \item Eftersom ingen operator kan hittas returneras det slutgiltiga
+    uttrycket.
+\end{enumerate}
 
-Associativa regler innebär hur uttryck grupperas när parenteser inte
-existerar. Ett exempel på detta är upphöjt till var grupperingen spelar stor
-betydelse. Om uttrycket \textit{5\^{}4\^{}3\^{}2} läses från vänster likt
-addition skulle gruppering bli \textit{((5\^{}4)\^{}3)\^{}2}, men eftersom
-upphöjt till har en höger associativ regel skall grupperingen egentligen vara
-\textit{5\^{}(4\^{}(3\^{}(2)))}, vilket ger ett annat resultat. Alla
-operatorer förutom \^{} och .. är vänster associativa i Lua. Implementationen
-för detta hittas i figur~\ref{rightassociative} och utgörs av att subtrahera
-1 från opretor prioriteten om en höger associativ regel hitta innan den
-högra operanden parsas. Detta orsakar en omvändning i grupperingen.
+\begin{figure}[ht]
+  \includegraphics[width=5cm]{figures/output/expression-tree.pdf}
+  \caption{Grupperingsträd av det matematiska uttrycket 1 + 2 - 3 * 4 + 5.}
+  \label{fig:expressiontree}
+\end{figure}
+
+\subsubsection{Operatorassociativitet}
+
+Operatorassociativitet används för att gruppera operatorer med samma prioritet
+och utan parenteser. De vanliga matematiska operatorerna har ingen
+associativitet eftersom $(1 + 2) + 3$ har samma resultat som $1 + (2 + 3)$. I
+uttrycksparsern från figur~\ref{fig:binprecedence} hanteras dessa operatorer
+som vänsterassociativa och grupperas alltså so m$(1 + 2) + 3)$, men detta kan
+avgöras godtyckligt.
+
+Lua har dock två operatorer med högerassociativitet,
+teckensträngsammansättningsoperatorn \textit{..} samt potensoperatorn
+\textit{\^{}}. Om uttrycket \textit{5\^{}4\^{}3\^{}2} grupperas från vänster likt
+addition skulle resultatet bli \textit{((5\^{}4)\^{}3)\^{}2}, vilket inte har
+samma värde som det korrekta högerassociativa \textit{5\^{}(4\^{}(3\^{}(2)))}.
+
+Implementationen för detta hittas i figur~\ref{fig:rightassociative} som en
+modifiering av algoritmen i figur~\ref{fig:binprecedence} och utgörs av att
+subtrahera 1 från opretorprioriteten om en högerassociativ regel hittas innan
+den högra operanden parsas. Detta orsakar en omvändning i grupperingen.
 
 \begin{figure}[ht]
   \lstinputlisting[title="",language=Javascript]%
