@@ -208,87 +208,81 @@ man antalet som k i formen LL(k) eller LR(k).
 
 Kort om vad memoisation är.
 
-\subsection{Parser genererare}
+\subsection{Parser-generatorer}
 
-Vad är parser genererare
+Att implementera en parser för hand är en tidskrävande och felbenägen process.
+Produktionsregler påminner mycket om varandra och repetitionen att
+implementera varje regel blir en långdragen uppgift med möjlighet för
+introduktion av fel vid varje steg. På grund av detta har det blivit populärt
+att använda en s.k. parser-generator som förser programmeraren med en färdig
+parser implementation utgående från en given grammatik \citep[s. 26]{pt10}.
 
-\subsubsection{Jison}
+Med hjälp av en parser-generator kan implementatören upprätthålla grammatiken
+av ett språk genom att skriva och modifiera en BNF-liknande syntax istället
+för den egentliga koden. Detta har stora fördelar om grammatiken inte är helt
+stabil eftersom enbart några rader behöver korrigeras vid förändringar. För
+ett språk med en stabil grammatik existerar fördelarna endast vid
+implementationsskedet och kan vara en nackdel i situationer som felsökning och
+skapandet av läsbara felmeddelanden för syntaxfel \citep[s. 175]{bf09}.
 
-Exempel på parser genererare, samt projekt som använder det.
+Uppdelningen av genererade parsers och handskrivna parsers är delad, de flesta
+språk använder sig av en genererad parser men några såsom C-språkets GCC \citep{gcc}
+samt Luas egna parser \citep{luaimp} har börjat från en genererad parser och
+sedan övergått till en handskriven rekursivt nedstigande parser för utökad
+funktionalitet.
 
-https://github.com/josevalim/luascript/blob/master/lib/lua/compiler/parser.jison
+Parser-generatorer existerar för flera språk och för diverse grammatik- samt
+algoritmtyper. I detta kapitel kommer jag att presentera två
+parser-generatorer som är vanliga i unix-system.
 
-\subsubsection{Fördelar och nackdelar}
+\subsubsection{Lex}
 
-Diskutera vad som allmänt ses som fördelar och nackdelar. Citera skaparna av
-lua om varför de böt från yac i 3.0.
+Lex är en generator för reguljära grammatiker skapad av Mike Lesk och
+Eric Schmidt. Verktyget använder en egen grammatik syntax för att
+definiera produktionsregler i ett språk och generera sedan en lexer i C eller
+Ratfor. För varje produktionsregel kan användaren definiera en åtgärd som
+kommer att exekveras när en regel identifierats. Vanligen är detta C kod för
+att returnera värdet till en parser så som Yacc eller Bison. Eftersom Lex
+genererar kod existerar funktionalitet för att inkludera valfri C kod som
+kopieras till resultat filen. Detta kan användas till att inkludera bibliotek
+eller definiera funktioner som produktionsreglerna använder \citep{lex}.
 
-% \section{Diskussion}
-%
-% Med hjälp av denna överblick kan det konstateras att de två huvudsakliga
-% grammatikerna man behöver förstå och kunna vid implementeringen av ett
-% programmeringsspråk är den reguljära grammatiken samt den kontextfria
-% grammatiken. Om man använder sig av en grammatik utanför dessa kan man lätta
-% skapa ett komplext språk som blir svårt att implementera, vilket C++ är ett
-% exempel på.
-%
-% Eftersom parsningsfasen inte innehåller en semantisk analys av ett uttryck kan
-% det även konstateras att uttryck inte behöver vara giltigt bara pga. att dessa
-% syntax är korrekt. Ytterligare krävs det en tolk för att fastställa att
-% uttrycket verkligen är korrekt.
-%
-% Under åren har det utvecklats många typer av LL parsers och LR parsers och vi
-% har enbart beskrivit grundtanken bakom dess struktur. Eftersom det i dagens
-% läge även existerar ett flertal verktyg för att generera parsers utgående från
-% en BNF grammatik kan man fråga sig om det lönar sig att skriva parsers
-% förhand, och vad detta i så fall ger för fördel. Detta är ett ämne jag
-% personligen kommer att forska mer om i mitt examensarbete som kommer beskriva
-% implementationen av en manuellt skriven parser för programmeringsspråket Lua.
+I figur~\ref{fig:lex} hittas en enkel grammatik specifikation som läser input
+och identifierar variabeldeklarationer av strängar eller heltal samt ignorerar
+blanksteg.
 
+\begin{figure}[ht]
+  \lstinputlisting[title="",keywords={printf,return,include,main}]%
+    {figures/tex/lex.l}
+  \caption{En Lex-specifikation för att identifiera variabeldeklarationer av
+    strängar eller heltal.}
+  \label{fig:lex}
+\end{figure}
 
-% Formella språk och mer specifikt programmeringsspråk beskrivs ofta mha. en
-% formell grammatik. Dessa består av en serie regler som beskriver hur man
-% kombinerar tecken för att skapa ett giltigt uttryck. De beskriver dock inte
-% semantiken av dessa uttryck utan enbart hur dess giltiga syntax ser ut.
-%
-% Syntax grammatiken till ett formellt språk är uppbyggt av finita serier
-% terminaler, icke-terminaler och produktions regler. Terminaler uttrycker
-% konstanta strängvärden så som alfabetiska bokstäver och siffror medan
-% icke-terminaler uttrycker en varierande serie av terminaler så som t.ex. heltal
-% eller strängar. Produktions reglerna är sammansättnings definitionen för
-% icke-terminalernas värde.
-%
-% Syntax grammatiken beskriver alltså hur ett språk skall läsas utgående från
-% dess utformning. Denna analyserings form kallas syntaktisk analys eller
-% parsning. Trots att ett språk läses syntaktiskt korrekt betyder det dock inte
-% att det är korrekt. Det återstår en semantisk grammatik som beaktar
-% innebördet hos symboler och strukturer. Denna form av grammatik kommer dock
-% inte tas upp och hädanefter är alla hänvisningar till grammatik angående
-% syntax grammatik.
+\subsubsection{Yacc}
 
-%notationen uttrycker icke-terminaler namnet på en produktionsregel, och därmed
+Eftersom de flesta programmeringsspråk använder sig av en kontextfrigrammatik
+är inte Lex verktyget tillräkligt utan man behöver ytterligare en syntaktisk
+analysator. Yacc är en parser-generator för kontextfrigrammatik skapad av
+Stephen Johnson. Syntaxen för grammatik specifikationen liknar mycket Lex.
+Användaren definierar produktionsregler samt dess åtgärder men har nu
+möjligheten att använda rekursion. Ytterligare bör man definiera en
+lexikaliseringsfunktion, exempelvis \textit{yylex()}, samt vilka tokentyper
+som existerar. Integreringen måste ske både i den valfria lexern och i
+Yacc-specifikationen, t.ex. med en delad defintionsfil av tokens som lexern
+returnerar och den Yacc-genererade parsern kan identifiera. Ett pseudokods
+exempel på ett språk som tillåter variabeldeklarationer av heltal och strängar
+hittas i figur~\ref{fig:yacc}. För att parsern skall fungera måste logiken för
+\textit{input} samt lexikaliseringen av \textit{VARIABLE}, \textit{STRING},
+\textit{INTEGER} och \textit{EQUAL_SIGN} definieras i lexer koden.
 
-% Syntax grammatiken till ett språk beskrivs ofta med hjälp av ett metaspråk och
-% ett av de vanligaste inom programmeringsspråk grammatiker är BNF (Backus-Naur
-% Form). Det existerar i varianter och I denna uppsats kommer jag att använda
-% en variant av EBNF (Extended BNF) för att beskriva grammatik på ett läsvänligt
-% sätt. Definitionen av symbolerna kan hittas i tabell~\ref{tab:ebnf}.
-
-% \begin{table}[ht]
-%   {\renewcommand{\arraystretch}{1.2}
-%   \caption{Syntax grammatik för BNF grammatiker i denna uppsats.}
-%   \begin{tabular}{| l | l |}
-%     \hline
-%     Definition & = \\
-%     Sammansättning & \\
-%     Alternering & | \\
-%     Valfrihet & [ \ldots ] \\
-%     Repetition & \{ \ldots \} \\
-%     Gruppering & ( \ldots ) \\
-%     \hline
-%   \end{tabular}
-%   \label{tab:ebnf}}
-% \end{table}
+\begin{figure}[ht]
+  \lstinputlisting[title="",keywords={printf,return,include,main,do,while}]%
+    {figures/tex/yacc.y}
+  \caption{En Yacc-specifikation för variabeldeklarationer av heltal och
+    strängar.}
+  \label{fig:yacc}
+\end{figure}
 
 % vim: set tw=78:ts=2:sw=2:et:fdm=marker:wrap:wm=78:ft=tex
 % vim: spell spelllang=sv
