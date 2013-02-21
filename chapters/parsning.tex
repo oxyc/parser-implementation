@@ -106,28 +106,68 @@ syntaxträdet returnerat \citep[s. 24]{pt10}.
 
 \subsection{Tekniker}
 
-\subsubsection{Vänster faktorering}
 
-Hur gör man left factoring @TODO detta är snabbt flyttat från en annan sektion
-hit och kommer beskriva processen för left factoring.
+
+\subsubsection{Vänsterfaktorering}
+
+Ett vanligt problem grammatiker i en parser med \textit{``uppifrån-och-ner''}
+algoritmen är vänsterrekursion. Detta innebär att produktionsregel använder
+sig själv som icke-terminal längst till vänster i sammansättningen enligt. När
+detta inträffar kommer implementationen fastna i en oändlig upprepning. För
+att implementera en LL-parser måste man därför använda en metod som kallas
+vänsterfaktorering.
+
+Exempelvis är produktionsregeln för kalkylatorn i figur~\ref{fig:cfg} på sida
+\pageref{fig:cfg} vänsterrekursiv.
 
 \setlength{\grammarindent}{5em}
 \begin{grammar}
   \singlespace\small%
   \fontfamily{lmr}\selectfont
-  <exp> ::= \ldots | <exp> <binop> <exp> | \ldots
+  <uttryck> ::= <tal>
+    \alt "(" <uttryck> ")"
+    \alt <uttryck> <operator> <uttryck>
 \end{grammar}
 
-Om denna regel skulle implementeras skulle den se ut enligt
-figur~\ref{exp-recursion} och vi kan se hur funktionen alla skulle komma
-vidare.
+Genom att expandera rekursionen i alla existerande villkor som nya villkor får
+vi:
 
-\begin{figure}[ht]
-  \lstinputlisting[title="",language=Javascript]%
-    {figures/tex/exp-recursion.js}
-  \caption{Direkt implementation av binära operationer enligt Lua grammatiken.}
-  \label{fig:exp-recursion}
-\end{figure}
+\setlength{\grammarindent}{5em}
+\begin{grammar}
+  \singlespace\small%
+  \fontfamily{lmr}\selectfont
+  <uttryck> ::= <tal>
+    \alt "(" <uttryck> ")"
+    \alt <tal> <operator> <uttryck>
+    \alt "(" <uttryck> ")" <operator> <uttryck>
+\end{grammar}
+
+Detta beskriver fortfarande en identisk grammatik och följande steg är att
+förenkla uttrycket med en ny produktionsregel som utnyttjar $\epsilon$, en
+symbol för att representera ett tomt värde.
+
+\setlength{\grammarindent}{5em}
+\begin{grammar}
+  \singlespace\small%
+  \fontfamily{lmr}\selectfont
+  <uttryck> ::= <tal> <uttryck'>
+    \alt "(" <uttryck> ")" <uttryck'>
+
+  <uttryck'> ::= <tal>
+    \alt "(" <uttryck> ")"
+    \alt <operator> <uttryck>
+    \alt $\epsilon$
+\end{grammar}
+
+Grammatikens funktion är fortfarande identisk men vänstrekursionen som är
+omöjlig att utföra i en \textit{``uppifrån-och-ner''} algoritm är eliminerad.
+
+En förenklad matematisk regel som kan användas för att vänsterfaktorera
+$A \rightarrow A\alpha\;|\;\beta$ är \citep[s. 212]{aa06}:
+\begin{align*}
+A &\rightarrow \beta A^\prime \\
+A^\prime &\rightarrow \alpha A^\prime\;|\;\epsilon
+\end{align*}
 
 \subsubsection{Backtracking}
 
