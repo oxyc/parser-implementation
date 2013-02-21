@@ -1,0 +1,24 @@
+digraph G {
+  node [fontname=Sans,fontsize=13,style=solid,color=black,fontcolor=black]
+  rankdir=LR;
+  edge [fontname=Sans,fontsize=11];
+
+  rot [shape=circle,style=bold];
+  rot -> block [label="1",color=red];
+  block -> sats [label="2",color=red];
+  block -> deklaration [dir=none];
+
+  sats -> forsats [dir=none];
+  sats -> whilesats [dir=none];
+  sats -> ifsats [label="3",color=red];
+  ifsats -> block [label="4",color=red];
+
+  block -> ifsats [label="5",color=blue];
+  ifsats -> sats [label="6",color=blue];
+  sats -> block [label="7", color=blue];
+  block -> rot [label="8", color=blue];
+
+  whilesats [label="while-sats"];
+  forsats [label="for-sats"];
+  ifsats [label="if-sats"];
+}

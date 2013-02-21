@@ -61,7 +61,9 @@ göra en lexikal analys av de tokens som ges som indata. När parsern får dessa
 tokens påbörjar den en syntaktisk analys som kan implementeras på diverse
 olika sätt. Huvudsakligen existerar två typer. Antingen härleds regler från
 vänster och kallas då LL-parser eller så härleds regler från höger och kallas
-LR-parser \citep[s. 67]{sm09}.
+LR-parser \citep[s. 67]{sm09}. En steg för steg jämförelse av de två
+algoritmerna som använders för LL- och LR-parsers finns i
+figur~\ref{fig:ll-vs-lr} på sida \pageref{fig:ll-vs-lr}.
 
 När man beskriver parsers nämner man ofta hur långt fram den kan se innan den
 gör ett beslut, dvs. hur många tokens framåt den kan se. Detta antal skriver
@@ -76,7 +78,7 @@ tankegång. De börjar med att gissa sig till en rot-regel, likt en ändlig
 automat, och förväntar sig sedan att löv-reglerna skall passa in en efter en.
 Om det misslyckas kan den gå till nästa alternativa regel och fortsätter
 fram tills den bevisat en gissning. Denna typ av strategi kallas även för en
-\textit{``uppifrån-och-ner''} strategi \citep[s. 67]{sm09}.
+\textit{``uppifrån-och-ner''} algoritm \citep[s. 67]{sm09}.
 
 \subsubsection{LR-parser}
 
@@ -84,25 +86,46 @@ LR-parsers genereras huvudsakligen av maskiner eftersom de är svårare att
 visualisera. Dessa parsers börjar med att läsa löv-reglerna, alltså de minsta
 identifierbara reglerna och ansluter dem sedan till varandra fram till det att
 den nått en slutgiltig rot-regel. Detta kallas även för en
-\textit{``nerifrån-och-upp''} strategi \citep[s. 67]{sm09}.
+\textit{``nerifrån-och-upp''} algoritm \citep[s. 67]{sm09}.
 
 Både LL-parsers och LR-parsers används i kompilatorer men LR är mer
 vanligt \citep[s. 67]{sm09}. En orsak är att LR-parsers täcker en
 större andel av grammatiker och därmed använder programvara som genererar
-parsers ofta \textit{``nerifrån-och-upp''} strategin \citep[s. 61]{aa06}.
+parsers ofta \textit{``nerifrån-och-upp''} algoritm \citep[s. 61]{aa06}.
+
+\begin{figure}[ht]
+  \begin{minipage}[t]{0.5\textwidth}
+    % @TODO
+    % \input{figures/tex/llparser}
+  \end{minipage}%
+  \begin{minipage}[t]{0.5\textwidth}
+    % @TODO
+    % \input{figures/tex/lrparser}
+  \end{minipage}%
+  \caption{Steg för steg parsning av ett matemtiskt uttryck med en
+    ``uppifrån-och-ner''-algoritm (vänster) och en
+    ``nerifrån-och-upp''-algoritm (höger).}
+  \label{fig:ll-vs-lr}
+\end{figure}
 
 \subsubsection{Rekursivt nedstigande parser}
 
 En form av LL-parsers som är vanlig för handskrivna parsers är den rekurisvt
-nedstigande parsern. Den fungerar genom att knyta varje icke-terminal i
-grammatik till en egen funktion som ansvarar för att identifiera dess
-grammatiska löv. För varje icke-terminal i sin egen regel kallar den rekursivt
-vidare på dess anknytande funktioner fram till det att rot funktionen får hela
-syntaxträdet returnerat \citep[s. 24]{pt10}.
+nedstigande parsern. Istället för att utnyttja en automat fungerar den genom
+att knyta varje icke-terminal i grammatik till en egen funktion som ansvarar
+för att identifiera dess grammatiska löv. För varje icke-terminal i sin egen
+regel kallar den rekursivt vidare på dess anknytande funktioner fram till det
+att rot funktionen får hela syntaxträdet returnerat \citep[s. 24]{pt10}.
 
-@TODO epsilon
+Flödet av en rekursivt nedstigande parser hittas i
+figur~\ref{fig:recursivedescent} där varje nod symboliserar en funktion och
+röda pilar symboliserar dess anrop medan blåa pilar symboliserar dess returnering.
 
-@TODO
+\begin{figure}[ht]
+  \includegraphics[width=\textwidth]{figures/output/recursivedescent.pdf}
+  \caption{Flöde av en rekursivt nedstigande parser steg för steg.}
+  \label{fig:recursivedescent}
+\end{figure}
 
 \subsection{Tekniker}
 
