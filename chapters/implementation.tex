@@ -5,7 +5,7 @@ en syntaktisk analysator parsa input från rot-noden, dvs. från program-noden.
 Det första som görs är ett anrop till den andra komponenten, lexern. Lexern
 läser input tecken för tecken och tokeniserar värden som sedan returneras
 till den syntaktiska analysatorn. Utanför lexern hanteras inte enskilda tecken
-mer utan enbart tokens. Utöver dessa två komponenter finns en separat
+utan enbart tokens. Utöver dessa två komponenter finns en separat
 uttrycksparser samt ett delegerare som producerar ett syntaxträd vilket
 slutligen returneras till programmet som anropat parsern i första hand.
 
@@ -14,10 +14,9 @@ slutligen returneras till programmet som anropat parsern i första hand.
 Lexern läser input enligt en reguljär grammatik och gör detta som en
 deterministisk ändlig automat. När parsningen av en token börjar hämtas det
 aktuella tecknet i input strängen och lexern går sedan genom en serie villkor
-för att bestämma var en token slutar och av vilken typ den är. När en
-token slutat har automaten nått sitt slutliga tillstånd och informationen
-returneras varefter automaten återgår till startläget för att vänta på nästa
-förfrågan.
+för att bestämma var en token slutar och av vilken typ den är. När en token
+slutat har automaten nått sitt slutliga tillstånd och informationen returneras
+varefter automaten återgår till utgångsläget för att vänta på nästa förfrågan.
 
 \subsubsection{Identifierare och nyckelord}
 
@@ -148,7 +147,7 @@ Hur översätts notationen, exempel på if / while.
 \subsection{Uttrycksparser}
 
 %Likna parsern till Luas egna.
-Lua-grammatikens uttrycksregel, \textit{expr}, utnyttjar vänsterrekursion,
+Lua-grammatikens uttrycksregel, \bnfrule{expr}, utnyttjar vänsterrekursion,
 vilket inte är möjligt i rekursivt nedstigande parsers eftersom de hamnar i en
 oändlig upprepning. Detta ser vi i alternativet där ett uttryck kan vara ett uttryck
 kombinerat med en binär operator samt ett annat uttryck.
@@ -165,11 +164,11 @@ kombinerat med en binär operator samt ett annat uttryck.
 Eftersom uttrycksregeln även består av en serie andra icke-terminaler vilkas
 funktioner är svåra att få ett grepp om kommer vi att expandera och analysera
 alla delregler för att slutligen få en fungerande och förhoppningsvis mer
-organiserad regel för uttryck.
+organiserad produktionsregel för uttryck.
 
 Processen för att införa detta kommer bestå av tre steg, där det det första
 steget visar den ursprungliga regeln, det andra steget visar resultatet från
-vänsterfaktoreringen och det tredje steget visar regeln skriven utan epsilon.
+att eliminera vänsterrekursion och det tredje steget visar regeln skriven utan epsilon.
 Med att ta omforma regeln till att använda repetition istället för epsilon är
 regeln färdig för att översättas till kod.
 
@@ -190,6 +189,8 @@ kvarstående alternativen, huvudsakligen datatyper.
       <exp> ::= <primaryexp> | <prefixexp> | <exp> <binop> <exp> | <unop> <exp>
 
       <primaryexp> ::= \ldots
+
+      <prefixexp> ::= \ldots
     \end{grammar}
 
   \item[Eliminering av vänsterrekursion] \hfill
@@ -229,7 +230,7 @@ kvarstående alternativen, huvudsakligen datatyper.
     Den fullständiga regeln för \bnfrule{args} finns i bilaga 1, men för
     att hålla grammatiken enkel utelämnas dess helhet här och vi konstaterar
     endast att regeln inte behöver bearbetas mer. Vi expanderar de övriga
-    underreglerna för att få en bättre överblick.
+    delreglerna för att få en bättre överblick.
 
     % @TODO något oklart?
 
@@ -262,9 +263,9 @@ kvarstående alternativen, huvudsakligen datatyper.
 
 \subsubsection{Sammanknytning}
 
-Med hjälp av dessa modifieringar har vi nu en uttrycksregel som inte använder
-sig av vänsterrekursion och kan därmed användas i en rekursivt nedstigande
-parser.
+Med hjälp av dessa modifieringar har vi nu en produktionsregel för uttryck som
+inte använder sig av vänsterrekursion och kan därmed användas i en rekursivt
+nedstigande parser.
 
 \setlength{\grammarindent}{6em}
 \begin{grammar}
@@ -283,10 +284,11 @@ parser.
 
 Operationsprioritet innebär den logik som bestämmer att multiplikation
 prioriteras högre än addition och därmed grupperar uttryck såsom \textit{5 + 5
-* 2} till \textit{5 + (5 * 2)} istället för \textit{(5 + 5) * 2}. Lua-manuelen
+* 2} till \textit{5 + (5 * 2)} istället för \textit{(5 + 5) * 2}. Lua-manualen
 nämner att grammatiken inte beskriver operationsprioritet \citep{luaref} men
 en lista av prioriteterna den kan hittas i källkoden av Luas egna parser
 \citep{lparse}.
+% @TODO tabell av prioriteter
 
 En implementationsmöjlighet som Lua själv använder är att spjälka ut
 funktionen som parsar uttryck till en ny funktionen som tar emot
@@ -297,14 +299,14 @@ prioriteten som givits som argument parsar funktionen rekursivt operationens
 högerled och skapar en ny operationsgruppering så länge som prioriteten är
 högre. Om operatorns prioritet är lägre än eller samma som argumentets
 prioritet kommer iterationen att avbrytas och det nuvarande uttrycket att
-returneras till det högraledet. Eftersom ursprungslägets prioritet är det
-lägsta kommer alltid ett uttryck att forsätta så länge som en operator kan
+returneras till det högra ledet. Eftersom ursprungslägets prioritet är det
+lägsta kommer alltid ett uttryck att fortsätta så länge som en operator kan
 hittas.
 
 Denna algoritm kallas för \textit{``operator-precedence''} parsning och
 använder sig av \textit{``nerifrån-och-upp''} strategin. Pseudokoden för en
-implementation visas i figur~\ref{fig:binprecedence} och ett grupperingsträdet
-visas i figur~\ref{fig:expressiontree}.
+implementation visas i figur~\ref{fig:binprecedence} och ett
+grupperingsexempel visas i figur~\ref{fig:expressiontree}.
 
 \begin{figure}[ht]
   \lstinputlisting[title="",language=Javascript]%
@@ -313,39 +315,40 @@ visas i figur~\ref{fig:expressiontree}.
   \label{fig:binprecedence}
 \end{figure}
 
-\paragraph{Algoritmexempel för uttrycket 1 + 2 - 3 * 4 + 5}
+\paragraph{Ett steg för steg exempel av parsningen för uttrycket 1 + 2 - 3 * 4
++ 5.}
 
 \begin{enumerate}\itemsep1pt \parskip0pt \parsep0pt
   \item Vänstra ledet har värdet 1 och operatorn är + med en prioritet på 1.
-  \item Eftersom prioriteten är högre än 0 anropar funktionen sig själv med den
-    nya prioriteten.
+  \item Eftersom prioriteten är högre än ursprungsläget anropar funktionen sig
+    själv med den nya prioriteten.
     \begin{enumerate}
       \item Vänstra ledet är 2 och operatorn är - med en prioritet på 1.
       \item Eftersom prioriteten är samma som föregående returneras värdet 2.
     \end{enumerate}
   \item Högra ledet är 2.
   \item En gruppering sker och vänstra ledet blir nu (1 + 2).
-  \item Operatorn är - med en prioritet på 1 som är mer än 0 så funktionen
-    anropar sig själv.
+  \item Följande operator är - med en prioritet på 1 som är mer än 0 och
+    därmed anropar funktionen sig själv.
     \begin{enumerate}
       \item Vänstra ledet är 3 och operatorn är * med en prioritet på 2.
-      \item Eftersom 2 > 1 anropar funktionen sig själv.
+      \item Eftersom 2 är högre än 1 anropar funktionen sig själv.
       \begin{enumerate}
         \item Vänstra ledet är 4 och operatorn är + med en prioritet på 1.
-        \item Eftersom 1 < 2 returneras värdet 4.
+        \item Eftersom 1 är lägre 2 returneras värdet 4.
       \end{enumerate}
       \item Högra ledet är nu 4.
       \item En gruppering sker och vänstra ledet blir nu (3 * 4).
-      \item Operatorn är + med en prioritet på 1 som är samma som 1 så
-        funktionen returnerar värdet (3 * 4).
+      \item Operatorn är + med en prioritet på 1 vilket är samma som
+        argumentets prioritet och därmed returnerar funktionen värdet (3 * 4).
     \end{enumerate}
   \item Högra ledet är nu (3 * 4) och en gruppering sker så att vänstra ledet
     blir ((1 + 2) - (3 * 4)).
-  \item Operatorn är + med en prioritet på 1 som är mer än 0 så funktionen
-    anropar sig själv.
+  \item Följande operator är + med en prioritet på 1 som är mer än 0 och
+    därmed anropar funktionen sig själv.
     \begin{enumerate}
       \item Vänstra ledet är 5 och eftersom ingen operator hittas returneras
-        värdet.
+        värdet såsom de tär.
     \end{enumerate}
   \item Högra ledet är nu 5 och grupperingen blir (((1 + 2) - (3 * 4)) + 5).
   \item Eftersom ingen operator kan hittas returneras det slutgiltiga
@@ -361,22 +364,22 @@ visas i figur~\ref{fig:expressiontree}.
 \subsubsection{Operatorassociativitet}
 
 Operatorassociativitet används för att gruppera operatorer med samma prioritet
-och utan parenteser. De vanliga matematiska operatorerna har ingen
-associativitet eftersom $(1 + 2) + 3$ har samma resultat som $1 + (2 + 3)$. I
+och utan användningen av parenteser. De vanliga matematiska operatorerna har ingen
+associativitet eftersom $(1 * 2) * 3$ har samma resultat som $1 * (2 * 3)$. I
 uttrycksparsern från figur~\ref{fig:binprecedence} hanteras dessa operatorer
-som vänsterassociativa och grupperas alltså so m$(1 + 2) + 3)$, men detta kan
-avgöras godtyckligt.
+som vänsterassociativa och grupperas därmed som $(1 * 2) * 3)$. Detta kan
+implementeras godtyckligt.
 
-Lua har dock två operatorer med högerassociativitet,
-teckensträngsammansättningsoperatorn \textit{..} samt potensoperatorn
-\textit{\^{}}. Om uttrycket \textit{5\^{}4\^{}3\^{}2} grupperas från vänster likt
-addition skulle resultatet bli \textit{((5\^{}4)\^{}3)\^{}2}, vilket inte har
-samma värde som det korrekta högerassociativa \textit{5\^{}(4\^{}(3\^{}(2)))}.
+Lua har dock två operatorer med högerassociativitet, nämligen operatorn för
+sammanfogningen av teckensträngar (\textit{..}) samt potensoperatorn
+(\textit{\^{}}). Om uttrycket \textit{5\^{}4\^{}3\^{}2} grupperas från vänster likt
+addition skulle det se ut som \textit{((5\^{}4)\^{}3)\^{}2}, vilket inte har
+samma resultat som det korrekta högerassociativa \textit{5\^{}(4\^{}(3\^{}(2)))}.
 
-Implementationen för detta hittas i figur~\ref{fig:rightassociative} som en
-modifiering av algoritmen i figur~\ref{fig:binprecedence} och utgörs av att
-subtrahera 1 från opretorprioriteten om en högerassociativ regel hittas innan
-den högra operanden parsas. Detta orsakar en omvändning i grupperingen.
+Implementationen för detta hittas i figur~\ref{fig:rightassociative} och är en
+modifiering av algoritmen i figur~\ref{fig:binprecedence}. Lösningen utgörs av
+att subtrahera 1 från operatorprioriteten om en högerassociativ regel hittas
+innan det högra ledet parsas. Detta orsakar en omvändning i grupperingen.
 
 \begin{figure}[ht]
   \lstinputlisting[title="",language=Javascript]%
@@ -389,9 +392,9 @@ den högra operanden parsas. Detta orsakar en omvändning i grupperingen.
 
 Resultatet av denna omvandling visar sig vara en nära exakt kopia av Luas egna
 uttrycksparser med vissa skillnader för operatorassociativitet. Det kan
-konstateras att skaparna använt sig av en enkel vänsterfaktorering för att
-omvandla sin tidigare yacc-skapade parser till en handskriven rekursivt
-nedstigande parser.
+konstateras att skaparna använt sig av metoden för eliminering av
+vänsterrekursion för att omvandla sin tidigare Yacc-skapade parser till en
+handskriven rekursivt nedstigande parser.
 
 %
 % \setlength{\grammarindent}{5em}

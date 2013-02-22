@@ -1,20 +1,20 @@
 \section{Parsning}
 
 Implementeringen av ett programmeringsspråk finns i flera varianter och en
-vanlig sådan är kompilatorn. Denna implementation läser indata och
-producerar sedan ett körbart program utgående från de instruktioner den fått.
-Själva processen av kompilering består av flera faser och komponenter. Den
-första komponenten är en parser som läser indata och konstruerar en
-fördefinierad struktur av de regler som givits. Vid detta skede bryr sig
-programmet inte ännu om vad som skall göras utan den försöker enbart identifiera
-de olika reglerna och granska att dess syntax är korrekt. Parsern körs normalt
-som en komponent inne i en tolk vars funktion i sin tur är att förstå och tolka
-innebördet hos en regel. När parsern är klar med sin analys returnerar den
-strukturen till tolken som i sin tur returnerar sin omformning av strukturen
-tillbaka till huvudkomponenten, kompilatorn. Kompilatorn fungerar som en
-översättare som slutligen genererar den kod som datorns processor kan förstå.
-En översikt av dessa komponenter och dess funktioner visas i
-figur~\ref{fig:compiler} \citep[s. 16]{pt10}.
+vanlig sådan är kompilatorn. Denna implementation läser input och producerar
+sedan ett körbart program utgående från de instruktioner den fått.  Själva
+processen av kompilering består av flera faser och komponenter. Den första
+komponenten är en parser som läser input och konstruerar en maskinläslig
+struktur utgående från den grammatik som givits. Vid detta skede bryr sig
+programmet inte ännu om vad som skall göras utan den försöker enbart
+identifiera de olika reglerna och granska att dess syntax är korrekt. Parsern
+körs normalt som en komponent inne i en tolk vars funktion i sin tur är att
+förstå och tolka innebördet hos en regel. När parsern är klar med sin analys
+returnerar den strukturen till tolken som i sin tur returnerar sin modifierade
+version av strukturen tillbaka till huvudkomponenten, kompilatorn. Kompilatorn
+fungerar som en översättare som slutligen genererar den kod som datorns
+processor kan förstå. En översikt av dessa komponenter och dess funktioner
+visas i figur~\ref{fig:compiler} \citep[s. 16]{pt10}.
 
 \begin{figure}[ht]
   \includegraphics[width=\textwidth]{figures/output/language-stages.pdf}
@@ -261,7 +261,7 @@ blanksteg.
 
 \subsubsection{Yacc}
 
-Eftersom de flesta programmeringsspråk använder sig av en kontextfrigrammatik
+Eftersom de flesta programmeringsspråk använder sig av en kontextfri grammatik
 är inte Lex verktyget tillräkligt utan man behöver ytterligare en syntaktisk
 analysator. Yacc är en parser-generator för kontextfrigrammatik skapad av
 Stephen Johnson. Syntaxen för grammatik specifikationen liknar mycket Lex.
@@ -269,11 +269,12 @@ Användaren definierar produktionsregler samt dess åtgärder men har nu
 möjligheten att använda rekursion. Ytterligare bör man definiera en
 lexikaliseringsfunktion, exempelvis \textit{yylex()}, samt vilka tokentyper
 som existerar. Integreringen måste ske både i den valfria lexern och i
-Yacc-specifikationen, t.ex. med en delad defintionsfil av tokens som lexern
-returnerar och den Yacc-genererade parsern kan identifiera. Ett pseudokods
-exempel på ett språk som tillåter variabeldeklarationer av heltal och strängar
-hittas i figur~\ref{fig:yacc}. För att parsern skall fungera måste logiken för
-\textit{input} samt lexikaliseringen av \textit{VARIABLE}, \textit{STRING},
+Yacc-specifikationen, t.ex. med en delad definitionsfil av tokens som lexern
+returnerar och den Yacc-genererade parsern kan identifiera. Ett
+pseudokod-exempel på ett språk som tillåter variabeldeklarationer av heltal
+och strängar hittas i figur~\ref{fig:yacc}. För att parsern skall fungera
+måste logiken för \textit{input} samt lexikaliseringen av \textit{VARIABLE},
+\textit{STRING},
 \textit{INTEGER} och \textit{EQUAL_SIGN} definieras i lexer koden.
 
 \begin{figure}[ht]
