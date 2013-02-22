@@ -34,20 +34,14 @@ native funktioner, escape sequences.
 
 \subsection{Syntaktisk analysator}
 
-Den syntaktiska analysatorn är en rekursivt nedstigande parser som börjar sin
-parsningsprocess från rot-noden, i Lua känd som en \textit{``chunk''}.
-Denna nod består av en block-nod med en obestämd mängd satser-noder. Varje
-nodtyp, eller regel, är implementerad som en funktion som rekursivt anropar
-andra regelfunktioner och slutligen returnerar ett syntaxträd över sin
-struktur. När input strängen tagit slut har det slutgiltiga syntaxträdet
-returnerats till rot-noden och kan därefter förmedlas till programmet som
-begärt informationen.
-
-% @TODO lite komplicerad paragraf. Förmedlas?
-
-Parsern är implementerad som en LL(1) parser med minne för en aktuell token,
-samt en s.k. \textit{``lookahead''} token. Med hjälp av dessa två tokens kan
-hela Lua-grammatiken syntaktiskt analyseras.
+Den syntaktiska analysatorn är implementerad som en rekursivt nedstigande
+parser för en LL(1)-grammatik. Parsern börjar sin parsningsprocess från
+rot-noden, i Lua känd som en \textit{``chunk''}.  Denna nod består av en
+block-nod med en obestämd mängd satser-noder. Varje nodtyp, eller regel, är
+implementerad som en funktion som rekursivt anropar andra regelfunktioner och
+slutligen returnerar ett syntaxträd över sin struktur. När input strängen
+tagit slut har det slutgiltiga syntaxträdet returnerats till rot-noden och kan
+därefter förmedlas till programmet som begärt informationen.
 
 Mycket av den syntaktiska analysatorns grammatik är samma som den ursprungliga
 Lua-grammatiken. Dock har vissa finjusteringar gjorts för att bland annat
@@ -149,20 +143,10 @@ Hur översätts notationen, exempel på if / while.
 %Likna parsern till Luas egna.
 Lua-grammatikens uttrycksregel, \bnfrule{expr}, utnyttjar vänsterrekursion,
 vilket inte är möjligt i rekursivt nedstigande parsers eftersom de hamnar i en
-oändlig upprepning. Detta ser vi i alternativet där ett uttryck kan vara ett uttryck
-kombinerat med en binär operator samt ett annat uttryck.
+oändlig upprepning.
 
-% @TODO make sure to explain vänster-rekursion.
-
-\setlength{\grammarindent}{5em}
-\begin{grammar}
-  \singlespace\small%
-  \fontfamily{lmr}\selectfont
-  <exp> ::= \ldots | <exp> <binop> <exp> | \ldots
-\end{grammar}
-
-Eftersom uttrycksregeln även består av en serie andra icke-terminaler vilkas
-funktioner är svåra att få ett grepp om kommer vi att expandera och analysera
+Uttrycksregeln består av en serie andra icke-terminaler vilkas funktioner är
+svåra att få ett grepp om och därför kommer vi att expandera och analysera
 alla delregler för att slutligen få en fungerande och förhoppningsvis mer
 organiserad produktionsregel för uttryck.
 

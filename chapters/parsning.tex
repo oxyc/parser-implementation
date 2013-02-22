@@ -27,71 +27,133 @@ lexikal analys som identifierar lexikala element, som kallas tokens. Tokens
 är identifierbara teckensträngar med speciell betydelse. De kategoriseras
 enligt typer såsom nyckelord, konstanter, parametrar osv. \citep[s. 6]{aa06}.
 
-Den andra fasen som sker efter att tokens är identifierade är den syntaktiska
-analysen där elementen sammansätts till helhetsuttryck.
+Den andra fasen som sker efter identifieringen av tokens är den syntaktiska
+analysen där elementen sammansätts till helhetsuttryck granskat enligt
+grammatikens produktionsregler.
 
 \subsection{Lexikal analys}
 
 Eftersom elementen i en lexikal analys kan beskrivas med en reguljär grammatik
 använder man sig ofta av en ändlig automat för att läsa den. Denna typ av
-automat brukar man kalla för lexer. Automaten börjar i ett specifikt start
-läge var den väntar på ett tecken att läsa. När ett tecken läses går den genom
-en serie alternativa lösningar den har för att minska mängden slutgiltiga
-lösningar. När därpå följande tecken läses in fortsätter den att härleda sig
-vidare tills den når en slutgiltig lösning, eller alternativt inte känner igen
-elementet och skapar ett felmeddelande. När lösningen är hittad skickar lexern
+automat brukar man kalla för lexer. Automaten börjar i ett specifikt startläge
+var den väntar på ett tecken att läsa. När ett tecken läses går den genom en
+serie alterneringar för att minska mängden slutgiltiga lösningar. När därpå
+följande tecken läses in fortsätter den att härleda sig vidare tills den når
+en slutgiltig lösning, eller alternativt inte känner igen elementet och skapar
+ett felmeddelande. När lösningen är hittad skickar lexern det identifierade
 elementet tillbaka till parsern och återgår till sitt utgångsläge för att
-vänta på nästa tecken. På detta sätt kan lexern, som har en effektiv
-algoritm, avlägsna onödig information såsom mellanslag och kommentarer för
-att sedan ge uttryckets riktiga element vidare till parsern som nu enkelt vet
-om en teckensträng är en nyckelordsterminal eller ett tal \citep[s.
-51]{sm09}.
+vänta på nästa tecken.  På detta sätt kan lexern, som har en effektiv
+algoritm, avlägsna onödig information såsom mellanslag och kommentarer för att
+sedan ge uttryckets egentliga element vidare till parsern som nu enkelt vet om
+en teckensträng är en nyckelordsterminal eller ett tal \citep[s.  51]{sm09}.
+
+\begin{figure}[ht]
+  \begin{alltt}
+\boxkeyword{if} \boxint{2} \boxpunct{+} \boxint{1} \boxpunct{>} \boxint{3} \boxpunct{==} \boxkeyword{false} \boxkeyword{then}
+  -- en kommentar
+  \boxkeyword{print} "\boxstring{foo}"\boxpunct{;}
+\boxkeyword{end}
+  \end{alltt}
+  \caption{Ett lexikaliserings exempel på en if-sats skriven i Lua.
+    Blanksteg samt kommentarer ignoreras och tokentyperna är nyckelord, tal,
+    specialsymbol och teckensträng.} \label{fig:yacc}
+\end{figure}
 
 \subsection{Syntaktisk analys}
 
+Processen att parsa input och validera dess syntax enligt en kontextfri
+grammatik kallas syntaktisk analys eller enbart parsning. Detta görs
+vanligtvis i kombination med en lexikal analys för att förenkla
+implementation men kan också genomföras direkt på input \citep[s. 8]{aa06}.
+
+Analysen kombinerar de tokens som identifierats en efter en och försöker hitta
+en giltig produktionsregel för kombinationen. Om en produktionsregel
+identifierats förväntas alla tokens överensstämma med regeldefinitionens
+terminaler och icke-terminaler. Visar det sig att en token inte överensstämmer
+skapas ett felmeddelande.
+
+Vid implementationen av en kompilator avbryts parsningen när ett fel skapats
+eftersom syntaxen inte är giltig. Vissa andra implementationer såsom
+\textit{``syntax-highlighters''} i texteditorer försöker hoppa över
+produktionsregeln och fortsätta med nästa eftersom detta ger en bättre
+användarupplevelse.
+
+\subsection{Syntax representation}
+
+Allteftersom produktionsregler parsats i.o.m. en syntaktisk analys skapas en
+maskinförståelig representation av dess innehåll. Lättast är det att tänka sig
+denna representation som en trädstruktur trots att den inte nödvändigtvis
+behöver vara.
+
 \begin{figure}[ht]
   \includegraphics[width=8cm]{figures/output/tree.pdf}
-  \caption{Den syntaktiska uppdelningen av en kod-sats i Lua.}
+  \caption{En trädrepresentation av en if-sats skriven i Lua.}
 \end{figure}
+
+Varje nod i trädet representeras av en produktionsregel där löv-noderna är
+dess icke-terminaler. Terminaler såsom \textit{if}, och \textit{else}
+utelämnas ofta i en praktisk implementation eftersom de kan knytas som
+attribut till en nod \citep[s. 49]{sm09}.
+
+Representationen skapas i den syntaktiska analysatorn när en produktionsregel
+identifierats och kan sedan användas i senare skeden såsom i en semantisk
+analysator eller kodoptimeringskomponent.
+
+Trädstrukturerna varierar beroende på syftet av parsern. Kompilatorer vill
+att de skall vara så nära maskinkod som möjligt medan andra verktyg såsom
+statiska kodanalysatorer vill att de ska vara i högre nivås representation
+\citep[s. 6]{pt10}.
+
+En vanlig representationsform på en högre nivå är abstrakt syntax träd (AST).
+Dessa är verkligen uppbyggt enligt ett träd såsom det beskrivits hittills.
+Karaktärsdrag av ett AST är att det är kompakt, enkelt att förflytta sig
+genom och betydelsefullt. Exempelvis kan varje nod existera som ett objekt av
+en klass namngiven efter produktionsregeln.
 
 \subsection{Parsertyper}
 
-Som det nämnts tidigare använder de flesta parsers en lexer för att
-göra en lexikal analys av de tokens som ges som indata. När parsern får dessa
-tokens påbörjar den en syntaktisk analys som kan implementeras på diverse
-olika sätt. Huvudsakligen existerar två typer. Antingen härleds regler från
-vänster och kallas då LL-parser eller så härleds regler från höger och kallas
-LR-parser \citep[s. 67]{sm09}. En steg för steg jämförelse av de två
-algoritmerna som använders för LL- och LR-parsers finns i
-figur~\ref{fig:ll-vs-lr} på sida \pageref{fig:ll-vs-lr}.
+Beroende på grammatiken av ett språk krävs det olika algoritmer för att kunna
+parsa den. Den s.k. Early-algoritmen kan parsa alla typer av kontextfria
+grammatiker i $O(n^3)$ tid \citep[s.  67]{sm09}. De flesta parsers behöver
+dock inte en så generell grammatik utan kan parsas i $O(n)$ tid med hjälp av
+\textit{``uppifrån-och-ner''}-algoritmer eller
+\textit{``nerifrån-och-upp''}-algoritmer. Det existerar ytterligare
+algoritmer för olika delmängder av kontextfria grammatiker men de vanligaste
+bygger på någon av dessa \citep[s. 61]{aa06}.
 
-När man beskriver parsers nämner man ofta hur långt fram den kan se innan den
-gör ett beslut, dvs. hur många tokens framåt den kan se. Detta antal skriver
-man inom en parentes efter parsertypen. För att uttrycka den vanligaste
-formen av parser som är en LR-parser som ser en token framåt skriver man
-LR(1) \citep[s. 69]{sm09}.
+När man beskriver en parser nämner man ofta hur långt fram den kan se innan
+den gör ett beslut av vilken produktionsregel den skall följa, hur många s.k.
+\textit{``lookahead''}-tokens den har. Detta antal skriver man inom en
+parentes efter parsertypens namn. Exempelvis skulle den s.k. LL-parsern med 2
+lookahead-tokens skrivas LL(2) \citep[s. 69]{sm09}.
 
 \subsubsection{LL-parser}
 
+LL-parsers härelder regler från vänster och använder sig av
+\textit{``uppifrån-och-ner''}-algoritmen. Parsern klarar av en mindre delmängd
+av kontextfria grammatiker och man pratar om LL-grammatiker för att uttrycka
+den delmängd som LL-parsers kan parsa.
+
 En LL-parser går att skriva för hand eftersom den i allmänhet följer en logisk
-tankegång. De börjar med att gissa sig till en rot-regel, likt en ändlig
-automat, och förväntar sig sedan att löv-reglerna skall passa in en efter en.
-Om det misslyckas kan den gå till nästa alternativa regel och fortsätter
-fram tills den bevisat en gissning. Denna typ av strategi kallas även för en
-\textit{``uppifrån-och-ner''} algoritm \citep[s. 67]{sm09}.
+tankegång. Den börjar från en rot-regel och arbetar sig sedan neråt
+med hjälp av hjälp av jämföra terminaler från vänster, likt en ändlig
+automat. När alla alternativa lösningar uteslutits förväntar sig parsern att
+löv-reglerna skall passa in en efter en.
 
 \subsubsection{LR-parser}
+
+LR-parsers härleder regler från höger och använder sig av
+\textit{``nerifrån-och-upp''}-algoritmen. Denna typ av parser klarar av att
+analysera en större delmängd grammatiker än t.ex. LL-parsers och är därmed mer
+vanlig i programvara som genererar parsers \citep[s. 61]{aa06}.
 
 LR-parsers genereras huvudsakligen av maskiner eftersom de är svårare att
 visualisera. Dessa parsers börjar med att läsa löv-reglerna, alltså de minsta
 identifierbara reglerna och ansluter dem sedan till varandra fram till det att
-den nått en slutgiltig rot-regel. Detta kallas även för en
-\textit{``nerifrån-och-upp''} algoritm \citep[s. 67]{sm09}.
+den nått en slutgiltig rot-regel \citep[s. 67]{sm09}.
 
-Både LL-parsers och LR-parsers används i kompilatorer men LR är mer
-vanligt \citep[s. 67]{sm09}. En orsak är att LR-parsers täcker en
-större andel av grammatiker och därmed använder programvara som genererar
-parsers ofta \textit{``nerifrån-och-upp''} algoritm \citep[s. 61]{aa06}.
+En steg för steg jämförelse mellan LR- och LL-parserns algoritmer hittas i
+figur~\ref{fig:ll-vs-lr} på sida \pageref{fig:ll-vs-lr}.
 
 \begin{figure}[ht]
   \begin{minipage}[t]{0.5\textwidth}
@@ -102,24 +164,35 @@ parsers ofta \textit{``nerifrån-och-upp''} algoritm \citep[s. 61]{aa06}.
     % @TODO
     % \input{figures/tex/lrparser}
   \end{minipage}%
-  \caption{Steg för steg parsning av ett matemtiskt uttryck med en
+  \caption{Steg för steg parsning av ett matematiskt uttryck med en
     ``uppifrån-och-ner''-algoritm (vänster) och en
     ``nerifrån-och-upp''-algoritm (höger).}
   \label{fig:ll-vs-lr}
 \end{figure}
 
+\subsubsection{LALR-parser}
+
+LALR-parsern baserar sig på en LR(0)-parser struktur men med stöd för
+lookahead-tokens. Skillnaden mellan LR-parsers med stöd för lookahead-tokens
+och LALR-parsern är antalet tillstånd \textit{``push-down''}-automaten har.
+Eftersom LALR-parsern kräver färre tillstånd och dessutom kräver mindre minne
+kan den ses som en förenklad och mer effektiv version \citep[s. 266]{aa06}.
+
 \subsubsection{Rekursivt nedstigande parser}
 
-En form av LL-parsers som är vanlig för handskrivna parsers är den rekurisvt
-nedstigande parsern. Istället för att utnyttja en automat fungerar den genom
+En annan typ av parser som använder sig av
+\textit{``uppifrån-och-ner''}-algoritmen är den rekursivt nedstigande parsern.
+Denna parsertyp klarar av parsa LL-grammatik och är därför vanlig för
+handskrivna parsers. Istället för att utnyttja en automat fungerar den genom
 att knyta varje icke-terminal i grammatik till en egen funktion som ansvarar
 för att identifiera dess grammatiska löv. För varje icke-terminal i sin egen
-regel kallar den rekursivt vidare på dess anknytande funktioner fram till det
+regel kallar den rekursivt vidare på dess respektive funktioner fram till det
 att rot funktionen får hela syntaxträdet returnerat \citep[s. 24]{pt10}.
 
 Flödet av en rekursivt nedstigande parser hittas i
 figur~\ref{fig:recursivedescent} där varje nod symboliserar en funktion och
-röda pilar symboliserar dess anrop medan blåa pilar symboliserar dess returnering.
+röda pilar symboliserar dess anrop medan blåa pilar symboliserar dess
+returnering.
 
 \begin{figure}[ht]
   \includegraphics[width=\textwidth]{figures/output/recursivedescent.pdf}
@@ -127,18 +200,15 @@ röda pilar symboliserar dess anrop medan blåa pilar symboliserar dess returner
   \label{fig:recursivedescent}
 \end{figure}
 
-\subsection{Tekniker}
+\subsection{Eliminering av mångtydighet}
 
-
-
-\subsubsection{Vänsterfaktorering}
+\subsubsection{Vänsterrekursion}
 
 Ett vanligt problem grammatiker i en parser med \textit{``uppifrån-och-ner''}
 algoritmen är vänsterrekursion. Detta innebär att produktionsregel använder
 sig själv som icke-terminal längst till vänster i sammansättningen enligt. När
 detta inträffar kommer implementationen fastna i en oändlig upprepning. För
-att implementera en LL-parser måste man därför använda en metod som kallas
-vänsterfaktorering.
+att implementera en LL-parser måste man därför eliminera vänsterrekursion.
 
 Exempelvis är produktionsregeln för kalkylatorn i figur~\ref{fig:cfg} på sida
 \pageref{fig:cfg} vänsterrekursiv.
@@ -182,31 +252,86 @@ symbol för att representera ett tomt värde.
     \alt $\epsilon$
 \end{grammar}
 
-Grammatikens funktion är fortfarande identisk men vänstrekursionen som är
+Grammatikens funktion är fortfarande identisk men vänsterrekursionen som är
 omöjlig att utföra i en \textit{``uppifrån-och-ner''} algoritm är eliminerad.
 
-En förenklad matematisk regel som kan användas för att vänsterfaktorera
-$A \rightarrow A\alpha\;|\;\beta$ är \citep[s. 212]{aa06}:
+En förenklad matematisk regel som kan användas för att eliminera
+vänsterrekursionen $A \rightarrow A\alpha\;|\;\beta$ är \citep[s. 212]{aa06}:
 \begin{align*}
 A &\rightarrow \beta A^\prime \\
 A^\prime &\rightarrow \alpha A^\prime\;|\;\epsilon
 \end{align*}
 
+\subsubsection{Vänsterfaktorering}
+
+Ytterligare ett problem \textit{``uppifrån-och-ner''}-algoritmen är
+produktionsregler var två villkor påminner om varandra i början av
+definitionen.
+
+Exempelvis behöver en obestämd mängd lookahead-tokens för att identifiera
+det korrekta villkoret i följande produktionsregel:
+
+\setlength{\grammarindent}{5em}
+\begin{grammar}
+  \singlespace\small%
+  \fontfamily{lmr}\selectfont
+  <if> ::= "if" <uttryck> "then" <block> "else" <block> "end"
+    \alt "if" <uttryck> "then" <block> "end"
+\end{grammar}
+
+Med hjälp av vänsterfaktorering kan vi omvandla regeln till:
+
+\setlength{\grammarindent}{5em}
+\begin{grammar}
+  \singlespace\small%
+  \fontfamily{lmr}\selectfont
+  <if> ::= "if" <uttryck> "then" <block> <else>
+
+  <else> ::= "else" <block> "end"
+    \alt "end"
+\end{grammar}
+
+
+Den matemtiska regeln för liknande uttryck i formen $A \rightarrow
+\alpha\beta_1\;|\;\alpha\beta_2 $ är \citep[s. 214]{aa06}:
+\begin{align*}
+A &\rightarrow \alpha A^\prime \\
+A^\prime &\rightarrow \beta_1\;|\;\beta_2
+\end{align*}
+
+\subsection{Vidareutveckling av parsertyper}
+
 \subsubsection{Backtracking}
 
-I vissa fall är det användbart att inte ha en begränsad framåtblick och då kan
-man använda sig av en teknik som heter backtracking som tillåter parsern att
-se en obegränsad mängd tokens framåt. Implementationen av en backtracker
-varierar men i enkel form fungerar den genom att när mångtydlighet uppstår
-välja ett alternativ och sedan ha möjligheten att återgå till ett tidigare
-tillstånd när alternativet bevisats vara korrekt eller felaktig \citep[s. 55]{pt10}.
+I vissa fall är det användbart att inte ha en begränsad mängd lookahead-tokens
+och då kan man använda sig av en metod som heter \textit{``backtracking''}
+förutsatt det handlar om rekursivt nedstigande parser.
 
-För att uttrycka att en parser kan se en obegränas mängd tokens framåt anger
-man antalet som k i formen LL(k) eller LR(k).
+Implementationen av en backtracker görs genom att markera positionen var en
+mångtydighet uppstår och sedan välja ett regelalternativ. När alternativet
+bevisats vara korrekt eller inkorrekt återgår parsern till den markerade
+positionen. Om ett felmeddelande skapats försöker parsern med följande
+alternativ och repeterar detta fram till att en regel visar sig vara korrekt
+varefter den påbörjar den egentliga parsningen utan att markera positionen
+\citep[s. 57]{pt10}.
 
-\subsubsection{Memoisation}
+För att uttrycka att en parser kan se en obegränsad mängd tokens framåt anger
+man antalet som k i formen LL(k).
 
-Kort om vad memoisation är.
+\subsubsection{Packrat parsning}
+
+En nackdel med den tidigare nämnda backtracking-metoden är att parsern alltid
+måste återgå till det tidigare tillståndet och därefter påbörja en andra
+parsning av regeln. Detta ökar den tidsmängd som krävs för att parsa ett
+inputvärde.
+
+Packrat parsning är en annan typ av parser vars metod går att implementera för
+rekursivt nedstigande parser. Den fungerar likt backtracking-metoden men
+skiljer sig genom att memorera resultatet av parsningsträdet samt positionen
+var parsningen avslutades. När parsern återgår till det tidigare tillståndet
+granskar den om parsningen var framgångsrik. Om den visar sig vara, använder
+parsern sig av det redan memorerade parsningsträdet och hoppar vidare till
+positionen var parsningen avslutades.
 
 \subsection{Parser-generatorer}
 

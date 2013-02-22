@@ -2,11 +2,19 @@
 \documentclass[listing,syntax,swedish]{\template/thesis}
 
 \usepackage{amsmath}
+\usepackage{tikz}
+\usepackage{alltt}
 
 % @TODO
 % \usepackage[nocenter]{lib/qtree}
 
 \newcommand{\bnfrule}[1]{\textit{$\langle$#1$\rangle$}}
+\newcommand\wordbox[2][]{\tikz[overlay]\node[fill=blue!20,inner sep=2pt,
+  anchor=text, rectangle, rounded corners=1mm,#1] {#2};\phantom{#2}}
+\newcommand\boxkeyword[1]{\wordbox[fill=orange!20]{#1}}
+\newcommand\boxint[1]{\wordbox[fill=blue!20]{#1}}
+\newcommand\boxpunct[1]{\wordbox[fill=cyan!20]{#1}}
+\newcommand\boxstring[1]{\wordbox[fill=purple!20]{#1}}
 \begin{document}
 
 \input{settings}
