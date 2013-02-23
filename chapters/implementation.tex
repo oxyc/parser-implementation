@@ -1,13 +1,14 @@
 \section{Lua-parserns implementation}
 
 Implementationen är uppdelad i fyra komponenter. När parsern startas börjar
-en syntaktisk analysator parsa input från rot-noden, dvs. från program-noden.
-Det första som görs är ett anrop till den andra komponenten, lexern. Lexern
-läser input tecken för tecken och tokeniserar värden som sedan returneras
-till den syntaktiska analysatorn. Utanför lexern hanteras inte enskilda tecken
-utan enbart tokens. Utöver dessa två komponenter finns en separat
-uttrycksparser samt ett delegerare som producerar ett syntaxträd vilket
-slutligen returneras till programmet som anropat parsern i första hand.
+en syntaktisk analysator parsa input från rot-noden.  Det första som görs är
+ett anrop till den andra komponenten, lexern. Lexern läser input tecken för
+tecken och tokeniserar värden som sedan returneras till den syntaktiska
+analysatorn var den används för att välja produktionsregel. Utanför lexern
+hanteras inte enskilda tecken utan enbart tokens.  Utöver dessa två
+komponenter finns en separat uttrycksparser samt ett delegerare som producerar
+ett syntaxträd vilket slutligen returneras till programmet som anropat parsern
+i första hand.
 
 \subsection{Lexer}
 

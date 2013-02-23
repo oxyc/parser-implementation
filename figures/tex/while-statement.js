@@ -1,7 +1,12 @@
 function parseWhileStatement() {
-  var condition = parseExpression();
+  condition = parseExpression();
   expect('do');
-  var body = parseBlock();
+  body = parseBlock();
   expect('end');
-  return ast.whileStatement(condition, body);
+
+  return {
+    type: 'WhileStatement',
+    condition: condition,
+    block: block
+  };
 }
