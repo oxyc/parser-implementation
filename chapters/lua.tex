@@ -32,6 +32,16 @@ datatyp som helst (förutom \textit{nil}) samt kan även hålla vilket värde so
 helst. Med hjälp av denna flexibilitet kan tabeller användas både som en array
 och som en hashtabell \citep[s. 15]{ir06}.
 
+Teckensträngar i Lua har en unik flerradsfunktion. Istället för att definiera
+teckensträngar med citationstecken kan man använda sig av symbolen \verb+[=[+
+var \verb+=+-tecknet består av ett godtyckligt antal som definierar dess djup.
+Med att definiera ett större djup kan en teckensträng omfatta
+symbolskombinationer för teckensträngar med ett mindre djup. Denna
+funktionalitet existerar även för kommentarer och är därmed användbar för att
+kommentera ut kod tillfälligt. För att avsluta en flerradsteckensträng
+använder man sig av den omvända \verb+]=]+ symbolen med ett överensstämmande
+djup.
+
 \subsubsection{Satser och block}
 
 Lua har stöd för de vanliga satser från exempelvis C såsom if, while, for,
