@@ -1,7 +1,56 @@
 \section{Inledning}
 
-\subsection{Syfte och målsättning}
+Det existerar ett flertal olika parser-arkitekturer i dagens kompilatorer.
+Vissa använder sig av maskingenererad kod medan andra implementerar
+komponenten manuellt. Beroende på komplexiteten av det kompilerade språkets
+syntax påverkas även komplexiteten av parser implementationen upp till att
+vissa implementationer väljer att inte vara fullständiga.
+
+Rapporten utgår från att läsaren har kunskap inom programmering i allmänhet
+samt en förståelse av JavaScript syntax.
+
+\subsection{Målsättning}
+
+Målet med detta examensarbete är att redogöra för hur ett programmeringsspråk
+är uppbyggt och hur parsningen av dess syntax implementeras. Varför är vissa
+språk svårare att parsa än andra? Vad är orsaken till att vissa kompilatorer
+implementerar parser-komponenten manuellt medan andra använder en
+maskingenererad komponent? Hur utförs implementationen av en parser i
+praktiken och hur komplicerat är det? Detta är frågor som examensarbetet ämnar
+besvara.
 
 \subsection{Utförande}
 
-% vim: set tw=78:ts=2:sw=2:et:fdm=marker:wrap:wm=78
+Teoridelen av detta arbete redogör för hur programmeringsspråk är uppbyggt
+samt hur de huvudsakliga parsning-arkitekturerna fungerar och används.
+
+Den praktiska delen använder denna teori för att implementera en handskriven
+Lua-parser i JavaScript. Orsaken till att JavaScript valts som
+implementationsspråk är att i framtiden kunna använda parsern som ett
+analyseringsverktyg i nätbaserade kodredigerare.
+
+För att upprätthålla en hög kvalitet på implementationen har diverse
+kvalitetssäkringar gjorts upp. Över 500 funktionstest har skapats med hjälp av
+kodgenerering och manuell verifiering. Testen baserar sig på Yueliang
+projektets testsvit. Med dessa test har ett flertal fel korrigerats och
+implementationen har i nuläget en kodtäckning på 100\%.
+
+Funktionstest, mätning av kodtäckning, test för funktionskomplexitet samt en
+statisk kodanlys körs innan varje uppdatering för att verifiera dess
+kvalitet. Ytterligare används Travis kontinuerlig integrering för att
+verifiera att utomstående uppdateringar håller standarden.
+
+Slutprodukten av arbetet finns att hitta på
+\url{http://oxyc.github.com/luaparse/} och är licenseriat under MIT-licensen.
+Implementationen kan användas med Node.js eller en webbläsare med en
+JavaScript-motor som implementerat ECMA-262 version 3.
+
+\subsection{Avgränsning}
+
+Teorin om formella språk innehåller enbart det som krävs för att förstå senare
+kapitel. Ytterligare presenteras enbart tekniker som är anses vara aktuella
+för parser-implementationen eller Lua språket. Till detta hör inte senare
+kompilatorskeden såsom semantisk analys eller kodgenerering.
+
+% vim: set tw=78:ts=2:sw=2:et:fdm=marker:wrap:wm=78:ft=tex
+% vim: spell spelllang=sv
