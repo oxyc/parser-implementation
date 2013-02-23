@@ -15,132 +15,208 @@ Lexern läser input enligt en reguljär grammatik och gör detta som en
 deterministisk ändlig automat. När parsningen av en token börjar hämtas det
 aktuella tecknet i input strängen och lexern går sedan genom en serie villkor
 för att bestämma var en token slutar och av vilken typ den är. När en token
-slutat har automaten nått sitt slutliga tillstånd och informationen returneras
-varefter automaten återgår till utgångsläget för att vänta på nästa förfrågan.
+slutat har automaten nått sitt slutliga tillstånd och tokenvärdet returneras.
+Slutligen återgår automaten till utgångsläget för att vänta på nästa
+förfrågan.
+
+Tokentyperna som lexern användar är: \textit{``End-of-file''} (EOF),
+teckensträngs-litteral, nyckelord, identifierare, tal-litteral, symbol,
+boolean samt nil. Dessa definieras som uppräkningsflaggor (enum flag) för att
+kunna jämföras med bit operationer. När en token identifieras av lexern
+returneras den som ett objekt med attribut för tokentypen, dess index-position
+i input-teckensträngen, dess rad och kolumn i input samt dess tokenvärde.
+
+\subsubsection{Blanksteg och kommentarer}
+
+Eftersom blanksteg utgör 40\% av implementationens kod kan det konstateras att
+lexern spenderar en väsentlig del av sin tid på blanksteg. Det första lexern
+gör när den anropas är att anropa en funktion som ignorerar alla
+blankstegstecken som hittas.
+
+Eftersom token-objekt innehåller information om dess rad och kolumn i input är
+detta funktionen som är ansvarig för att memorera dessa värden. För varje
+radbrytningstecken som hittas ökas en radantals-variabel. Ytterligare lagras den
+nuvarande positionen i input som en variabel. Detta är positionen i input var
+den nuvarande raden börjat. När ett tokenobjekt skapas subtraheras radens
+startposition från den nuvarande input-positionen och bildar därmed kolumnen.
+
+Kompilatorer kan ignorera kommentarer eftersom de inte innehåller semantiskt
+värde men eftersom målet med denna implementation är att användas för
+kodanalys sparas även kommentarer. Detta görs genom att söka efter
+avgränsarsymbolen (\verb+--+) och lagra dess information i en separat tabell
+som slutligen anknyts till det returnerade syntaxträdet.
 
 \subsubsection{Identifierare och nyckelord}
 
-Beskriv identifier start, identifier part, prestanda. Notering om varför
-variabler inte börjar med siffror.
+Från och med Lua 5.2 kan variabelnamn, eller s.k. identifierare, endast bestå av
+bokstäver, siffror och understreck i ASCII-uppsättningen. Ytterligare kan ett
+variabelnamn inte börja med en siffra \citep{luaref}.
 
-\subsubsection{Kommentarer och blanksteg}
+Nyckelord är terminaler med samma regler som identifierare och därmed kan de
+dela logik för att avskilja giltiga tecken. En skillnad mellan
+parser-implementationen och Lua-grammatiken är åtskiljandet mellan nyckelord
+och datatyperna nil samt boolean.
 
-Hur kommentarer och blanksteg ignoreras. Kommenterar lagras avskiljt.
+Med att granska grammatiken för tokentyperna kan det utläsas att enbart nil,
+boolean, nyckelord samt identifierare kan börja med en bokstav. Eftersom
+lexern arbetar tecken för tecken kan detta användas som en villkorsförgrening.
+Om en ny token börjar med en bokstav måste det tillhöra någon av dessa fyra
+tokentyper, ytterligare vet vi att tokentypen slutar där ett tecken inte är en
+bokstav, en siffra eller ett understreck.
 
-\subsubsection{Litteraler och symboler}
+Implementationen av denna fögrerning göras genom att läsa ASCII-koden för
+tecknet och granska om det är en bokstav eller ett understreck. Om testet
+lyckas fortsätter lexern acceptera tecken så länge som teckenkoden tillhör
+serien för bokstäver, siffror och understreck. När testet misslyckas betyder
+det att denna token tagit slut och nu kan lexern granska om värdet är lika med
+ett boolean värde, ett nil värde, ett av nyckelorden eller inte tillhör någon
+av dessa och därmed är en identifierare.
 
-Beskriv string vs long string. Hex och exponenter. Dec och exponenter med JS
-native funktioner, escape sequences.
+\subsubsection{Symboler}
+
+Identifieringen av symboler implementeras genom en serie switch- och
+if-satser vilka granskar vilka tecken framåt i input som tillhör en giltig
+symbol. När den längsta möjliga symbolen identifieras returneras den.
+
+Luas giltiga symboler är:
+\begin{verbatim}
+. .. ... : :: ; # = == > >= < <= ~= { } ( ) [ ] ^ % * / - +
+\end{verbatim}
+
+\subsubsection{Litteraler}
+
+Lua stöder tal likt vanliga programmeringsspråk men har även stöd för
+hexadecimaltal innehållande en valfri binär expontent. Implementationen läser
+input och verifierar att talet är giltigt. När token värdet identifierats
+konverteras det till ett flyttal och returneras.
+
+Teckensträngar i Lua börjar antingen med enkla citationstecken (\verb+'+)
+eller dubbla citationstecken (\verb+"+) och samma avgränsarsymbol förväntas
+innan raden tar slut. Lua tillåter dock att man inaktiverar en symbol såsom
+citations- eller radbrytningstecken genom att använda ett omvänt snedstreck
+(\verb+\+). En annan användning för det omvända snedstreck är att definiera en
+styrkodsekvens.  När lexern hittar ett snedstreck inom en
+teckensträngslitteral granskas först giltiga styrkodssekvenser och om ingen
+identifieras inaktiveras följande tecken i input.
 
 \subsection{Syntaktisk analysator}
 
 Den syntaktiska analysatorn är implementerad som en rekursivt nedstigande
-parser för en LL(1)-grammatik. Parsern börjar sin parsningsprocess från
-rot-noden, i Lua känd som en \textit{``chunk''}.  Denna nod består av en
-block-nod med en obestämd mängd satser-noder. Varje nodtyp, eller regel, är
-implementerad som en funktion som rekursivt anropar andra regelfunktioner och
-slutligen returnerar ett syntaxträd över sin struktur. När input strängen
-tagit slut har det slutgiltiga syntaxträdet returnerats till rot-noden och kan
-därefter förmedlas till programmet som begärt informationen.
+parser för en LL(1)-grammatik. Parsern börjar från
+rot-noden. Denna nod består av en block-nod med en obestämd mängd
+satser-noder. Varje nodtyp, eller regel, är implementerad som en funktion som
+rekursivt anropar andra regelfunktioner och slutligen returnerar ett
+syntaxträd över sin struktur. När input strängen tagit slut har det
+slutgiltiga syntaxträdet returnerats till rot-noden och kan därefter förmedlas
+till programmet som begärt informationen.
 
 Mycket av den syntaktiska analysatorns grammatik är samma som den ursprungliga
 Lua-grammatiken. Dock har vissa finjusteringar gjorts för att bland annat
-kunna åtskilja variabeldeklarationer från funktionsanrop. Dessa två sats-typer
-skulle normalt kräva fler \textit{``lookahead''} tokens för att kunna
-identifieras korrekt. Implementationen har istället implementerat
-funktionalitet för memoisation. Detta innebär att det första alternativet
-testas och om det misslyckas används istället det andra alternativet.
+kunna åtskilja variabeldeklarationer från funktionsanrop.
 
-% @TODO sista meningen låter fel.
+% Dessa två sats-typer
+% skulle normalt kräva fler \textit{``lookahead''} tokens för att kunna
+% identifieras korrekt. Implementationen har istället implementerat
+% funktionalitet för memoisation. Detta innebär att det första alternativet
+% testas och om det misslyckas används istället det andra alternativet.
 
-\subsubsection{EBNF notation till JavaScript}
+\subsubsection{Hjälp-funktioner}
 
-Hur översätts notationen, exempel på if / while.
+För att underlätta arbetadet med produktionsregler samt kommunikationen med
+lexer-komponenten används vissa hjälp-funktioner.
 
-\subsubsection{Satser}
+Kommunikationen med lexern sker med en \textit{next()} funktion. Funktionen
+ansvarar även för att parsern skall ha tillgång till en lookahead-token som
+krävs för att syntaxen skall kunna analyseras. När funktionen anropas ersätts
+aktuella token med lookahead-token. Efter detta anropas lexern och dess
+resultat sparas som lookahead-token. Dessa tokens lagras som variabler
+tillgängliga för hela implementationen.
 
-<stat> implementationen.
+Ytterligare existerar två viktiga hjälp-funktioner för att hålla
+implementationen mer läslig. \textit{expect()}-funktionen anropas med ett
+tokenvärde, som jämförs med den aktuella token. Stämmer bägge överens hämtas
+nästa token mha. \textit{next()} metoden. Om de inte överenstämmer skapas ett
+felmeddelande eftersom syntaxen inte är korrekt. Denna funktion används för
+att granska terminaler när en produktionsregel hittats.
 
-% När grammatiken av Lua börjar analyseras med tanke på en LL grammatik hittas
-% det första problemet med hur satser identifieras. I flera situationer kan inte
-% satsen identifieras utgående från första terminalen. Här kunde man exempelvis
-% använda sig av en stor switch-sats med en förutsägningsfunktion för
-% mångtydigheterna. För att försöka hålla komplexiteten av funktionerna liten
-% har jag dock valt att spjälka varje alternering till en egen funktion samt
-% kombinera vissa av dessa till en mellanregel var ytterligare identifiering
-% sker. För att lösa mångatydigheten med funktionskallelser och
-% variabeldeklarationer kombineras även dessa till en sista utväg för
-% sats-regeln. Ytterligare optimerar jag sats-regeln med att ordna reglerna
-% enligt popularitets data (Bilaga 2) jag analyserat från ett exempel program.
-%
-% Den slutgiltiga sats-regeln översatt till JavaScript visas i
-% figur~\ref{parsestatement} och EBNF notationen ser ut enligt följande:
-%
+Den andra väsentliga hjälp-funktionen är \textit{consume()} som likt
+\textit{expect()} granskar om ett tokenvärde överenstämmer med den aktuella
+token. Skillnaden är att \textit{consume()} inte skapar ett felmeddelande utan
+returnerar istället sant eller falskt. Detta används för att granska valfria
+delar av en produktionsregel. T.ex. if-satser som har en valfri \textit{else}
+komponent.
 
-% \setlength{\grammarindent}{5em}
-% \begin{grammar}
-%   \singlespace\small%
-%   \fontfamily{lmr}\selectfont
-%   <stat> ::= "local" <localstat>
-%     \alt "if" <ifstat>
-%     \alt "return" <returnstat>
-%     \alt "function" <functionstat>
-%     \alt "while" <whilestat>
-%     \alt "for" <forstat>
-%     \alt "repeat" <repeatstat>
-%     \alt "break" <breakstat>
-%     \alt "do" <dostat>
-%     \alt "goto" <gotostat>
-%     \alt "::" <labelstat>
-%     \alt ";"
-%     \alt <assignment>
-%     <if> | <return> | <function> | <while> | <for> |
-%   <repeat> | <break> | <do> | <goto> | <label> | ";" | <assignment or call>
-% \end{grammar}
-%
-% \begin{figure}[ht]
-%   \lstinputlisting[title="",language=Javascript]%
-%     {figures/tex/parse-statement.js}
-%   \caption{Motsvarelesen till <stat> regeln skriven i JavaScript.}
-%   \label{fig:parsestatement}
-% \end{figure}
+\subsubsection{EBNF-notation till JavaScript-kod}
 
-% De flesta reglerna är enkla och fortsätter enligt mönstret.
-%
-% \begin{grammar}
-%   \singlespace\small%
-%   \fontfamily{lmr}\selectfont
-%   <local> ::= "::" <identifier> "::"
-%
-%   <break> ::= "break"
-%
-%   <if> ::= "if" <exp> "then" <block> \{"elseif" <exp> "then" <block>\} ["else"
-%   <block>] "end"
-% \end{grammar}
-%
-% Vissa regler kräver dock något mer invecklade sammansättningar.
-%
-% \begin{grammar}
-%   \singlespace\small%
-%   \fontfamily{lmr}\selectfont
-%   <for> ::= "for" Name "=" <exp> "," <exp> ["," <exp>] "do" <block> "end"
-%     \alt "for" Name \{"," Name\} "in" <exp> \{"," <exp>\} "do" <block> "end"
-%
-%   <local> ::= "local" "function" Name <funcdecl>
-%     \alt "local" Name \{"," Name\} ["=" <exp> \{"," <exp>\}
-%
-%   <assignment or statement> ::= <prefixexp> \{"," <prefixexp>\} "=" <exp> \{","
-%     <exp>\}
-%     \alt <prefixexp> <args> | <prefixexp> ":" Name <args>
-% \end{grammar}
-%
-% Den största föränringer som gjorts är av \textit{prefixexp} eller
-% prefixuttryck. Orsaken till dess förändirng är uttrycksparsern.
+Processen att omvandla EBNF-notation är en enkel process när eliminieringen av
+$\epsilon$ gjorts. Alternering implementeras som switch-satser, villkor som
+if-satser och repetition som while-, for- eller do-satser.
 
+För att hålla minimera komplexiteten av parsern har implementationen delat upp
+produktionsregeln \bnfrule{sats} så att den enbart identifierar vilken typ av
+sats det handlar om utgående från den första terminalen. Efter att satsen
+identifieras anropas funktionen knyten till den satstypen.
+
+Ytterligare optimerar jag sats-grammatiken med att ordna reglerna enligt
+populariteten baserat på en provtagning av ett exempel program (Bilaga 2).
+
+Den nya \bnfrule{sats}-grammatiken hittas i figur~\ref{fig:stat}.
+
+\begin{figure}
+  \setlength{\grammarindent}{5em}
+  \begin{grammar}
+    \singlespace\small%
+    \fontfamily{lmr}\selectfont
+    <sats> ::= "local" <local-sats>
+      \alt "if" <if-sats>
+      \alt "return" <retur-sats>
+      \alt "function" <funktion-sats>
+      \alt "while" <while-sats>
+      \alt "for" <for-sats>
+      \alt "repeat" <repeat-sats>
+      \alt "break" <break-sats>
+      \alt "do" <do-sats>
+      \alt "goto" <goto-sats>
+      \alt "::" <label-sats>
+      \alt ";"
+      \alt <deklaration-eller-anrop-sats>
+  \end{grammar}
+  \caption{Parser implementationens produktionsregel för en sats}
+  \label{fig:stat}
+\end{figure}
+
+\subsubsection{Implementation av produktionsregler}
+
+Som exempel omvandlas följande if- samt while-sats till JavaScript
+motsvarigheterna i figur~\ref{fig:ifstat}.
+
+\setlength{\grammarindent}{3em}
+\begin{grammar}
+  \singlespace\small%
+  \fontfamily{lmr}\selectfont
+    <sats> ::= "if" <if-sats> | "while" <while-sats> | \ldots
+
+    <if-sats> ::= "if" <uttryck> "then" <block> \{"elseif" <uttryck> "then" <block>\}
+    ["else" <block>] "end"
+
+    <while-sats> ::= "while" <uttryck> "do" <block> "end"
+\end{grammar}
+
+\begin{figure}[ht]
+  \begin{minipage}[t]{0.5\textwidth}
+  \lstinputlisting[title="",language=Javascript]%
+    {figures/tex/if-statement.js}
+  \end{minipage}
+  \begin{minipage}[t]{0.5\textwidth}
+  \lstinputlisting[title="",language=Javascript]%
+    {figures/tex/while-statement.js}
+  \end{minipage}
+  \caption{Produktionsregelerna för if- och while-satser i JavaScript-kod}
+  \label{fig:ifstat}
+\end{figure}
 
 \subsection{Uttrycksparser}
 
-%Likna parsern till Luas egna.
 Lua-grammatikens uttrycksregel, \bnfrule{expr}, utnyttjar vänsterrekursion,
 vilket inte är möjligt i rekursivt nedstigande parsers eftersom de hamnar i en
 oändlig upprepning.
@@ -161,8 +237,6 @@ regeln färdig för att översättas till kod.
 För att lättare arbeta med definitioner indelas uttryck i binära och unära
 operationer, prefix uttryck samt primära uttryck. Primära uttryck består av de
 kvarstående alternativen, huvudsakligen datatyper.
-
-% @TODO lite oklart
 
 \begin{description}
   \setlength{\grammarindent}{5em}
@@ -215,8 +289,6 @@ kvarstående alternativen, huvudsakligen datatyper.
     att hålla grammatiken enkel utelämnas dess helhet här och vi konstaterar
     endast att regeln inte behöver bearbetas mer. Vi expanderar de övriga
     delreglerna för att få en bättre överblick.
-
-    % @TODO något oklart?
 
     \begin{grammar}
       \singlespace\small%
@@ -272,7 +344,6 @@ prioriteras högre än addition och därmed grupperar uttryck såsom \textit{5 +
 nämner att grammatiken inte beskriver operationsprioritet \citep{luaref} men
 en lista av prioriteterna den kan hittas i källkoden av Luas egna parser
 \citep{lparse}.
-% @TODO tabell av prioriteter
 
 En implementationsmöjlighet som Lua själv använder är att spjälka ut
 funktionen som parsar uttryck till en ny funktionen som tar emot
@@ -380,66 +451,24 @@ konstateras att skaparna använt sig av metoden för eliminering av
 vänsterrekursion för att omvandla sin tidigare Yacc-skapade parser till en
 handskriven rekursivt nedstigande parser.
 
-%
-% \setlength{\grammarindent}{5em}
-% \begin{grammar}
-%   \singlespace\small%
-%   \fontfamily{lmr}\selectfont
-%   <exp> ::= "nil" | "false" | "true" | Number | String | "..." |
-%           \alt "function" <funcbody>
-%           \alt <prefixexp>
-%           \alt Name
-%           \alt
-%           \alt "{" <fieldlist] "}"
-%           \alt <exp> <binop> <exp>
-%           \alt <unop> <exp>
-%
-%   <functiondef> ::= "function" <funcbody>
-%
-%   <function
-% \end{grammar}
+\subsection{Abstrakt syntaxträd}
 
-% \setlength{\grammarindent}{5em}
-% \begin{grammar}
-%   \singlespace\small%
-%   \fontfamily{lmr}\selectfont
-%   <exp> ::= "nil" | "false" | "true" | Number | String | "..." | <functiondef>
-%           | <prefixexp> | <tableconstructor> | <exp> <binop> <exp>
-%           | <unop> <exp>
-%
-%   <functiondef> ::= "function" <funcbody>
-%
-%   <function
-% \end{grammar}
+Eftersom implementationens mål är att användas som kodanalysator representeras
+parsningens syntaxträd som ett abstrakt syntaxträd. Varje nod i trädet
+innehåller en obligatorisk typ-attribut samt en serie andra attribut som är
+nod-specifika. Dessa noder är implementerade som objekt-litteraler och
+returneras till det anropande programmet började från programmets rot, Luas
+s.k. \textit{``chunk''}.
 
-\subsection{Syntax träd}
+Implementationen av det abstrakta syntaxträdet är uppbyggt med att varje nod
+existerar som en funktion vars ansvar är att skapa en representation av
+informationen. Under den syntaktiska analysen delegeras skapandet av noder
+till dessa funktioner. För att det anropande programmet skall ha möjlighet att
+så enkelt som möjligt omstrukturera syntaxträdet tillgängliggörs dessa
+funktioner via parserns API.
 
-Vad är AST?
-
-\begin{figure}[ht]
-  \includegraphics[width=10cm]{figures/output/abstract-tree.pdf}
-  \caption{Abstrakt syntaxträd som representation av en parsningsanalys.}
-\end{figure}
-
-\subsubsection{Representation}
-
-Beskriv Mozilla Parser API.
-
-Vilken representation som används
-
-\subsubsection{Delegerare}
-
-Varför delegerare.
-
-% \subsection{JavaScript kodmönster}
-%
-% \subsubsection{Imperativt paradigm}
-%
-% OOP vs Imperativt.
-%
-% \subsubsection{Modul laddare}
-%
-% Require.JS, AMD, Node.JS, Browsers, vad det kan användas till.
+Eftersom syntaxträdet representeras i en mycket lågnivå i Luas egna parser har
+jag valt att ta inspiration av Mozillas Parser API \citep{parserapi}.
 
 % vim: set tw=78:ts=2:sw=2:et:fdm=marker:wrap:wm=78:ft=tex
 % vim: spell spelllang=sv
