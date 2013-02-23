@@ -70,3 +70,44 @@
 
   <unop> ::= "-" | "not" | "\#"
 \end{grammar}
+
+\addcontentsline{toc}{section}{Bilaga 2. Nodantal analys av LuaMinify}
+\section*{Bilaga 2. Nodantal analys av LuaMinify}
+
+Provtagningen är baserad på LuaMinify projektet och implementerat med Luaparse.
+
+\begin{table}[ht]
+  \begin{tabular}{l l}
+    Nod-typ & Antal \\
+    \hline
+    Identifier & 1771 \\
+    Literal & 705 \\
+    MemberExpression & 339 \\
+    CallExpression & 334 \\
+    AssignmentStatement & 215 \\
+    ElseifClause & 181 \\
+    LocalStatement & 174 \\
+    TableValue & 172 \\
+    BinaryExpression & 162 \\
+    IfStatementh & 138 \\
+    ReturnStatement & 130 \\
+    UnaryExpression & 122 \\
+    Comment & 122 \\
+    TableConstructorExpression & 101 \\
+    IndexExpression & 56 \\
+    TableKeyString & 49 \\
+    LogicalExpression & 44 \\
+    ElseClause & 39 \\
+    FunctionDeclaration & 38 \\
+    CallStatement & 26 \\
+    WhileStatement24TableKey & 20 \\
+    BreakStatement & 12 \\
+    TableCallExpression & 9 \\
+    ForGenericStatement & 6 \\
+    ForNumericStatement & 5 \\
+    RepeatStatement & 4 \\
+    Chunk & 1 \\
+    \hline
+    Totalt & 4999
+  \end{tabular}
+\end{table}
