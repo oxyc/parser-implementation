@@ -14,7 +14,7 @@ document: $(DOCUMENT).tex
 	@pdflatex -halt-on-error $<
 
 # Make sure everything is compiled
-full: figures document bibtex document document
+full: clean figures document bibtex document document
 
 # Generate bibliography
 bibtex: $(DOCUMENT)
@@ -73,7 +73,7 @@ kill: $(DOCUMENT).pdf
 ## Misc ---------------------------------------------------------------------
 
 clean:
-	@rm -f *.aux *.bbl *.blg *.lof *.lot *.log *.toc *.lol *.pdf
+	@rm -f *.aux *.bbl *.blg *.lof *.lot *.log *.toc *.lol *.pdf *.out
 	@$(MAKE) -s -C figures clean
 
 .PHONY: all figures clean
