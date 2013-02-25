@@ -384,6 +384,10 @@ blanksteg.
   \label{fig:lex}
 \end{figure}
 
+En fritt tillgänglig version av Lex är Flex som distribueras av bl.a. GNU
+projektet. I allmänhet är Flex kompatibel med Lex och är därför ett populärt
+alternativ \citep[s. 279]{bd92}.
+
 \subsubsection{Yacc}
 
 Eftersom de flesta programmeringsspråk använder sig av en kontextfri grammatik
@@ -399,8 +403,12 @@ returnerar och den Yacc-genererade parsern kan identifiera. Ett
 pseudokod-exempel på ett språk som tillåter variabeldeklarationer av heltal
 och strängar hittas i figur~\ref{fig:yacc}. För att parsern skall fungera
 måste logiken för \textit{input} samt lexikaliseringen av \textit{VARIABLE},
-\textit{STRING},
-\textit{INTEGER} och \textit{EQUAL_SIGN} definieras i lexer koden.
+\textit{STRING}, \textit{INTEGER} och \textit{EQUAL_SIGN} definieras i lexer
+koden.
+
+GNU projektet har även skapat en copyleft-licenseriad version av Yacc som
+heter GNU bison. Bison är i allmänhet kompatibel med Yacc syntax och är därför
+ett populärt alternativ \citep[s. 277]{bd92}.
 
 \begin{figure}[ht]
   \lstinputlisting[title="",keywords={printf,return,include,main,do,while}]%
@@ -409,6 +417,17 @@ måste logiken för \textit{input} samt lexikaliseringen av \textit{VARIABLE},
     strängar.}
   \label{fig:yacc}
 \end{figure}
+
+\subsubsection{Jison}
+
+Jison är en JavaScript skriven parser-generator för både reguljära grammatiker
+och kontextfria grammatiker. Verktyget använder samma koncept som Lex/Flex
+samt Yacc/Bison och därmed är grammatik-specifikationen samma. Skillnaden är
+att specifikationen kan innehålla grammatik för både lexern och den
+syntaktiska analysatorn. Trots att det finns funktionalitet för att generera
+både en lexer och en syntaktisk analysator tillåter Jison att användaren
+utnyttjar en separat lexer som följer ett specificerat gränssnitt
+\citep{jison}.
 
 % vim: set tw=78:ts=2:sw=2:et:fdm=marker:wrap:wm=78:ft=tex
 % vim: spell spelllang=sv

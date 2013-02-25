@@ -1,0 +1,91 @@
+\section{Resultat}
+
+För att mäta resultat av examensarbetets parser-implementation kommer jag att
+göra en prestanda analys av alternativa parsers.
+
+\subsection{Jison-genererad parser}
+
+Parser-generatorn Jison kommer att användas för att generera en Lua-parser som
+utnyttjar en \textit{``nerifrån-och-upp''}-algoritm. Grammatiken som används
+är baserad på \cite{lua.js} projektets Lua-grammatik. Eftersom Lua.js
+kompilerar Lua-kod till JavaScript-kod har grammatiken förenklats till att
+enbart parsa och inte lagra någon information från processen. Den slutliga
+grammatiken hittas i bilaga 3.
+
+I det tidigare kapitlet utgick det att lexern kan utgöra 40\% av en
+parsningsprocess. Eftersom den Jison-genererade lexern använder sig av
+reguljära uttryck kan den förväntas vara ineffektiv. I ett försök att
+förbättra resultatet kommer prestanda analysen av den genererade parsern
+existera i två versioner. En version kommer att använda den fullständiga
+parsern medan en annan kommer att utnyttja lexern som utvecklats i detta
+examensarbete.
+
+\subsection{LuaMinify}
+
+LuaMinify är en källkods-komprimerare för Lua implementerad i Lua. Projektet
+är gjort som ett hobbyprojekt och använder sig en av handskriven rekursivt
+nedstigande parser. Implementationen av parsern har inte prioriterat
+optimering, vilket är förståeligt eftersom en källkods-komprimerare inte har
+ett behov av att vara snabb. För att få en mer komplett bild av prestandan för
+handskrivna parsers inkluderas denna parser i analysen.
+
+Prestanda analysen av parsern från LuaMinify kommer att göras i två versioner.
+En version kommer att köras med Luas standard kompilator och en annan med Luas
+JIT-kompilator.
+
+\subsection{Mätning}
+
+JavaScript mätningar görs i Node.js v0.9.8 med Benchmark.js-verktyget och skriptet
+för mätningen hittas i bilaga 4. Lua mätningen är implementerad i Lua och
+använder sig av socket-biblioteket för att få tillgång en högre noggrannhet.
+Skriptet för mätningen hittas i bilaga 5. Alla parsningar görs på ParseLua.lua
+från LuaMinify-projektet.
+
+\subsection{Resultat}
+
+\begin{figure}[ht]
+  \includegraphics[width=15cm]{figures/output/parsers.pdf}
+  \caption{Prestandaresultat från parsning av ParseLua.lua (@TODO data ändras)}
+\end{figure}
+
+Resultatet från tabell~\ref{tab:parsers} visar att examensarbetets
+parser-implementation har den snabbaste implementation både när det kommer
+till lexikal analys och syntaktisk analys.
+
+\begin{table}[ht]
+  \caption{Resultat från prestanda analysen mellan parsers.}
+  \begin{tabular}{l l l}
+    Parser & Tid (ms) & Standardavvikelse \\
+    \hline
+    Examensarbetets implementation & 5.6 & 0.5 \\
+    Fullständig Jison-genererad implementation & 111.0 & 7.5 \\
+    Jison-genererad implementation utan lexer & 49.1 & 2.2 \\
+    LuaMinify med Lua 5.1 & 184.1 & 10.7 \\
+    LuaMinify med Luajit 2.0.0 & 75.3 & 7.9
+  \end{tabular}
+  \label{tab:parsers}
+\end{table}
+
+
+Parsern som genererats av Jison visar sig vara 20 gånger långsammare än
+examensarbetets implementation.  Genom att byta ut lexern med examensarbetets
+lexer halveras exekveringstiden för testet. Lexer är den mest
+prestandaoptimerade komponenten i implementationen medan den syntaktiska
+analysatorn är en typisk rekursivt nedstigande parser. Eftersom den
+genererade parsern fortfarande är långsam jämfört med examensarbetets
+implementation kan det konstateras att lösningen inte är passande för ett
+prestandakritiskt projekt.
+
+Parsern tillhörande LuaMinify visar sig vara över 30 gånger långsammare än
+examensarbetets parser. Detta resultat är svårt att tolka eftersom
+implementationerna använder sig av skilda språk. LuaJIT är känd för att vara
+en mycket snabb tolk jämfört med andra. I en diskussion från 2010 hävdar dess
+skapare Mike Pall \citep{mp10} att skräpinsamling är ett problem för LuaJIT
+jämfört med V8. Eftersom parsningsprocessen konstruerar 5000 noder i ett
+syntaxträd vid varje test och testen körs 100 gånger är det möjligt att detta
+är en orsak till det sämre resultatet. Skräpinsamlingsproblem går vanligtvis
+att optimera genom att inte kontrollera användningen av de objekt som skapas
+under en exekvering.
+
+% vim: set tw=78:ts=2:sw=2:et:fdm=marker:wrap:wm=78:ft=tex
+% vim: spell spelllang=sv
