@@ -1,3 +1,46 @@
 \section{Diskussion och slutsatser}
 
-\ldots
+Slutresultatet av detta examensarbete är en prestandaoptimerad rekursivt
+nedstigande parser av Lua-språket. Implementationen av parsern är en pågående
+process som påbörjats 6 månader innan detta examensarbete fullgjorts.
+
+Tidsmängden krävd för implementationen är omöjlig att mäta, men resultatet
+utgörs av mer än 1600 källkodsrader samt mer än 600 logiska kodrader.
+Ytterligare existerar det mer än 500 test som används för att upprätthålla
+parserns kvalitet. I efterhand kan jag konstatera att implementationen varit
+en okomplicerad men tidskrävande process. Eftersom tidsmängden för att
+generera en Lua-parser med hjälp av Jison enbart tog enstaka timmar är
+skillnaden mellan implementationsalternativen enorm. Slutprodukten visar sig
+dock vara en stabil och prestandaeffektiv implementation som kan användas i
+praktiken. Likt skaparna av GCC och Lua anser jag inte tidsmängden vara för
+mycket när det handlar om ett språk med en stabil och enkel syntax. Fördelen
+som fås visas tydligt i dess prestanda, dess felmeddelanden och enkelheten av
+källkoden.
+
+För språk med en mer komplicerad syntax såsom C++ eller PHP anser jag dock
+inte det vara möjligt att upprätthålla en handskriven parser. Dessutom sker
+det kontinuerligt uppdateringar i syntaxen av ett språk, vilket vi kan se i
+senaste versionen av PHP samt uppkommande versionen av JavaScript. Processen
+att uppdatera syntax grammatiken för en genererad parser innebär enbart
+justeringar i en grammatik specifikation. I en handskriven parser kan det
+innebära stora strukturella förändringar.
+
+Slutsatsen jag har är att projekt som körs i en prestandakritisk miljö med ett
+tolkat språk bör överväga att implementera en handskriven parser. Om
+tidsmängden är begränsad eller projektet inte är prestandakritiskt kan dock en
+maskingenererad parser användas.
+
+Det finns en fortfarande en serie förbättringar som kan göras till denna
+parser för att vara mer användbar som ett analyseringsverktyg. I nästa version
+har jag planer att introducera inkrementell parsning så att syntaxmarkerare
+inte behöver parsa en hel fil för att göra uppdateringar. Ytterligare planerar
+jag anknyta källdkodspositionen till varje nod i syntaxträdet för att ett
+verktyg lättare skall kunna manipulera kod.
+
+Slutprodukten av arbetet finns att hitta på
+\url{http://oxyc.github.com/luaparse/} och är licenseriat under MIT-licensen.
+Implementationen kan användas med Node.js eller en webbläsare med en
+JavaScript-motor som implementerats enligt ECMA-262 version 3.
+
+% vim: set tw=78:ts=2:sw=2:et:fdm=marker:wrap:wm=78:ft=tex
+% vim: spell spelllang=sv
