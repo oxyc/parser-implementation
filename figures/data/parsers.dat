@@ -1,6 +1,5 @@
-0 "Luaparse (node 0.8.16)" 2.9
-1 "Luaparse (chrome 22)" 3.7
-2 "Luaparse (firefox 16)" 9.8
-3 "LuaMinify (lua 5.1)" 95.4
-4 "LuaMinify (luajit 2)" 39.7
-5 "Esprima uglifyJS (node)" 7.7
+0 "Examensarbete"  5
+1 "Genererad lexer och parser" 111
+2 "Genererad parser" 49
+3 "LuaMinify Lua 5.1" 184
+4 "LuaMinify Luajit 2.0.0" 75
