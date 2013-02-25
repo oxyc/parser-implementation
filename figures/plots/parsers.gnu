@@ -1,5 +1,5 @@
 reset
-set terminal pdf color font ",6"
+set terminal pdf color font "0,10"
 set output 'output/parsers.pdf'
 set boxwidth 0.5
 set ylabel 'ms'

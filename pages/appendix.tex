@@ -112,3 +112,91 @@ Provtagningen är baserad på LuaMinify projektet och implementerat med Luaparse
     Totalt & 4999
   \end{tabular}
 \end{table}
+
+\clearpage
+\addcontentsline{toc}{section}{Bilaga 3. Lua-grammatik för Jison}
+\section*{Bilaga 3. Lua-grammatik för Jison}
+
+\lstinputlisting[title="",keywords=]{figures/tex/lua.jison}
+
+\clearpage
+\addcontentsline{toc}{section}{Bilaga 4. Skript för prestanda analys i JavaScript}
+\section*{Bilaga 4. Skript för prestanda analys i JavaScript}
+
+\lstinputlisting[title="",language=Javascript]{figures/tex/benchmark.js}
+
+\clearpage
+\addcontentsline{toc}{section}{Bilaga 5. Skript för prestanda analys i Lua}
+\section*{Bilaga 5. Skript för prestanda analys i Lua}
+
+\lstinputlisting[title="",language=Lua]{figures/tex/benchmark.lua}
+
+\clearpage
+\addcontentsline{toc}{section}{Bilaga 6. Bailout data}
+\section*{Bilaga 6. Bailout data}
+
+\begin{verbatim}
+Bailout in HGraphBuilder: @"IN": call to a JavaScript runtime function
+Bailout in HGraphBuilder: @"ToString": call to a JavaScript runtime function
+Bailout in HGraphBuilder: @"toString": inlined runtime function: ClassOf
+Bailout in HGraphBuilder: @"ToObject": call to a JavaScript runtime function
+Bailout in HGraphBuilder: @"NonNumberToNumber": call to a JavaScript runtime function
+Bailout in HGraphBuilder: @"SUB": call to a JavaScript runtime function
+Bailout in HGraphBuilder: @"ToNumber": call to a JavaScript runtime function
+Bailout in HGraphBuilder: @"DefaultNumber": call to a JavaScript runtime function
+Bailout in HGraphBuilder: @"isUnary": SwitchStatement: non-literal switch label
+Bailout in HGraphBuilder: @"parsePrimaryExpression": SwitchStatement: non-literal switch label
+Bailout in HGraphBuilder: @"forProps": ForInStatement is not fast case
+Bailout in HGraphBuilder: @"FILTER_KEY": call to a JavaScript runtime function
+Bailout in HGraphBuilder: @"DELETE": call to a JavaScript runtime function
+Bailout in HGraphBuilder: @"extend": bad value context for arguments value
+Bailout in HGraphBuilder: @"NonStringToString": call to a JavaScript runtime function
+Bailout in HGraphBuilder: @"extend": bad value context for arguments value
+Bailout in HGraphBuilder: @"TO_NUMBER": call to a JavaScript runtime function
+Bailout in HGraphBuilder: @"MUL": call to a JavaScript runtime function
+Bailout in HGraphBuilder: @"sqrt": inlined runtime function: MathSqrt
+Bailout in HGraphBuilder: @"DefaultString": call to a JavaScript runtime function
+Bailout in HGraphBuilder: @"EQUALS": call to a JavaScript runtime function
+\end{verbatim}
+
+\clearpage
+\addcontentsline{toc}{section}{Bilaga 7. Provtagning 1}
+\section*{Bilaga 7. Provtagning 1}
+
+@TODO data uppdateras
+\begin{verbatim}
+Statistical profiling result from node, (5917 ticks, 5904 unaccounted, 0 excluded).
+
+ [Unknown]:
+   ticks  total  nonlib   name
+   5904   99.8%
+
+ [Shared libraries]:
+   ticks  total  nonlib   name
+     11    0.2%    0.0%  /usr/lib/libc-2.17.so
+      1    0.0%    0.0%  /usr/lib/libpthread-2.17.so
+
+ [JavaScript]:
+   ticks  total  nonlib   name
+   1825   30.8%   30.9%  LazyCompile: *readToken /home/oxy/luaparse-benchmark/benchmarks/bench-luaparse/lib/luaparse.js:464
+   1041   17.6%   17.6%  LazyCompile: *test native regexp.js:220
+    513    8.7%    8.7%  LazyCompile: *scanIdentifierOrKeyword /home/oxy/luaparse-benchmark/benchmarks/bench-luaparse/lib/luaparse.js:557
+    320    5.4%    5.4%  LazyCompile: *parsePrefixExpression /home/oxy/luaparse-benchmark/benchmarks/bench-luaparse/lib/luaparse.js:1502
+    251    4.2%    4.3%  LazyCompile: *parseSubExpression /home/oxy/luaparse-benchmark/benchmarks/bench-luaparse/lib/luaparse.js:1460
+    235    4.0%    4.0%  LazyCompile: *parseStatement /home/oxy/luaparse-benchmark/benchmarks/bench-luaparse/lib/luaparse.js:1062
+    175    3.0%    3.0%  LazyCompile: *parseCallExpression /home/oxy/luaparse-benchmark/benchmarks/bench-luaparse/lib/luaparse.js:1556
+    143    2.4%    2.4%  LazyCompile: *parsePrimaryExpression /home/oxy/luaparse-benchmark/benchmarks/bench-luaparse/lib/luaparse.js:1592
+    138    2.3%    2.3%  LazyCompile: *parseIfStatement /home/oxy/luaparse-benchmark/benchmarks/bench-luaparse/lib/luaparse.js:1201
+    128    2.2%    2.2%  LazyCompile: *parseLocalStatement /home/oxy/luaparse-benchmark/benchmarks/bench-luaparse/lib/luaparse.js:1281
+    124    2.1%    2.1%  LazyCompile: *next /home/oxy/luaparse-benchmark/benchmarks/bench-luaparse/lib/luaparse.js:885
+    116    2.0%    2.0%  LazyCompile: *parseBlock /home/oxy/luaparse-benchmark/benchmarks/bench-luaparse/lib/luaparse.js:1037
+    106    1.8%    1.8%  LazyCompile: *parseTableConstructor /home/oxy/luaparse-benchmark/benchmarks/bench-luaparse/lib/luaparse.js:1379
+\end{verbatim}
+
+\clearpage
+\addcontentsline{toc}{section}{Bilaga 8. Provtagning 2}
+\section*{Bilaga 8. Provtagning 2}
+
+@TODO data kommer
+\begin{verbatim}
+\end{verbatim}

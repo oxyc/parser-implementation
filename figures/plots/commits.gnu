@@ -1,7 +1,7 @@
 reset
-set terminal pdf color font ",5" size 5,5
+set terminal pdf color font "0,10" size 5,5
 set output 'output/commits.pdf'
-set xlabel 'Commits'
+set xlabel 'Revision'
 set ylabel 'ms'
 set grid y
 set style data linespoints
