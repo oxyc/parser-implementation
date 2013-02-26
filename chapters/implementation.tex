@@ -1,6 +1,6 @@
 \section{Lua-parserns implementation}
 
-Implementationen är uppdelad i fyra komponenter. När parsern startas börjar
+Implementationen är indelad i fyra komponenter. När parsern startas börjar
 en syntaktisk analysator parsa input från rot-noden.  Det första som görs är
 ett anrop till den andra komponenten, lexern. Lexern läser input tecken för
 tecken och tokeniserar värden som sedan returneras till den syntaktiska
@@ -34,15 +34,14 @@ lexern spenderar en väsentlig del av sin tid på blanksteg. Det första lexern
 gör när den anropas är att anropa en funktion som ignorerar alla
 blankstegstecken som hittas.
 
-Eftersom token-objekt innehåller information om dess rad och kolumn i input är
-detta funktionen som är ansvarig för att memorera dessa värden. För varje
-radbrytningstecken som hittas ökas en radantals-variabel. Ytterligare lagras den
-nuvarande positionen i input som en variabel. Detta är positionen i input var
-den nuvarande raden börjat. När ett tokenobjekt skapas subtraheras radens
-startposition från den nuvarande input-positionen och bildar därmed kolumnen.
+Eftersom token-objekt innehåller information om rad och kolumn i input
+memoreras varje radförändringen i funktionen som ignorerar blanksteg.
+Ytterligare lagras input-positionen när en rad påbörjas. När ett tokenobjekt
+skapas subtraheras radens startposition från den nuvarande input-positionen
+och bildar därmed kolumnen.
 
-Kompilatorer kan ignorera kommentarer eftersom de inte innehåller semantiskt
-värde men eftersom målet med denna implementation är att användas för
+Kompilatorer kan ignorera kommentarer eftersom de inte innehåller semantiska
+värden men eftersom målet med denna implementation är användningen för
 kodanalys sparas även kommentarer. Detta görs genom att söka efter
 avgränsarsymbolen (\verb+--+) och lagra dess information i en separat tabell
 som slutligen anknyts till det returnerade syntaxträdet.
@@ -54,9 +53,9 @@ bokstäver, siffror och understreck i ASCII-uppsättningen. Ytterligare kan ett
 variabelnamn inte börja med en siffra \citep{luaref}.
 
 Nyckelord är terminaler med samma regler som identifierare och därmed kan de
-dela logik för att avskilja giltiga tecken. En skillnad mellan
+använda samma logik för att avskilja giltiga tecken. En skillnad mellan
 parser-implementationen och Lua-grammatiken är åtskiljandet mellan nyckelord
-och datatyperna nil samt boolean.
+och datatyperna nil, boolean.
 
 Med att granska grammatiken för tokentyperna kan det utläsas att enbart nil,
 boolean, nyckelord samt identifierare kan börja med en bokstav. Eftersom
@@ -65,18 +64,18 @@ Om en ny token börjar med en bokstav måste det tillhöra någon av dessa fyra
 tokentyper, ytterligare vet vi att tokentypen slutar där ett tecken inte är en
 bokstav, en siffra eller ett understreck.
 
-Implementationen av denna fögrerning göras genom att läsa ASCII-koden för
+Implementationen av denna fögrerning görs genom att läsa ASCII-koden för
 tecknet och granska om det är en bokstav eller ett understreck. Om testet
-lyckas fortsätter lexern acceptera tecken så länge som teckenkoden tillhör
+lyckas fortsätter lexern att acceptera tecken så länge som teckenkoden tillhör
 serien för bokstäver, siffror och understreck. När testet misslyckas betyder
 det att denna token tagit slut och nu kan lexern granska om värdet är lika med
-ett boolean värde, ett nil värde, ett av nyckelorden eller inte tillhör någon
+ett boolean-värde, ett nil-värde, ett av nyckelorden eller inte tillhör någon
 av dessa och därmed är en identifierare.
 
 \subsubsection{Symboler}
 
-Identifieringen av symboler implementeras genom en serie switch- och
-if-satser vilka granskar vilka tecken framåt i input som tillhör en giltig
+Identifieringen av symboler implementeras med en serie switch- och
+if-satser vilka granskar vilka tecken framåt i input tillhör en giltig
 symbol. När den längsta möjliga symbolen identifieras returneras den.
 
 Luas giltiga symboler är:
@@ -88,15 +87,15 @@ Luas giltiga symboler är:
 
 Lua stöder tal likt vanliga programmeringsspråk men har även stöd för
 hexadecimaltal innehållande en valfri binär expontent. Implementationen läser
-input och verifierar att talet är giltigt. När token värdet identifierats
+input och verifierar att talet är giltigt. När token-värdet identifierats
 konverteras det till ett flyttal och returneras.
 
 Teckensträngar i Lua börjar antingen med enkla citationstecken (\verb+'+)
 eller dubbla citationstecken (\verb+"+) och samma avgränsarsymbol förväntas
 innan raden tar slut. Lua tillåter dock att man inaktiverar en symbol såsom
 citations- eller radbrytningstecken genom att använda ett omvänt snedstreck
-(\verb+\+). En annan användning för det omvända snedstreck är att definiera en
-styrkodsekvens.  När lexern hittar ett snedstreck inom en
+(\verb+\+). En annan användning för det omvända snedstrecket är att definiera
+en styrkodsekvens.  När lexern hittar ett snedstreck inom en
 teckensträngslitteral granskas först giltiga styrkodssekvenser och om ingen
 identifieras inaktiveras följande tecken i input.
 
@@ -123,15 +122,16 @@ kunna åtskilja variabeldeklarationer från funktionsanrop.
 
 \subsubsection{Hjälp-funktioner}
 
-För att underlätta arbetadet med produktionsregler samt kommunikationen med
+För att underlätta hanteringen av produktionsregler samt kommunikationen med
 lexer-komponenten används vissa hjälp-funktioner.
 
-Kommunikationen med lexern sker med en \textit{next()} funktion. Funktionen
-ansvarar även för att parsern skall ha tillgång till en lookahead-token som
-krävs för att syntaxen skall kunna analyseras. När funktionen anropas ersätts
-aktuella token med lookahead-token. Efter detta anropas lexern och dess
-resultat sparas som lookahead-token. Dessa tokens lagras som variabler
-tillgängliga för hela implementationen.
+Kommunikationen med lexern sker med en \textit{next()}-funktion. Funktionen
+ansvarar även för att parsern skall ha tillgång till en
+\textit{``lookahead''}-token som krävs för att syntaxen skall kunna
+analyseras. När funktionen anropas ersätts den aktuella token med
+\textit{``lookahead''}-token.  Efter detta anropas lexern och dess resultat
+sparas som \textit{``lookahead''}-token. Dessa tokens lagras som variabler tillgängliga för
+hela implementationen.
 
 Ytterligare existerar två viktiga hjälp-funktioner för att hålla
 implementationen mer läslig. \textit{expect()}-funktionen anropas med ett
@@ -144,7 +144,7 @@ Den andra väsentliga hjälp-funktionen är \textit{consume()} som likt
 \textit{expect()} granskar om ett tokenvärde överenstämmer med den aktuella
 token. Skillnaden är att \textit{consume()} inte skapar ett felmeddelande utan
 returnerar istället sant eller falskt. Detta används för att granska valfria
-delar av en produktionsregel. T.ex. if-satser som har en valfri \textit{else}
+delar av en produktionsregel, t.ex. if-satser som har en valfri \textit{else}
 komponent.
 
 \subsubsection{EBNF-notation till JavaScript-kod}
@@ -153,17 +153,17 @@ Processen att omvandla EBNF-notation är en enkel process när eliminieringen av
 $\epsilon$ gjorts. Alternering implementeras som switch-satser, villkor som
 if-satser och repetition som while-, for- eller do-satser.
 
-För att hålla minimera komplexiteten av parsern har implementationen delat upp
+För att minimera komplexiteten av parsern har implementationen delat upp
 produktionsregeln \bnfrule{sats} så att den enbart identifierar vilken typ av
 sats det handlar om utgående från den första terminalen. Efter att satsen
-identifieras anropas funktionen knyten till den satstypen.
+identifieras anropas funktionen knyten till satstypen.
 
 Ytterligare optimerar jag sats-grammatiken med att ordna reglerna enligt
-populariteten baserat på en provtagning av ett exempel program (Bilaga 2).
+populariteten baserad på en provtagning av ett exempelprogram (bilaga 2).
 
-Den nya \bnfrule{sats}-grammatiken hittas i figur~\ref{fig:stat}.
+Den nya \bnfrule{sats}-grammatiken visas i figur~\ref{fig:stat}.
 
-\begin{figure}
+\begin{figure}[ht]
   \setlength{\grammarindent}{5em}
   \begin{grammar}
     \singlespace\small%
@@ -182,28 +182,27 @@ Den nya \bnfrule{sats}-grammatiken hittas i figur~\ref{fig:stat}.
       \alt ";"
       \alt <deklaration-eller-anrop-sats>
   \end{grammar}
-  \caption{Parser implementationens produktionsregel för en sats}
+  \caption{Parser-implementationens produktionsregel för en sats}
   \label{fig:stat}
 \end{figure}
 
 \subsubsection{Implementation av produktionsregler}
 
-Som exempel omvandlas följande if- samt while-sats till JavaScript
-motsvarigheterna i figur~\ref{fig:ifstat}.
-
-\setlength{\grammarindent}{3em}
-\begin{grammar}
-  \singlespace\small%
-  \fontfamily{lmr}\selectfont
-    <sats> ::= "if" <if-sats> | "while" <while-sats> | \ldots
-
-    <if-sats> ::= "if" <uttryck> "then" <block> \{"elseif" <uttryck> "then" <block>\}
-    ["else" <block>] "end"
-
-    <while-sats> ::= "while" <uttryck> "do" <block> "end"
-\end{grammar}
+Som exempel omvandlas följande if- samt while-sats till
+JavaScript-motsvarigheterna i figur~\ref{fig:ifstat}.
 
 \begin{figure}[ht]
+  \setlength{\grammarindent}{3em}
+  \begin{grammar}
+    \singlespace\small%
+    \fontfamily{lmr}\selectfont
+      <sats> ::= "if" <if-sats> | "while" <while-sats> | \ldots
+
+      <if-sats> ::= "if" <uttryck> "then" <block> \{"elseif" <uttryck> "then" <block>\}
+      ["else" <block>] "end"
+
+      <while-sats> ::= "while" <uttryck> "do" <block> "end"
+  \end{grammar}
   \begin{minipage}[t]{0.5\textwidth}
   \lstinputlisting[title="",language=Javascript]%
     {figures/tex/if-statement.js}
@@ -230,7 +229,7 @@ organiserad produktionsregel för uttryck.
 Processen för att införa detta kommer bestå av tre steg, där det det första
 steget visar den ursprungliga regeln, det andra steget visar resultatet från
 att eliminera vänsterrekursion och det tredje steget visar regeln skriven utan epsilon.
-Med att ta omforma regeln till att använda repetition istället för epsilon är
+Med att omforma regeln till att använda repetition istället för epsilon är
 regeln färdig för att översättas till kod.
 
 \subsubsection{Gruppering av uttryck}
@@ -343,36 +342,39 @@ Operationsprioritet innebär den logik som bestämmer att multiplikation
 prioriteras högre än addition och därmed grupperar uttryck såsom \textit{5 + 5
 * 2} till \textit{5 + (5 * 2)} istället för \textit{(5 + 5) * 2}. Lua-manualen
 nämner att grammatiken inte beskriver operationsprioritet \citep{luaref} men
-en lista av prioriteterna den kan hittas i källkoden av Luas egna parser
+en lista av på rioriteterna kan hittas i källkoden av Luas egna parser
 \citep{lparse}.
+% @TODO tabell
 
 En implementationsmöjlighet som Lua själv använder är att spjälka ut
-funktionen som parsar uttryck till en ny funktionen som tar emot
+funktion som parsar uttryck till en ny funktionen som tar emot
 operatorprioriteten som ett argument med den lägsta prioriteten som
 ursprungsläge. Funktionen spjälker sedan uttrycket i ett vänsterled, ett
-högerled och operatorn mellan dessa. Om operatorns prioritet är höger än
+högerled och operatorn mellan dessa. Om operatorns prioritet är högre än
 prioriteten som givits som argument parsar funktionen rekursivt operationens
 högerled och skapar en ny operationsgruppering så länge som prioriteten är
 högre. Om operatorns prioritet är lägre än eller samma som argumentets
 prioritet kommer iterationen att avbrytas och det nuvarande uttrycket att
-returneras till det högra ledet. Eftersom ursprungslägets prioritet är det
+returneras till det högra ledet. Eftersom ursprungslägets prioritet är den
 lägsta kommer alltid ett uttryck att fortsätta så länge som en operator kan
 hittas.
 
-Denna algoritm kallas för \textit{``operator-precedence''} parsning och
-använder sig av \textit{``nerifrån-och-upp''} strategin. Pseudokoden för en
+Denna algoritm kallas för \textit{``operator precedence''} parsning och
+använder sig av \textit{``nerifrån-och-upp''}-strategin. Pseudokoden för en
 implementation visas i figur~\ref{fig:binprecedence} och ett
 grupperingsexempel visas i figur~\ref{fig:expressiontree}.
 
 \begin{figure}[ht]
   \lstinputlisting[title="",language=Javascript]%
     {figures/tex/binary-precedence.js}
-  \caption{En ``operator-precedence'' uttrycksparser.}
+  \caption{En ``operator precedence''-uttrycksparser.}
   \label{fig:binprecedence}
 \end{figure}
 
 \paragraph{Ett steg för steg exempel av parsningen för uttrycket 1 + 2 - 3 * 4
 + 5.}
+
+% @TODO beskriv
 
 \begin{enumerate}\itemsep1pt \parskip0pt \parsep0pt
   \item Vänstra ledet har värdet 1 och operatorn är + med en prioritet på 1.
@@ -404,7 +406,7 @@ grupperingsexempel visas i figur~\ref{fig:expressiontree}.
     därmed anropar funktionen sig själv.
     \begin{enumerate}
       \item Vänstra ledet är 5 och eftersom ingen operator hittas returneras
-        värdet såsom de tär.
+        värdet.
     \end{enumerate}
   \item Högra ledet är nu 5 och grupperingen blir (((1 + 2) - (3 * 4)) + 5).
   \item Eftersom ingen operator kan hittas returneras det slutgiltiga
@@ -456,7 +458,7 @@ handskriven rekursivt nedstigande parser.
 
 Eftersom implementationens mål är att användas som kodanalysator representeras
 parsningens syntaxträd som ett abstrakt syntaxträd. Varje nod i trädet
-innehåller en obligatorisk typ-attribut samt en serie andra attribut som är
+innehåller ett obligatoriskt typ-attribut samt en serie andra attribut som är
 nod-specifika. Dessa noder är implementerade som objekt-litteraler och
 returneras till det anropande programmet började från programmets rot, Luas
 s.k. \textit{``chunk''}.
@@ -468,10 +470,10 @@ till dessa funktioner. För att det anropande programmet skall ha möjlighet att
 så enkelt som möjligt omstrukturera syntaxträdet tillgängliggörs dessa
 funktioner via parserns API.
 
-Eftersom syntaxträdet representeras i en mycket lågnivå i Luas egna parser har
+Eftersom syntaxträdet representerar en mycket låg nivå i Luas egna parser har
 jag valt att ta inspiration av Mozillas Parser API \citep{parserapi}.
 
-Ett exempel på syntaxträdet genererat från en parsning hittas i
+Ett exempel på syntaxträd genererat från en parsning visas i
 figur~\ref{fig:tool}.
 
 \begin{figure}[ht]

@@ -62,10 +62,10 @@ Nedan följer en lista på de kommandoradsflaggor som används i detta kapitel
     kan användaren skapa en översikt av denna information. Översikten återger
     hur stor andel av den totala exekveringen som utgörs av varje funktion.
   \item[--trace_bailout] \hfill \\
-    Återger orsaken till varför en funktion avoptimerats med en
+    Anger orsaken till varför en funktion avoptimerats med en
     \textit{``bailout''}.
   \item[--trace_inlining] \hfill \\
-    Återger varje gång en Crankshaft försöker omkompilera en funktion med
+    Registrerar varje gång en Crankshaft försöker omkompilera en funktion med
     hjälp av en teknik som kallas \textit{``function inlining''}. Denna
     optimeringsteknik innebär att kompilatorn ersätter ett funktionsanrop med
     själva funktionsinnehållet och därmed sparar kostnaden av själva andropet
@@ -78,7 +78,7 @@ Nedan följer en lista på de kommandoradsflaggor som används i detta kapitel
 \subsection{Provtagning}
 
 Följande moment har genomförts för att optimera prestandan av parsern fram
-till att resultatet har en längre relativ förbättring än 10\%. Alla test har
+till att resultatet har en relativ förbättring större än 10\%. Alla test har
 utförts på en dual-core 2.6 GHz dator med ett Linux-baserat operativsystem.
 
 \subsubsection{Undvikandet av ``bailouts''}
@@ -123,20 +123,20 @@ giltiga identifierare.
 
 Det första som kan göras är att omvandla dessa reguljära uttryck till vanliga
 funktioner som granskar tecken. I provtagningsresultatet framgår det också att
-\textit{readToken()} som är lexer funktionen ansvarig för att identifiera
+\textit{readToken()} som är lexer-funktionen ansvarig för att identifiera
 tokens upptar 30\% (@TODO data uppdateras ännu)  av hela parsningsprocessen.
 Eftersom detta är en väsentlig del av exekveringstiden är det värt att
 optimera alla teckenjämförelser till att istället arbeta med teckenkoder.
 Detta gör att JavaScript-motorn kan använda sig av binära operationer för att
 utföra en jämförelse. Denna metod visar sig ha en betydande prestandaskillnad
-i äldre V8 versionen samt i övriga webbläsare \citep{charcodeat}.
+i äldre versioner av V8 samt i övriga webbläsare \citep{charcodeat}.
 
 \subsubsection{Optimering av sträng-funktioner}
 
 Efter att de tidigare optimeringarna genomförts betonas nu 2 huvudsakliga
-funktioner i provtagningsanalysen från bilaga 8. Dessa funktioner, dvs.
+funktioner i provtagningsanalysen i bilaga 8. Dessa funktioner, dvs.
 \textit{StringAddStub} som är en maskinkodsmetod för att sammanfoga strängar
-och \textit{CompareICStub} som är en maskinkodsmetod för att jämföra strängar
+och \textit{CompareICStub} som är en maskinkodsmetod för att jämföra strängar,
 upptar 8.3\% respektive 7.9\% av parsningsprocessens exekveringstid.
 
 \textit{StringAddStub} orsakas av att lexern sammanfogar token-värden för
@@ -190,13 +190,13 @@ gjorts valideras ännu att funktionen är tillräkligt liten för
 \begin{figure}[ht]
   \includegraphics[width=13cm]{figures/output/functions.pdf}
   \caption{Slutgiltig översikt av exekveringstiden för parser-implementations
-    funktioner (outdated).}
+    funktioner.}
 \end{figure}
 
 \begin{figure}[ht]
   \includegraphics[width=15cm]{figures/output/commits.pdf}
   \caption{Översikt av moment i.o.m. parser-implementationens
-    prestandaoptimering (outdated).}
+    prestandaoptimering.}
 \end{figure}
 
 % vim: set tw=78:ts=2:sw=2:et:fdm=marker:wrap:wm=78:ft=tex

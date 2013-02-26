@@ -20,10 +20,10 @@ källkoden.
 För språk med en mer komplicerad syntax såsom C++ eller PHP anser jag dock
 inte det vara möjligt att upprätthålla en handskriven parser. Dessutom sker
 det kontinuerligt uppdateringar i syntaxen av ett språk, vilket vi kan se i
-senaste versionen av PHP samt uppkommande versionen av JavaScript. Processen
-att uppdatera syntax grammatiken för en genererad parser innebär enbart
-justeringar i en grammatik specifikation. I en handskriven parser kan det
-innebära stora strukturella förändringar.
+senaste versionen av PHP samt i den uppkommande versionen av JavaScript.
+Processen att uppdatera syntaxgrammatiken för en genererad parser innebär
+enbart justeringar i en grammatikspecifikation. I en handskriven parser kan
+det innebära stora strukturella förändringar.
 
 Slutsatsen jag har är att projekt som körs i en prestandakritisk miljö med ett
 tolkat språk bör överväga att implementera en handskriven parser. Om
@@ -37,10 +37,10 @@ inte behöver parsa en hel fil för att göra uppdateringar. Ytterligare planera
 jag anknyta källdkodspositionen till varje nod i syntaxträdet för att ett
 verktyg lättare skall kunna manipulera kod.
 
-Slutprodukten av arbetet finns att hitta på
-\url{http://oxyc.github.com/luaparse/} och är licenseriat under MIT-licensen.
-Implementationen kan användas med Node.js eller en webbläsare med en
-JavaScript-motor som implementerats enligt ECMA-262 version 3.
+Slutprodukten av arbetet finns i \url{http://oxyc.github.com/luaparse/} och är
+licenseriad under MIT-licensen. Implementationen kan användas med Node.js
+eller en webbläsare med en JavaScript-motor som implementerats enligt ECMA-262
+version 3.
 
 % vim: set tw=78:ts=2:sw=2:et:fdm=marker:wrap:wm=78:ft=tex
 % vim: spell spelllang=sv

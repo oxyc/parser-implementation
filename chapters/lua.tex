@@ -7,7 +7,7 @@ paradigmet \citep{luaimp}.
 
 Målet av Lua är att använda en enkel syntax med en liten grupp av
 datastrukturer, att vara snabbt såväl i kompilering som exekvering, att kunna
-köras på så många platformer som möjligt och slutligen att vara effektivt för
+köras på så många plattformer som möjligt och slutligen att vara effektivt för
 inbäddningen i programvara. Dessa mål anses vara uppnådda enligt \cite{luaimp}.
 
 Utgående från dessa mål är Lua ett bra alternativ för konfigurationsspråk och
@@ -21,40 +21,41 @@ funktionalitet som fås av dess flexibilitet och val av datastruktur.
 
 \subsubsection{Datatyper}
 
-Lua består av 8 datatyper: \textit{nil, boolean, number, string, table,
-  function}. Eftersom språket använder sig av dynamisk typning kan variabler
-referera till vilken datatyp som helst. Därmed använder språket inte heller
-datatypsdefinitioner vid variabel deklarationer \citep[s. 9]{ir06}.
+Lua består av 8 datatyper: \textit{nil, boolean, number, string, userdata,
+ table, thread, function}. Eftersom språket använder sig av dynamisk typning
+ kan variabler referera till vilken datatyp som helst. Därmed använder språket
+ inte heller datatypsdefinitioner vid variabeldeklarationer \citep[s.
+ 9]{ir06}.
 
-Tabeller är Luas enda datastruktur och detta är egentligen en associativ
-array. Detta betyder att den är dynamiskt växande, kan indexeras av vilken
+Tabell är Luas enda datastruktur och denna är egentligen en associativ
+tabell. Detta betyder att den är dynamiskt växande, kan indexeras av vilken
 datatyp som helst (förutom \textit{nil}) samt kan även hålla vilket värde som
-helst. Med hjälp av denna flexibilitet kan tabeller användas både som en array
-och som en hashtabell \citep[s. 15]{ir06}.
+helst. Med hjälp av denna flexibilitet kan tabeller användas både som
+vanliga tabeller och som hashtabeller \citep[s. 15]{ir06}.
 
 Teckensträngar i Lua har en unik flerradsfunktion. Istället för att definiera
 teckensträngar med citationstecken kan man använda sig av symbolen \verb+[=[+
 var \verb+=+-tecknet består av ett godtyckligt antal som definierar dess djup.
 Med att definiera ett större djup kan en teckensträng omfatta
-symbolskombinationer för teckensträngar med ett mindre djup. Denna
+symbolkombinationer för teckensträngar med ett mindre djup. Denna
 funktionalitet existerar även för kommentarer och är därmed användbar för att
 kommentera ut kod tillfälligt. För att avsluta en flerradsteckensträng
-använder man sig av den omvända \verb+]=]+ symbolen med ett överensstämmande
-djup.
+använder man sekvenser av den omvända \verb+]=]+ symbolen med ett
+överensstämmande djup.
 
 \subsubsection{Satser och block}
 
-Lua har stöd för de vanliga satser från exempelvis C såsom if, while, for,
-break och return. Ytterligare existerar satser såsom repeat, lokala variabel
-deklarationer samt fler-variabel deklarationen. En annan mer unik
+Lua har stöd för de vanliga satserna i exempelvis C såsom if, while, for,
+break och return. Ytterligare existerar satser såsom repeat, lokala
+variabeldeklarationer samt flervariabel-deklarationen. En annan mer unik
 funktionalitet för Lua är att funktioner kan returnera flera värden.
 
 En syntaktisk skillnad till språk i likhet med C är hur sats-block definieras.
-Istället för att omringa block med klammerparenteser (\{ och \}) använder man
-sig av terminaler. Initialiserings terminalen skiljer sig beroende på
-sats-typen men alla satser använder \textit{end} som avslutande terminal.
+Istället för att omringa block med vågparenteser (\{ och \}) använder man sig
+av terminaler. Initialiseringsterminalen beror på sats-typen men alla satser
+använder \textit{end} som avslutande terminal.
 
-Ett exempel på hur de olika sats-strukturerna ser ut i Lua hittas i
+Ett exempel på hur de olika sats-strukturerna ser ut i Lua visas i
 figur~\ref{fig:luacode}.
 
 \begin{figure}[ht]
@@ -111,26 +112,26 @@ Ett karaktärsdrag från det funktionella paradigmet är att alla luas datatyper
 tal och teckensträngar accepteras som funktionsargument samt som returvärde.
 
 När man kombinerar denna funktionalitet med Luas lexikala omfång (scope)
-möjliggörs användningen av s.k. \textit{``closures''}. Closures innebär att
-en funktion vid exekvering har referenser till variabler vid olika
-händelseförlopp. Den har tillgång till dess egna inre variabler vid
-exekveringen men också yttrevariabler från den miljö var funktionen
+möjliggörs användningen av s.k. \textit{``closures''}. \textit{``Closures''}
+innebär att en funktion vid exekvering har referenser till variabler vid olika
+händelseförlopp. En \textit{``closure''} har tillgång till egna inre variabler
+vid exekveringen men också till yttre variabler från den miljö där funktionen
 definierats \citep[s. 45]{ir06}.
 
-Användningen av closures är populärt i funktionella programmeringsspråk för
+Användningen av \textit{``closures''} är populärt i funktionella programmeringsspråk för
 att implementera diverse algoritmer såsom \textit{``curry''}-funktionen.
 
 \subsection{Objektorienterad programmering}
 
 Trots att Lua inte innehåller klasser eller funktionalitet för arv finns det
-koncept som möjliggör dess implementation.
+koncept som möjliggör deras implementation.
 
 \subsubsection{Objekt}
 
 Luas tabeller är objekt och har därmed också funktionalitet för metoder och
 för en identitet i betydelsen att ett objekt som ändrar värde alltid är samma
 objekt och olikt ett annat objekt med samma värde. Ytterligare kan en metod
-definiera referensen till sig själv med hjälp kolon operatorn. Detta gör
+definiera referensen till sig själv med hjälp kolon-operatorn. Detta gör
 tabeller till en nära identisk representation av objekt i ett objektorienterat
 språk \citep[s. 149]{ir06}.
 
@@ -150,7 +151,7 @@ end
 
 Lua har inget koncept av klasser, alla objekt definierar sin egen struktur och
 har inget direkt arv. Vi kan dock simulera klasser och arv genom att använda
-en struktur likt prototyp-baserat arv. Detta görs med hjälp av s.k.
+en struktur lik prototyp-baserat arv. Detta görs med hjälp av s.k.
 metatabeller \citep[s. 151]{ir06}.
 
 Efter följande deklaration kommer värden att sökas i Person-objektet om det
@@ -162,7 +163,7 @@ setmetatable(carl, {__index = Person});
 \end{lstlisting}
 \vspace{-2em}
 Vad som återstår är att kombinera funktionaliteten för prototyp-arv samt
-objekt metoder till något som liknar klasser. Figur~\ref{fig:class} visar en
+objekt-metoder till något som liknar klasser. Figur~\ref{fig:class} visar en
 klass-lik implementation i Lua.
 
 \begin{figure}[ht]
@@ -188,8 +189,8 @@ carl:greet("Roger");
 
 \subsection{Grammatik}
 
-Luas grammatik existerar i en EBNF notation som inkluderats i dess
-ursprungliga form i Bilaga 1.
+Luas grammatik existerar i en EBNF-notation som inkluderats i
+ursprunglig form i bilaga 1.
 
 I version 3.0 övergick Lua från en genererad parser till en handskriven
 rekursivt nedstigande parser \citep{luaimp}. På grund av detta gjordes det
@@ -200,10 +201,9 @@ validering identisk med den ursprungliga versionen. Förändringen gjordes för
 att kunna byta ut parsern.
 
 Vid analys av grammatiken kan det konstateras att mycket av grammatiken går att
-implementera med en LL(1)-grammatik utan större förändringar. De problem som
-uppstår är en vänsterrekursion i uttrycksregeln samt ett lookahead-problem för
-att åtskilja variabel deklarationer och funktionskallelser. Dessa problem
-kommer hanteras i följande kapitel.
+implementera med en LL(1)-grammatik utan större förändringar. Det problem som
+uppstår är en vänsterrekursion i uttrycksregeln. Detta hanteras i följande
+kapitel.
 
 % vim: set tw=78:ts=2:sw=2:et:fdm=marker:wrap:wm=78:ft=tex
 % vim: spell spelllang=sv

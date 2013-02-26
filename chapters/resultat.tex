@@ -1,21 +1,21 @@
 \section{Resultat}
 
 För att mäta resultat av examensarbetets parser-implementation kommer jag att
-göra en prestanda analys av alternativa parsers.
+göra en prestandaanalys av alternativa parsers.
 
 \subsection{Jison-genererad parser}
 
 Parser-generatorn Jison kommer att användas för att generera en Lua-parser som
 utnyttjar en \textit{``nerifrån-och-upp''}-algoritm. Grammatiken som används
-är baserad på \cite{lua.js} projektets Lua-grammatik. Eftersom Lua.js
-kompilerar Lua-kod till JavaScript-kod har grammatiken förenklats till att
-enbart parsa och inte lagra någon information från processen. Den slutliga
-grammatiken hittas i bilaga 3.
+är baserad på Lua.js-projektets Lua-grammatik. Eftersom Lua.js kompilerar
+Lua-kod till JavaScript-kod har grammatiken förenklats till att enbart parsa
+och inte lagra någon information från processen. Den slutliga grammatiken
+visas i bilaga 3.
 
-I det tidigare kapitlet utgick det att lexern kan utgöra 40\% av en
+I det tidigare kapitlet framgick det att lexern kan utgöra 40\% av en
 parsningsprocess. Eftersom den Jison-genererade lexern använder sig av
 reguljära uttryck kan den förväntas vara ineffektiv. I ett försök att
-förbättra resultatet kommer prestanda analysen av den genererade parsern
+förbättra resultatet kommer prestandaanalysen av den genererade parsern
 existera i två versioner. En version kommer att använda den fullständiga
 parsern medan en annan kommer att utnyttja lexern som utvecklats i detta
 examensarbete.
@@ -29,23 +29,23 @@ optimering, vilket är förståeligt eftersom en källkods-komprimerare inte har
 ett behov av att vara snabb. För att få en mer komplett bild av prestandan för
 handskrivna parsers inkluderas denna parser i analysen.
 
-Prestanda analysen av parsern från LuaMinify kommer att göras i två versioner.
-En version kommer att köras med Luas standard kompilator och en annan med Luas
+Prestandaanalysen av parsern från LuaMinify kommer att göras i två versioner.
+En version kommer att köras med Luas standardkompilator och en annan med Luas
 JIT-kompilator.
 
 \subsection{Mätning}
 
-JavaScript mätningar görs i Node.js v0.9.8 med Benchmark.js-verktyget och skriptet
-för mätningen hittas i bilaga 4. Lua mätningen är implementerad i Lua och
+JavaScript-mätningar görs i Node.js v0.9.8 med Benchmark.js-verktyget och skriptet
+för mätningen visas i bilaga 4. Lua-mätningen är implementerad i Lua och
 använder sig av socket-biblioteket för att få tillgång en högre noggrannhet.
-Skriptet för mätningen hittas i bilaga 5. Alla parsningar görs på ParseLua.lua
+Skriptet för mätningen visas i bilaga 5. Alla parsningar görs på ParseLua.lua
 från LuaMinify-projektet.
 
 \subsection{Resultat}
 
 \begin{figure}[ht]
   \includegraphics[width=15cm]{figures/output/parsers.pdf}
-  \caption{Prestandaresultat från parsning av ParseLua.lua (@TODO data ändras)}
+  \caption{Prestandaresultat från parsning av ParseLua.lua.}
 \end{figure}
 
 Resultatet från tabell~\ref{tab:parsers} visar att examensarbetets
@@ -53,7 +53,7 @@ parser-implementation har den snabbaste implementation både när det kommer
 till lexikal analys och syntaktisk analys.
 
 \begin{table}[ht]
-  \caption{Resultat från prestanda analysen mellan parsers.}
+  \caption{Resultat från prestandaanalysen mellan parsers.}
   \begin{tabular}{l l l}
     Parser & Tid (ms) & Standardavvikelse \\
     \hline

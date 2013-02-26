@@ -46,6 +46,7 @@ vänta på nästa tecken.  På detta sätt kan lexern, som har en effektiv
 algoritm, avlägsna onödig information såsom mellanslag och kommentarer för att
 sedan ge uttryckets egentliga element vidare till parsern som nu enkelt vet om
 en teckensträng är en nyckelordsterminal eller ett tal \citep[s.  51]{sm09}.
+Ett lexikaliseringsexempel visas i figur~\ref{fig:lexing}.
 
 \begin{figure}[ht]
   \begin{alltt}
@@ -54,9 +55,10 @@ en teckensträng är en nyckelordsterminal eller ett tal \citep[s.  51]{sm09}.
   \boxkeyword{print} "\boxstring{foo}"\boxpunct{;}
 \boxkeyword{end}
   \end{alltt}
-  \caption{Ett lexikaliserings exempel på en if-sats skriven i Lua.
+  \caption{Ett lexikaliseringsexempel på en if-sats skriven i Lua.
     Blanksteg samt kommentarer ignoreras och tokentyperna är nyckelord, tal,
     specialsymbol och teckensträng.} \label{fig:yacc}
+  \label{fig:lexing}
 \end{figure}
 
 \subsection{Syntaktisk analys}
@@ -72,28 +74,29 @@ identifierats förväntas alla tokens överensstämma med regeldefinitionens
 terminaler och icke-terminaler. Visar det sig att en token inte överensstämmer
 skapas ett felmeddelande.
 
-Vid implementationen av en kompilator avbryts parsningen när ett fel skapats
-eftersom syntaxen inte är giltig. Vissa andra implementationer såsom
-\textit{``syntax-highlighters''} i texteditorer försöker hoppa över
+Vid implementationen av en kompilator avbryts parsningen när ett fel
+påträffats eftersom syntaxen inte är giltig. Vissa andra implementationer
+såsom \textit{``syntax highlighters''} i textredigerare försöker hoppa över
 produktionsregeln och fortsätta med nästa eftersom detta ger en bättre
 användarupplevelse.
 
-\subsection{Syntax representation}
+\subsection{Syntaxrepresentation}
 
 Allteftersom produktionsregler parsats i.o.m. en syntaktisk analys skapas en
 maskinförståelig representation av dess innehåll. Lättast är det att tänka sig
 denna representation som en trädstruktur trots att den inte nödvändigtvis
-behöver vara.
+behöver vara det.
 
 \begin{figure}[ht]
   \includegraphics[width=8cm]{figures/output/tree.pdf}
   \caption{En trädrepresentation av en if-sats skriven i Lua.}
+  \label{fig:syntaxtree}
 \end{figure}
 
-Varje nod i trädet representeras av en produktionsregel där löv-noderna är
-dess icke-terminaler. Terminaler såsom \textit{if}, och \textit{else}
-utelämnas ofta i en praktisk implementation eftersom de kan knytas som
-attribut till en nod \citep[s. 49]{sm09}.
+Varje nod i trädet representeras av en produktionsregel. Löv-noderna är
+terminaler (figur~\ref{fig:syntaxtree}). Terminaler såsom \textit{if}, och
+\textit{else} utelämnas ofta i en praktisk implementation eftersom de kan
+knytas som attribut till en nod \citep[s. 49]{sm09}.
 
 Representationen skapas i den syntaktiska analysatorn när en produktionsregel
 identifierats och kan sedan användas i senare skeden såsom i en semantisk
@@ -101,38 +104,38 @@ analysator eller kodoptimeringskomponent.
 
 Trädstrukturerna varierar beroende på syftet av parsern. Kompilatorer vill
 att de skall vara så nära maskinkod som möjligt medan andra verktyg såsom
-statiska kodanalysatorer vill att de ska vara i högre nivås representation
-\citep[s. 6]{pt10}.
+statiska kodanalysatorer vill att de ska vara på en högre nivå \citep[s.
+6]{pt10}.
 
-En vanlig representationsform på en högre nivå är abstrakt syntaxträd (AST).
-Dessa är verkligen uppbyggt enligt ett träd såsom det beskrivits hittills.
-Karaktärsdrag av ett AST är att det är kompakt, enkelt att förflytta sig
-genom och betydelsefullt. Exempelvis kan varje nod existera som ett objekt av
-en klass namngiven efter produktionsregeln.
+En vanlig representationsform på en högre nivå är ett abstrakt syntaxträd
+(AST).  Detta är verkligen uppbyggt såsom ett träd enligt vad beskrivits
+hittills. Karaktärsdrag av ett AST är att det är kompakt, enkelt att förflytta
+sig genom och betydelsefullt. Exempelvis kan varje nod existera som ett objekt
+i en klass namngiven efter produktionsregeln \citep[s 77]{pt10}.
 
 \subsection{Parsertyper}
 
 Beroende på grammatiken av ett språk krävs det olika algoritmer för att kunna
 parsa den. Den s.k. Early-algoritmen kan parsa alla typer av kontextfria
-grammatiker i $O(n^3)$ tid \citep[s.  67]{sm09}. De flesta parsers behöver
-dock inte en så generell grammatik utan kan parsas i $O(n)$ tid med hjälp av
-\textit{``uppifrån-och-ner''}-algoritmer eller
-\textit{``nerifrån-och-upp''}-algoritmer. Det existerar ytterligare
-algoritmer för olika delmängder av kontextfria grammatiker men de vanligaste
-bygger på någon av dessa \citep[s. 61]{aa06}.
+grammatiker i $O(n^3)$ tid, där n är inputlängd \citep[s. 67]{sm09}. De
+flesta parsers behöver dock inte en så generell grammatik utan kan parsas i
+$O(n)$ tid med hjälp av \textit{``uppifrån-och-ner''}-algoritmer eller
+\textit{``nerifrån-och-upp''}-algoritmer. Det existerar ytterligare algoritmer
+för olika delmängder av kontextfria grammatiker men de vanligaste bygger på
+någon av dessa \citep[s. 61]{aa06}.
 
 När man beskriver en parser nämner man ofta hur långt fram den kan se innan
 den gör ett beslut av vilken produktionsregel den skall följa, hur många s.k.
 \textit{``lookahead''}-tokens den har. Detta antal skriver man inom en
 parentes efter parsertypens namn. Exempelvis skulle den s.k. LL-parsern med 2
-lookahead-tokens skrivas LL(2) \citep[s. 69]{sm09}.
+\textit{``lookahead''}-tokens skrivas LL(2) \citep[s. 69]{sm09}.
 
 \subsubsection{LL-parser}
 
-LL-parsers härelder regler från vänster och använder sig av
+LL-parsers härleder regler från vänster och använder sig av
 \textit{``uppifrån-och-ner''}-algoritmen. Parsern klarar av en mindre delmängd
-av kontextfria grammatiker och man pratar om LL-grammatiker för att uttrycka
-den delmängd som LL-parsers kan parsa.
+av kontextfria grammatiker och man använder benämningen LL-grammatik för att
+uttrycka den delmängd som en LL-parser kan parsa.
 
 En LL-parser går att skriva för hand eftersom den i allmänhet följer en logisk
 tankegång. Den börjar från en rot-regel och arbetar sig sedan neråt
@@ -152,16 +155,14 @@ visualisera. Dessa parsers börjar med att läsa löv-reglerna, alltså de minst
 identifierbara reglerna och ansluter dem sedan till varandra fram till det att
 den nått en slutgiltig rot-regel \citep[s. 67]{sm09}.
 
-En steg för steg jämförelse mellan LR- och LL-parserns algoritmer hittas i
-figur~\ref{fig:ll-vs-lr} på sida \pageref{fig:ll-vs-lr}.
+En steg för steg jämförelse mellan LR- och LL-parserns algoritmer visas i
+figur~\ref{fig:ll-vs-lr}.
 
 \begin{figure}[ht]
   \begin{minipage}[t]{0.5\textwidth}
-    % @TODO
     \input{figures/tex/llparser}
   \end{minipage}%
   \begin{minipage}[t]{0.5\textwidth}
-    % @TODO
     \input{figures/tex/lrparser}
   \end{minipage}%
   \caption{Steg för steg parsning av ett matematiskt uttryck med en
@@ -172,27 +173,28 @@ figur~\ref{fig:ll-vs-lr} på sida \pageref{fig:ll-vs-lr}.
 
 \subsubsection{LALR-parser}
 
-LALR-parsern baserar sig på en LR(0)-parser struktur men med stöd för
-lookahead-tokens. Skillnaden mellan LR-parsers med stöd för lookahead-tokens
-och LALR-parsern är antalet tillstånd \textit{``push-down''}-automaten har.
-Eftersom LALR-parsern kräver färre tillstånd och dessutom kräver mindre minne
-kan den ses som en förenklad och mer effektiv version \citep[s. 266]{aa06}.
+LALR-parsern baserar sig på en LR(0)-parsers struktur men med stöd för
+\textit{``lookahead''}-tokens. Skillnaden mellan LR-parsers med stöd för
+\textit{``lookahead''}-tokens och LALR-parsern är antalet tillstånd
+\textit{``push-down''}-automaten har.  Eftersom LALR-parsern kräver färre
+tillstånd och dessutom kräver mindre minne kan den ses som en förenklad och
+mer effektiv version \citep[s. 266]{aa06}.
 
 \subsubsection{Rekursivt nedstigande parser}
 
 En annan typ av parser som använder sig av
 \textit{``uppifrån-och-ner''}-algoritmen är den rekursivt nedstigande parsern.
-Denna parsertyp klarar av parsa LL-grammatik och är därför vanlig för
+Denna parsertyp klarar av att parsa LL-grammatik och är därför vanlig för
 handskrivna parsers. Istället för att utnyttja en automat fungerar den genom
-att knyta varje icke-terminal i grammatik till en egen funktion som ansvarar
-för att identifiera dess grammatiska löv. För varje icke-terminal i sin egen
-regel kallar den rekursivt vidare på dess respektive funktioner fram till det
-att rot funktionen får hela syntaxträdet returnerat \citep[s. 24]{pt10}.
+att knyta varje icke-terminal i grammatiken till en egen funktion som ansvarar
+för att identifiera dess löv i grammatiken. För varje icke-terminal i sin egen
+regel anropar den rekursivt vidare dess funktioner fram till det att rot
+funktionen får hela syntaxträdet returnerat \citep[s. 24]{pt10}.
 
-Flödet av en rekursivt nedstigande parser hittas i
-figur~\ref{fig:recursivedescent} där varje nod symboliserar en funktion och
-röda pilar symboliserar dess anrop medan blåa pilar symboliserar dess
-returnering.
+Flödet av en rekursivt nedstigande parser visas i
+figur~\ref{fig:recursivedescent} där varje nod symboliserar en funktion.
+En röd pil symboliserar dess funktionsanrop medan en blå pil symboliserar
+funktionens returnering.
 
 \begin{figure}[ht]
   \includegraphics[width=\textwidth]{figures/output/recursivedescent.pdf}
@@ -204,11 +206,11 @@ returnering.
 
 \subsubsection{Vänsterrekursion}
 
-Ett vanligt problem grammatiker i en parser med \textit{``uppifrån-och-ner''}
+Ett vanligt problem med grammatiken i en parser med \textit{``uppifrån-och-ner''}
 algoritmen är vänsterrekursion. Detta innebär att produktionsregel använder
-sig själv som icke-terminal längst till vänster i sammansättningen enligt. När
-detta inträffar kommer implementationen fastna i en oändlig upprepning. För
-att implementera en LL-parser måste man därför eliminera vänsterrekursion.
+sig själv som icke-terminal längst till vänster i sammansättningen. När
+detta inträffar kommer implementationen att fastna i en oändlig upprepning.
+För att implementera en LL-parser måste man därför eliminera vänsterrekursion.
 
 Exempelvis är produktionsregeln för kalkylatorn i figur~\ref{fig:cfg} på sida
 \pageref{fig:cfg} vänsterrekursiv.
@@ -265,11 +267,11 @@ A^\prime &\rightarrow \alpha A^\prime\;|\;\epsilon
 \subsubsection{Vänsterfaktorering}
 
 Ytterligare ett problem \textit{``uppifrån-och-ner''}-algoritmen är
-produktionsregler var två villkor påminner om varandra i början av
+produktionsregler där två villkor påminner om varandra i början av
 definitionen.
 
-Exempelvis behöver en obestämd mängd lookahead-tokens för att identifiera
-det korrekta villkoret i följande produktionsregel:
+Exempelvis behövs en obestämd mängd \textit{``lookahead''}-tokens för att
+identifiera det korrekta villkoret i följande produktionsregel:
 
 \setlength{\grammarindent}{5em}
 \begin{grammar}
@@ -303,35 +305,37 @@ A^\prime &\rightarrow \beta_1\;|\;\beta_2
 
 \subsubsection{Backtracking}
 
-I vissa fall är det användbart att inte ha en begränsad mängd lookahead-tokens
-och då kan man använda sig av en metod som heter \textit{``backtracking''}
-förutsatt det handlar om rekursivt nedstigande parser.
+I vissa fall är det användbart att inte ha en begränsad mängd
+\textit{``lookahead''}-tokens och då kan man använda sig av en metod som heter
+\textit{``backtracking''} förutsatt det handlar om en rekursivt nedstigande
+parser.
 
-Implementationen av en backtracker görs genom att markera positionen var en
-mångtydighet uppstår och sedan välja ett regelalternativ. När alternativet
-bevisats vara korrekt eller inkorrekt återgår parsern till den markerade
-positionen. Om ett felmeddelande skapats försöker parsern med följande
-alternativ och repeterar detta fram till att en regel visar sig vara korrekt
-varefter den påbörjar den egentliga parsningen utan att markera positionen
-\citep[s. 57]{pt10}.
+Implementationen av en \textit{``backtracker''} görs genom att markera
+positionen var en mångtydighet uppstår och sedan välja ett regelalternativ.
+När alternativet bevisats vara korrekt eller inkorrekt återgår parsern till
+den markerade positionen. Om ett felmeddelande skapats försöker parsern med
+följande alternativ och repeterar detta fram till att en regel visar sig vara
+korrekt varefter den påbörjar den egentliga parsningen utan att markera
+positionen \citep[s. 57]{pt10}.
 
 För att uttrycka att en parser kan se en obegränsad mängd tokens framåt anger
-man antalet som k i formen LL(k).
+man antalet som k i LL(k).
 
 \subsubsection{Packrat parsning}
 
-En nackdel med den tidigare nämnda backtracking-metoden är att parsern alltid
-måste återgå till det tidigare tillståndet och därefter påbörja en andra
-parsning av regeln. Detta ökar den tidsmängd som krävs för att parsa ett
-inputvärde.
+En nackdel med den tidigare nämnda \textit{``backtracking''}-metoden är att
+parsern alltid måste återgå till det tidigare tillståndet och därefter påbörja
+en andra parsning av regeln. Detta ökar den tidsmängd som krävs för att parsa
+ett inputvärde.
 
 Packrat parsning är en annan typ av parser vars metod går att implementera för
-rekursivt nedstigande parser. Den fungerar likt backtracking-metoden men
-skiljer sig genom att memorera resultatet av parsningsträdet samt positionen
-var parsningen avslutades. När parsern återgår till det tidigare tillståndet
-granskar den om parsningen var framgångsrik. Om den visar sig vara, använder
-parsern sig av det redan memorerade parsningsträdet och hoppar vidare till
-positionen var parsningen avslutades.
+en rekursivt nedstigande parser. Den fungerar likt
+\textit{``backtracking''}-metoden men skiljer sig genom att memorera
+resultatet av parsningsträdet samt positionen var parsningen avslutades. När
+parsern återgår till det tidigare tillståndet granskar den om parsningen var
+framgångsrik. Om den visar sig vara, använder parsern sig av det redan
+memorerade parsningsträdet och hoppar vidare till positionen där parsningen
+avslutades.
 
 \subsection{Parser-generatorer}
 
@@ -340,7 +344,7 @@ Produktionsregler påminner mycket om varandra och repetitionen att
 implementera varje regel blir en långdragen uppgift med möjlighet för
 introduktion av fel vid varje steg. På grund av detta har det blivit populärt
 att använda en s.k. parser-generator som förser programmeraren med en färdig
-parser implementation utgående från en given grammatik \citep[s. 26]{pt10}.
+parserimplementation utgående från en given grammatik \citep[s. 26]{pt10}.
 
 Med hjälp av en parser-generator kan implementatören upprätthålla grammatiken
 av ett språk genom att skriva och modifiera en BNF-liknande syntax istället
@@ -356,23 +360,23 @@ samt Luas egna parser \citep{luaimp} har börjat från en genererad parser och
 sedan övergått till en handskriven rekursivt nedstigande parser för utökad
 funktionalitet.
 
-Parser-generatorer existerar för flera språk och för diverse grammatik- samt
+Parser-generatorer existerar för flera språk samt för diverse grammatik- och
 algoritmtyper. I detta kapitel kommer jag att presentera två
 parser-generatorer som är vanliga i unix-system.
 
 \subsubsection{Lex}
 
 Lex är en generator för reguljära grammatiker skapad av Mike Lesk och
-Eric Schmidt. Verktyget använder en egen grammatik syntax för att
+Eric Schmidt. Verktyget använder en egen grammatiksyntax för att
 definiera produktionsregler i ett språk och generera sedan en lexer i C eller
 Ratfor. För varje produktionsregel kan användaren definiera en åtgärd som
-kommer att exekveras när en regel identifierats. Vanligen är detta C kod för
-att returnera värdet till en parser så som Yacc eller Bison. Eftersom Lex
-genererar kod existerar funktionalitet för att inkludera valfri C kod som
-kopieras till resultat filen. Detta kan användas till att inkludera bibliotek
-eller definiera funktioner som produktionsreglerna använder \citep{lex}.
+kommer att exekveras när en regel identifierats. Vanligen är detta C-kod för
+att returnera värdet till en syntaktisk analysator. Eftersom Lex genererar kod
+existerar funktionalitet för att inkludera valfri C-kod som kopieras till
+resultat filen. Detta kan användas till att inkludera bibliotek eller
+definiera funktioner som produktionsreglerna använder \citep{lex}.
 
-I figur~\ref{fig:lex} hittas en enkel grammatik specifikation som läser input
+I figur~\ref{fig:lex} visas en enkel grammatikspecifikation som läser input
 och identifierar variabeldeklarationer av strängar eller heltal samt ignorerar
 blanksteg.
 
@@ -384,16 +388,16 @@ blanksteg.
   \label{fig:lex}
 \end{figure}
 
-En fritt tillgänglig version av Lex är Flex som distribueras av bl.a. GNU
-projektet. I allmänhet är Flex kompatibel med Lex och är därför ett populärt
-alternativ \citep[s. 279]{bd92}.
+En fritt tillgänglig version av Lex är Flex som distribueras av bl.a.
+GNU-projektet. I allmänhet är Flex kompatibel med Lex och är därför ett
+populärt alternativ \citep[s. 279]{bd92}.
 
 \subsubsection{Yacc}
 
 Eftersom de flesta programmeringsspråk använder sig av en kontextfri grammatik
 är inte Lex verktyget tillräkligt utan man behöver ytterligare en syntaktisk
-analysator. Yacc är en parser-generator för kontextfrigrammatik skapad av
-Stephen Johnson. Syntaxen för grammatik specifikationen liknar mycket Lex.
+analysator. Yacc är en parser-generator för kontextfri grammatik skapad av
+Stephen Johnson. Syntaxen för grammatikspecifikationen liknar mycket Lex.
 Användaren definierar produktionsregler samt dess åtgärder men har nu
 möjligheten att använda rekursion. Ytterligare bör man definiera en
 lexikaliseringsfunktion, exempelvis \textit{yylex()}, samt vilka tokentyper
@@ -401,13 +405,13 @@ som existerar. Integreringen måste ske både i den valfria lexern och i
 Yacc-specifikationen, t.ex. med en delad definitionsfil av tokens som lexern
 returnerar och den Yacc-genererade parsern kan identifiera. Ett
 pseudokod-exempel på ett språk som tillåter variabeldeklarationer av heltal
-och strängar hittas i figur~\ref{fig:yacc}. För att parsern skall fungera
+och strängar visas i figur~\ref{fig:yacc}. För att parsern skall fungera
 måste logiken för \textit{input} samt lexikaliseringen av \textit{VARIABLE},
 \textit{STRING}, \textit{INTEGER} och \textit{EQUAL_SIGN} definieras i lexer
 koden.
 
-GNU projektet har även skapat en copyleft-licenseriad version av Yacc som
-heter GNU bison. Bison är i allmänhet kompatibel med Yacc syntax och är därför
+GNU-projektet har även skapat en \textit{``copyleft''}-licenseriad version av Yacc som
+heter GNU bison. Bison är i allmänhet kompatibel med Yacc-syntax och är därför
 ett populärt alternativ \citep[s. 277]{bd92}.
 
 \begin{figure}[ht]
@@ -420,7 +424,7 @@ ett populärt alternativ \citep[s. 277]{bd92}.
 
 \subsubsection{Jison}
 
-Jison är en JavaScript skriven parser-generator för både reguljära grammatiker
+Jison är en JavaScript programmerad parser-generator för både reguljära grammatiker
 och kontextfria grammatiker. Verktyget använder samma koncept som Lex/Flex
 samt Yacc/Bison och därmed är grammatik-specifikationen samma. Skillnaden är
 att specifikationen kan innehålla grammatik för både lexern och den

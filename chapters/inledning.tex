@@ -3,11 +3,11 @@
 Det existerar ett flertal olika parser-arkitekturer i dagens kompilatorer.
 Vissa använder sig av maskingenererad kod medan andra implementerar
 komponenten manuellt. Beroende på komplexiteten av det kompilerade språkets
-syntax påverkas även komplexiteten av parser implementationen upp till att
+syntax påverkas även komplexiteten av parser-implementationen av att
 vissa implementationer väljer att inte vara fullständiga.
 
-Rapporten utgår från att läsaren har kunskap inom programmering i allmänhet
-samt en förståelse av JavaScript syntax.
+Denna examensarbetsrapport utgår från att läsaren har kunskap inom
+programmering i allmänhet samt en förståelse av JavaScript-syntax.
 
 \subsection{Målsättning}
 
@@ -16,28 +16,28 @@ Målet med detta examensarbete är att redogöra för hur ett programmeringsspr�
 språk svårare att parsa än andra? Vad är orsaken till att vissa kompilatorer
 implementerar parser-komponenten manuellt medan andra använder en
 maskingenererad komponent? Hur utförs implementationen av en parser i
-praktiken och hur komplicerat är det? Detta är frågor som examensarbetet ämnar
+praktiken och hur komplicerat är det? Dessa frågor ämnar examensarbetet
 besvara.
 
 \subsection{Utförande}
 
-Teoridelen av detta arbete redogör för hur programmeringsspråk är uppbyggt
+Teoridelen i detta arbete redogör för hur programmeringsspråk är uppbyggt
 samt hur de huvudsakliga parsning-arkitekturerna fungerar och används.
 
 Den praktiska delen använder denna teori för att implementera en handskriven
-Lua-parser i JavaScript. I kapitel 6 utförs en prestanda analys och parserns
+Lua-parser i JavaScript. I kapitel 6 beskrivs en prestandaanalys och parserns
 väsentliga flaskhalsar avlägsnas. Orsaken till att JavaScript valts som
 implementationsspråk är att i framtiden kunna använda parsern som ett
 analyseringsverktyg i en nätbaserad kodredigerare.
 
-För att upprätthålla en hög kvalitet på implementationen har diverse
-kvalitetssäkringar gjorts upp. Över 500 funktionstest har skapats med hjälp av
-kodgenerering och manuell verifiering. Testen baserar sig på Yueliang
-projektets testsvit. Med dessa test har ett flertal fel korrigerats och
-implementationen har i nuläget en kodtäckning på 100\%.
+För att upprätthålla en hög kvalitet på implementationen har ett antal
+kvalitetssäkringar uppgjorts. Över 500 funktionstest har skapats med hjälp av
+kodgenerering och manuell verifiering. Testen baserar sig på
+Yueliang-projektets testsvit. Med dessa test har ett flertal fel korrigerats
+och implementationen har i nuläget en kodtäckning på 100\%.
 
 Funktionstest, mätning av kodtäckning, test för funktionskomplexitet samt en
-statisk kodanlys körs innan varje uppdatering för att verifiera dess
+statisk kodanlys körs före varje uppdatering för att verifiera dess
 kvalitet. Ytterligare används Travis kontinuerlig integrering för att
 verifiera att utomstående uppdateringar håller standarden.
 
@@ -45,8 +45,8 @@ verifiera att utomstående uppdateringar håller standarden.
 
 Teorin om formella språk innehåller enbart det som krävs för att förstå senare
 kapitel. Ytterligare presenteras enbart tekniker som är anses vara aktuella
-för parser-implementationen eller Lua språket. Till detta hör inte senare
-kompilatorskeden såsom semantisk analys eller kodgenerering.
+för parser-implementationen eller Lua-språket. Till detta examensarbete hör
+inte senare kompilatorskeden såsom semantisk analys eller kodgenerering.
 
 % vim: set tw=78:ts=2:sw=2:et:fdm=marker:wrap:wm=78:ft=tex
 % vim: spell spelllang=sv

@@ -26,7 +26,7 @@ produktionsregler som var för sig definierar en tillåten sammansättning av
 teckensträngar som kallas terminaler eller icke-terminaler. Terminaler är
 teckensträngar som inte refererar vidare till andra teckensträngar medan
 icke-terminaler är sekvenser av terminaler som bildar giltiga
-produktionsregler, eller språkliga meningar. Ytterligare existerar vissa
+produktionsregler eller språkliga meningar. Ytterligare existerar vissa
 symboler för att uttrycka vilken typ av sammansättningsfunktion är tillåten.
 % @TODO liknelsen med meningar är något oklart.
 
@@ -40,7 +40,7 @@ skrivs längst till vänster följt av symbolerna $::=$ samt själva regeln.
 Terminalerna skrivs med fet stil och sammansättningarna skrivs med normal
 stil samt regelns specifika syntax. De vanliga funktionerna är alternering, som
 skrivs med ett lodrätt streck ($|$) mellan alternativen, repetition som skrivs
-med en klammerparentes ($\{ \ldots \}$) omkring uttrycket och slutligen
+med en vågparentes ($\{ \ldots \}$) omkring uttrycket och slutligen
 valfrihet som skrivs med en hakparentes ($[ \ldots ]$) runt uttrycket
 \citep[s. 28]{gd08}. Dessa är de viktigaste elementen i BNF men det existerar
 även övriga funktioner för bl.a. bekvämlighet och läsbarhet.
@@ -131,12 +131,12 @@ giltiga uttryck.
 Tillåter man ytterligare rekursion i en giltig regel är grammatiken inte
 längre reguljär, utan klassas som en kontextfri grammatik och måste läsas av
 en s.k. \textit{``push-down''} automat ofta kallad parser. Skillnaden från en
-ändlig automat är att \textit{``push-down''} automaten har en stack för att
-hjälpa i valet av tillstånd \citep[s.  100]{sm09}. Rekursion innebär att en
-produktionsregel kan innehålla sig själv som en icke-terminal i
-regeldefinitionen. Denna funktionalitet är användbar när ett uttryck skall
-vara flexibelt, exempelvis i en kalkylator var ett uttryck kan bestå av ett
-tal, en matematisk operation samt en oändlig uppsättning av dessa.
+ändlig automat är att \textit{``push-down''} automaten har en stack val av
+tillstånd \citep[s.  100]{sm09}. Rekursion innebär att en produktionsregel kan
+innehålla sig själv som en icke-terminal i regeldefinitionen. Denna
+funktionalitet är användbar när ett uttryck skall vara flexibelt, exempelvis i
+en kalkylator var ett uttryck kan bestå av ett tal, en matematisk operation
+samt en oändlig uppsättning av dessa.
 
 I figur~\ref{fig:cfg} har vi ett exempel på en kalkylator som kan uttrycka
 alla dessa funktionaliteter genom att rekursivt hänvisa till sig själv och
