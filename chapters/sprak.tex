@@ -49,11 +49,13 @@ valfrihet som skrivs med en hakparentes ($[ \ldots ]$) runt uttrycket
 När man skriver grammatiken till ett språk beaktar man alltid vilka
 typer av regler man vill tillåta i specifikationen. Utgående från valet man
 gör kommer grammatiken och därmed också språket tillhöra en av fyra språkliga
-delmängder som sträcker sig från enkel till komplicerad \citep[s. 19]{gd08}.
+delmängder som sträcker sig från enkel till komplicerad \citep[s. 19]{gd08}
+enligt figur~\ref{fig:chomskyhierarki}.
 
 \begin{figure}[ht]
   \includegraphics[width=5cm]{figures/output/chomsky.pdf}
   \caption{De fyra nivåerna i Chomskyhierarkin}
+  \label{fig:chomskyhierarki}
 \end{figure}
 
 Denna indelning kallas för Chomskyhierarkin och används bl.a. för att ta reda
@@ -136,9 +138,9 @@ funktionalitet är användbar när ett uttryck skall vara flexibelt, exempelvis 
 en kalkylator var ett uttryck kan bestå av ett tal, en matematisk operation
 samt en oändlig uppsättning av dessa.
 
-I figur~\ref{fig:cfg} har vi ett exempel på en kalkylator som kan uttrycka
-alla dessa funktionaliteter genom att rekursivt hänvisa till sig själv och
-därmed tillåta uttryck så som \mbox{\textit{1 + (2 / 7) * -3}}.
+Figur~\ref{fig:cfg} visar ett exempel på en kalkylator som kan uttrycka alla
+dessa funktionaliteter genom att rekursivt hänvisa till sig själv och därmed
+tillåta uttryck så som \mbox{\textit{1 + (2 / 7) * -3}}.
 
 \begin{figure}[ht]
   \begin{grammar}
