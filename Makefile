@@ -72,6 +72,9 @@ kill: $(DOCUMENT).pdf
 
 ## Misc ---------------------------------------------------------------------
 
+spell:
+	@./check.sh
+
 clean:
 	@rm -f *.aux *.bbl *.blg *.lof *.lot *.log *.toc *.lol *.pdf *.out
 	@$(MAKE) -s -C figures clean
