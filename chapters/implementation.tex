@@ -342,9 +342,24 @@ Operationsprioritet innebär den logik som bestämmer att multiplikation
 prioriteras högre än addition och därmed grupperar uttryck såsom \textit{5 + 5
 * 2} till \textit{5 + (5 * 2)} istället för \textit{(5 + 5) * 2}. Lua-manualen
 nämner att grammatiken inte beskriver operationsprioritet \citep{luaref} men
-en lista av på rioriteterna kan hittas i källkoden av Luas egna parser
-\citep{lparse}.
-% @TODO tabell
+en lista av på prioriteterna kan hittas i källkoden av Luas egna parser
+\citep{lparse} samt i tabell~\ref{tab:precedence}.
+
+\begin{table}[ht]
+  \caption{Tabell över Luas operatorprioritet}
+  \begin{tabular}{l l}
+    Operator & Prioritet \\
+    \hline
+    \verb|^| & 10 \\
+    \verb|* / %| & 7 \\
+    \verb|+ -| & 6 \\
+    \verb|..| & 5 \\
+    \verb|== < <= > >= ~=| & 3 \\
+    \verb|and| & 2 \\
+    \verb|or| & 1
+  \end{tabular}
+  \label{tab:precedence}
+\end{table}
 
 En implementationsmöjlighet som Lua själv använder är att spjälka ut
 funktion som parsar uttryck till en ny funktionen som tar emot
