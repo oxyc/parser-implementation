@@ -388,8 +388,10 @@ grupperingsexempel visas i figur~\ref{fig:expressiontree}.
 
 \paragraph{Ett steg för steg exempel av parsningen för uttrycket 1 + 2 - 3 * 4
 + 5.}
+\hfill
 
-% @TODO beskriv
+Punkterna 1 till 9 beskriver stegen för det ursprungliga funktionsanropet medan
+en underlista representerar stegen i ett rekursivt funktionsanrop.
 
 \begin{enumerate}\itemsep1pt \parskip0pt \parsep0pt
   \item Vänstra ledet har värdet 1 och operatorn är + med en prioritet på 1.
@@ -423,7 +425,7 @@ grupperingsexempel visas i figur~\ref{fig:expressiontree}.
       \item Vänstra ledet är 5 och eftersom ingen operator hittas returneras
         värdet.
     \end{enumerate}
-  \item Högra ledet är nu 5 och grupperingen blir (((1 + 2) - (3 * 4)) + 5).
+  \item Högra ledet är nu 5 och grupperingen blir (((1 + 2) - (3 * 4)) + (5)).
   \item Eftersom ingen operator kan hittas returneras det slutgiltiga
     uttrycket.
 \end{enumerate}
