@@ -1,5 +1,5 @@
 reset
-set terminal pdf color font "0,10" size 5,5
+set terminal pdf color font "0,15" size 5,4
 set output 'output/commits.pdf'
 set xlabel 'Revision'
 set ylabel 'ms'
@@ -13,7 +13,7 @@ set xtics nomirror rotate by -45
 set xtics textcolor rgb '#6a6a6a'
 set ytics textcolor rgb '#6a6a6a'
 set key autotitle columnhead
-plot [][2.7:7.1] 'data/commits.dat' using 2:xticlabel(1)
+plot [][0:7.1] 'data/commits.dat' using 2:xticlabel(1)
 #plot [][2.9:3.5] 'data/commits.dat' using 2:xticlabel(1) index 0, \
 #  '' using 2 index 1
 # vim: set ft=gnuplot

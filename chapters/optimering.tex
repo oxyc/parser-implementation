@@ -117,19 +117,15 @@ Detta är ett enkelt problem att lösa eftersom avoptimeringen inte sker för
 \subsubsection{Teckenkoder istället för reguljära uttryck}
 
 Genom att analysera resultat i bilaga 7 som fås från provtagningsverktyget i
-V8 framgår det att 17.6\% (@TODO data uppdateras ännu) av en hel exekvering
-går åt till reguljära uttryck som används för att identifiera blanksteg och
-giltiga identifierare.
+V8 framgår det att 53.5\% av en hel exekvering går åt till reguljära uttryck
+som används för att identifiera blanksteg och giltiga identifierare.
 
-Det första som kan göras är att omvandla dessa reguljära uttryck till vanliga
-funktioner som granskar tecken. I provtagningsresultatet framgår det också att
-\textit{readToken()} som är lexer-funktionen ansvarig för att identifiera
-tokens upptar 30\% (@TODO data uppdateras ännu)  av hela parsningsprocessen.
-Eftersom detta är en väsentlig del av exekveringstiden är det värt att
-optimera alla teckenjämförelser till att istället arbeta med teckenkoder.
-Detta gör att JavaScript-motorn kan använda sig av binära operationer för att
-utföra en jämförelse. Denna metod visar sig ha en betydande prestandaskillnad
-i äldre versioner av V8 samt i övriga webbläsare \citep{charcodeat}.
+Tidigare prestandamätningar \citep{charcodeat} visar ytterligare att
+jämförelser på teckenkoder istället för teckensträngar kan vara mer än dubbelt
+snabbare. Orsaken för denna prestandaskillnad är att JavaScript-motorn
+utnyttjar binära operationer när den jämför teckenkoder. På grund av denna
+prestandaskillnad ersätts reguljära uttryck med switch- och if-satser som
+jämför teckenkoder.
 
 \subsubsection{Optimering av sträng-funktioner}
 
@@ -137,7 +133,7 @@ Efter att de tidigare optimeringarna genomförts betonas nu 2 huvudsakliga
 funktioner i provtagningsanalysen i bilaga 8. Dessa funktioner, dvs.
 \textit{StringAddStub} som är en maskinkodsmetod för att sammanfoga strängar
 och \textit{CompareICStub} som är en maskinkodsmetod för att jämföra strängar,
-upptar 8.3\% respektive 7.9\% av parsningsprocessens exekveringstid.
+upptar 20\% av parsningsprocessens exekveringstid.
 
 \textit{StringAddStub} orsakas av att lexern sammanfogar token-värden för
 kommentarer, tal och identifierare genom att iterera över varje tecken så
@@ -185,18 +181,27 @@ gjorts valideras ännu att funktionen är tillräkligt liten för
 
 \subsection{Resultat}
 
-(@TODO data uppdateras ännu)
+Efter optimeringarna i detta kapitel har de huvudsakliga flaskhalsarna
+avlägsnats från parsern. En överblick av exekveringstiden för de nuvarande
+funktionerna visas i figur~\ref{fig:funcdist}. Funktionerna
+\textit{readToken()} och \textit{scanIdentifierOrKeyword()} som kräver mest
+exekveringstid är redan optimerade och kan inte förbättras.
 
 \begin{figure}[ht]
   \includegraphics[width=13cm]{figures/output/functions.pdf}
   \caption{Slutgiltig översikt av exekveringstiden för parser-implementations
     funktioner.}
+  \label{fig:funcdist}
 \end{figure}
 
+En översikt av förbättringsskillnaderna från kapitlets prestandaoptimeringar
+visas i figur~\ref{fig:perf-overview}.
+
 \begin{figure}[ht]
-  \includegraphics[width=15cm]{figures/output/commits.pdf}
+  \includegraphics[width=13cm]{figures/output/commits.pdf}
   \caption{Översikt av moment i.o.m. parser-implementationens
     prestandaoptimering.}
+  \label{fig:perf-overview}
 \end{figure}
 
 % vim: set tw=78:ts=2:sw=2:et:fdm=marker:wrap:wm=78:ft=tex

@@ -10,6 +10,6 @@ set xtics nomirror rotate by -25
 set xtics textcolor rgb '#6a6a6a'
 set ytics textcolor rgb '#6a6a6a'
 unset key
-plot[][0:205] 'data/parsers.dat' using 3:xticlabel(2) with boxes ls 1 notitle, \
+plot[][0:80] 'data/parsers.dat' using 3:xticlabel(2) with boxes ls 1 notitle, \
   'data/parsers.dat' using 1:($3+6):3 with labels
 # vim: set ft=gnuplot
