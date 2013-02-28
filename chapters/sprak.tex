@@ -86,28 +86,27 @@ programmeringsspråk används ofta en reguljär grammatik för att identifiera
 s.k. lexikala element och går att läsa med en ändlig automat \citep[s.
 100]{sm09}.
 
-% @TODO polaritet av tal?
-För att beskriva alla variationer av ett tal i en kalkylator kan man
+För att beskriva alla variationer av ett naturligt tal i en kalkylator kan man
 använda sig av EBNF grammatiken i figur~\ref{fig:reg}. Ett tal definieras som
-alterneringen av ett heltal och ett reellt tal samt dess polaritet. Ett heltal
-måste bestå av minst en siffra medan ett reellt tal kan bestå av antingen ett
-heltal samt en exponent eller ett decimaltal och en valfri exponent. Detta
-innebär att uttrycken \textit{0.14E-2} och \textit{3} är giltiga medan
-uttrycket \textit{222e} inte är giltigt eftersom en exponent måste avslutas
-med ett heltal. Dessutom måste man tänka på att ett giltigt decimaltal i en
-riktig kalkylator inte nödvändigtvis behöver börja med en siffra utan kan
-börja med en punkt, dock måste det antingen börja med en siffra eller avslutas
-med en siffra eftersom ett uttryck enbart innehållande en punkt inte kan
-räknas som giltigt. Alla dessa regler kan bli komplicerade att hålla reda på
-och därför underlättar det att arbeta med BNF notationer för att inte mista
-giltiga uttryck.
+alterneringen av ett heltal och ett reellt tal. Ett heltal måste bestå av
+minst en siffra medan ett reellt tal kan bestå av antingen ett heltal samt en
+exponent eller ett decimaltal och en valfri exponent. Detta innebär att
+uttrycken \textit{0.14E-2} och \textit{3} är giltiga medan uttrycket
+\textit{222e} inte är giltigt eftersom en exponent måste avslutas med ett
+heltal. Dessutom måste man tänka på att ett giltigt decimaltal i en riktig
+kalkylator inte nödvändigtvis behöver börja med en siffra utan kan börja med
+en punkt, dock måste det antingen börja med en siffra eller avslutas med en
+siffra eftersom ett uttryck enbart innehållande en punkt inte kan räknas som
+giltigt. Alla dessa regler kan bli komplicerade att hålla reda på och därför
+underlättar det att arbeta med BNF notationer för att inte mista giltiga
+uttryck.
 
 \begin{figure}[ht]
   \begin{grammar}
     \singlespace\small%
     \fontfamily{lmr}\selectfont
 
-    <tal> ::= ["+" | "-"] (<heltal> | <reellt tal>)
+    <tal> ::= ["-"] (<heltal> | <reellt tal>)
 
     <heltal> ::= <siffra> \{<siffra>\}
 
