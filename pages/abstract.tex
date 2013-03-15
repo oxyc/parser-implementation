@@ -1,13 +1,46 @@
 \begin{abstract}{swedish}
-  a  a \\
+  Avsikten med detta examensarbete är att redogöra för hur parsningen av ett
+  programmeringsspråk fungerar samt att undersöka varför vissa kompilatorer
+  implementerar en handskriven parser medan andra använder en maskingenererad
+  parser.
+  Examensarbetet består av en teoretisk grund samt en praktisk implementation av
+  en handskriven Lua-parser. Den teoretiska delen beskriver hur
+  programmeringsspråk är uppbyggda samt ger en överblick av hur en parser
+  implementeras. Teknikerna som tas upp fokuserar huvudsakligen på handskrivna
+  parsers. Den praktiska implementationen är programmerad i JavaScript för att
+  kunna användas som ett analyseringsverktyg i en nätbaserad kodredigerare.
+  Problemen som påträffas under implementationen behandlas med hjälp av tekniker
+  presenterade i teorin.  Slutligen genomgår parser-implementationen en
+  prestandaoptimering för JavaScript-motorn V8. Resultatet jämförs med en
+  maskingenererad parser samt med en handskriven parser implementerad i Lua.
+  Slutsatsen är att handskrivna parsers kan uppnå högre prestanda samt ökad
+  flexibilitet men kräver avsevärt mera tid att implementera än en
+  maskingenererad parser.
+  \\
+  \\
 \end{abstract}
 
 \begin{abstract}{english}
-  a  a \\
-\end{abstract}
-
-\begin{abstract}{finnish}
-  Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas molestie, nisi sed consectetur tincidunt, ante libero euismod nulla, eget commodo ligula purus eu nibh. Ut enim risus, congue sed viverra ut, tempor vel velit. Quisque consectetur tincidunt scelerisque. Donec nec mollis leo. Donec laoreet purus a massa ultrices egestas. Ut quis neque nisi. In hac habitasse platea dictumst. Suspendisse suscipit, ante eget venenatis molestie, elit nulla aliquam ligula, sit amet consectetur tortor magna eu ipsum. Pellentesque tempor tincidunt arcu, eget ultrices lorem commodo a.
+  The purpose of this thesis is to describe the process of parsing a
+  programming language and investigate why some compilers implement their
+  own handwritten parser while others use a machine generated parser.
+  The thesis consists of a theoretical foundation and a practical
+  implementation of a handwritten Lua parser.  The theoretical part gives an
+  overview of how programming languages are built and how a parser is
+  implemented.
+  The techniques presented focus primarily on handwritten parsers.
+  The practical parser implementation is written in JavaScript so that it can
+  be used as an analysis tool within online code editors.
+  The problems encountered during the implementation process are solved with
+  the help of techniques presented in the theoretical part. At the end the
+  parser undergoes a performance optimization for the V8 JavaScript engine.
+  The achieved results are compared to a machine generated parser as well as
+  to a handwritten parser implemented in Lua. The conclusion is that a
+  handwritten parser can achieve higher performance and an increased
+  flexibility but is significantly more time consuming to implement than a
+  machine generated parser.
+  \\
+  \\
 \end{abstract}
 
 % vim: set tw=78:ts=2:sw=2:et:fdm=marker:wrap:wm=78:ft=tex
