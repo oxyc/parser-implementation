@@ -41,7 +41,7 @@ skapas subtraheras radens startposition från den nuvarande input-positionen
 och bildar därmed kolumnen.
 
 Kompilatorer kan ignorera kommentarer eftersom de inte innehåller semantiska
-värden men eftersom målet med denna implementation är användningen för
+värden men eftersom målet med denna implementation är användning för
 kodanalys sparas även kommentarer. Detta görs genom att söka efter
 avgränsarsymbolen (\verb+--+) och lagra dess information i en separat tabell
 som slutligen anknyts till det returnerade syntaxträdet.
@@ -362,7 +362,7 @@ en lista av på prioriteterna kan hittas i källkoden av Luas egna parser
 \end{table}
 
 En implementationsmöjlighet som Lua själv använder är att spjälka ut
-funktion som parsar uttryck till en ny funktionen som tar emot
+funktionen som parsar uttryck till en ny funktion som tar emot
 operatorprioriteten som ett argument med den lägsta prioriteten som
 ursprungsläge. Funktionen spjälker sedan uttrycket i ett vänsterled, ett
 högerled och operatorn mellan dessa. Om operatorns prioritet är högre än

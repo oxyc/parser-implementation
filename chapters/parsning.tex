@@ -197,7 +197,7 @@ En röd pil symboliserar dess funktionsanrop medan en blå pil symboliserar
 funktionens returnering.
 
 \begin{figure}[ht]
-  \includegraphics[width=\textwidth]{figures/output/recursivedescent.pdf}
+  \includegraphics[width=12cm]{figures/output/recursivedescent.pdf}
   \caption{Flöde av en rekursivt nedstigande parser steg för steg.}
   \label{fig:recursivedescent}
 \end{figure}
@@ -373,7 +373,7 @@ Ratfor. För varje produktionsregel kan användaren definiera en åtgärd som
 kommer att exekveras när en regel identifierats. Vanligen är detta C-kod för
 att returnera värdet till en syntaktisk analysator. Eftersom Lex genererar kod
 existerar funktionalitet för att inkludera valfri C-kod som kopieras till
-resultat filen. Detta kan användas till att inkludera bibliotek eller
+resultatfilen. Detta kan användas till att inkludera bibliotek eller
 definiera funktioner som produktionsreglerna använder \citep{lex}.
 
 I figur~\ref{fig:lex} visas en enkel grammatikspecifikation som läser input
@@ -389,7 +389,7 @@ blanksteg.
 \end{figure}
 
 En fritt tillgänglig version av Lex är Flex som distribueras av bl.a.
-GNU-projektet. I allmänhet är Flex kompatibel med Lex och är därför ett
+GNU-projektet. I allmänhet är Flex-kompatibel med Lex och är därför ett
 populärt alternativ \citep[s. 279]{bd92}.
 
 \subsubsection{Yacc}
@@ -398,7 +398,7 @@ Eftersom de flesta programmeringsspråk använder sig av en kontextfri grammatik
 är inte Lex verktyget tillräkligt utan man behöver ytterligare en syntaktisk
 analysator. Yacc är en parser-generator för kontextfri grammatik skapad av
 Stephen Johnson. Syntaxen för grammatikspecifikationen liknar mycket Lex.
-Användaren definierar produktionsregler samt dess åtgärder men har nu
+Användaren definierar produktionsregler samt deras åtgärder men har nu
 möjligheten att använda rekursion. Ytterligare bör man definiera en
 lexikaliseringsfunktion, exempelvis \textit{yylex()}, samt vilka tokentyper
 som existerar. Integreringen måste ske både i den valfria lexern och i
@@ -424,7 +424,7 @@ ett populärt alternativ \citep[s. 277]{bd92}.
 
 \subsubsection{Jison}
 
-Jison är en JavaScript programmerad parser-generator för både reguljära grammatiker
+Jison är en JavaScript-programmerad parser-generator för både reguljära grammatiker
 och kontextfria grammatiker. Verktyget använder samma koncept som Lex/Flex
 samt Yacc/Bison och därmed är grammatik-specifikationen samma. Skillnaden är
 att specifikationen kan innehålla grammatik för både lexern och den

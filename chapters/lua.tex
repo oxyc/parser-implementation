@@ -17,7 +17,7 @@ Warcraft \citep{lua}.
 \subsection{Syntax och uppbyggnad}
 
 Trots att ett av Luas mål är dess enkelhet har språket en stor mängd
-funktionalitet som fås av dess flexibilitet och val av datastruktur.
+funktionalitet som fås p.g.a. dess flexibilitet och val av datastruktur.
 
 \subsubsection{Datatyper}
 
@@ -96,7 +96,7 @@ repeat
 until i < 10
 
 local days = {"Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"}
-for day in ipairs(days) do
+for i,day in ipairs(days) do
   print(day)
 end
 \end{lstlisting}
@@ -170,6 +170,7 @@ klass-lik implementation i Lua.
 
 \begin{figure}[ht]
   \begin{lstlisting}[language=Lua]
+Person = {}
 function Person:new(name)
   o = { name = name }
   setmetatable(o, self)
@@ -182,7 +183,7 @@ function Person:greet(name)
   print("My name is " .. self.name)
 end
 
-carl = Person.new("Carl")
+carl = Person:new("Carl")
 carl:greet("Roger");
   \end{lstlisting}
   \caption{En arv-implementation i Lua med hjälp av metatabeller.}
@@ -192,7 +193,7 @@ carl:greet("Roger");
 \subsection{Grammatik}
 
 Luas grammatik existerar i en EBNF-notation som inkluderats i
-ursprunglig form i bilaga 1.
+ursprunglig form i bilaga~1.
 
 I version 3.0 övergick Lua från en genererad parser till en handskriven
 rekursivt nedstigande parser \citep{luaimp}. På grund av detta gjordes det
