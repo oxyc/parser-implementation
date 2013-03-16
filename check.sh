@@ -11,5 +11,5 @@ IFS="|"
 ack -a -G '\.tex$' "${words[*]}"
 IFS=" "
 
-echo "Figure references"
+echo -e "\nFigure references"
 ack -a -G '\.tex$' 'fig:' | sed -e 's/.*fig:\([^}]*\)}.*/\1/' | sort | uniq -c

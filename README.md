@@ -2,7 +2,7 @@
 
 The theoretical part of my bachelors thesis, implementing a Lua parser in JavaScript.
 
-You can find the actual parser on [Github][parser-repo]. **Haven't even started on it yet**.
+You can find the actual parser on [Github][parser-repo].
 
 ## Getting started
 
