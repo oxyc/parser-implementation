@@ -4,7 +4,7 @@ declare -a words=(
 'prestanda-analys' 'lua språket' 'syntax-highlighter' ' editor'
 'hittas i figur' ' lookahead' ' backtracker' ' backtracking'
 'gnu projektet' 'array' 'prestanda analys' 'kontextfrigrammatik'
-'syntax analys' 'syntastisk'
+'syntax analys' 'syntastisk' '\-\-'
 )
 
 IFS="|"

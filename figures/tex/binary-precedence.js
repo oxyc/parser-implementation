@@ -9,8 +9,8 @@ function parseSubExpression(minPrecedence = 0) {
       var right = parseSubExpression(precedence);
       expression = binaryExpression(operator, expression, right);
     } else {
-      break
+      break;
     }
   }
-  return expression
+  return expression;
 }

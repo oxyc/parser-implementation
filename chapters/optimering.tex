@@ -56,15 +56,15 @@ Nedan följer en lista på de kommandoradsflaggor som används i detta kapitel
 \citep{v8profiler}.
 
 \begin{description}
-  \item[--prof] \hfill \\
+  \item[-{}-prof] \hfill \\
     Skapar en v8.log fil bestående av provtagning från JavaScript-stacken
     samt C++-stacken. Med hjälp av verktyget tick-processor som följer med V8
     kan användaren skapa en översikt av denna information. Översikten återger
     hur stor andel av den totala exekveringen som utgörs av varje funktion.
-  \item[--trace_bailout] \hfill \\
+  \item[-{}-trace_bailout] \hfill \\
     Anger orsaken till varför en funktion avoptimerats med en
     \textit{``bailout''}.
-  \item[--trace_inlining] \hfill \\
+  \item[-{}-trace_inlining] \hfill \\
     Registrerar varje gång en Crankshaft försöker omkompilera en funktion med
     hjälp av en teknik som kallas \textit{``function inlining''}. Denna
     optimeringsteknik innebär att kompilatorn ersätter ett funktionsanrop med
@@ -88,7 +88,7 @@ V8 är det klokt att undvika avoptimeringen eftersom den kostar en del
 prestanda och kommer att återupprepas vid varje exekvering.
 
 Genom att analysera resultatet från en parsning med kommandoradsflaggan
-\textit{--trace_bailout} i bilaga 6 kan två
+\mbox{\textit{-{}-trace_bailout}} i bilaga 6 kan två
 \textit{``bailout''}-avoptimeringar utläsas.  Funktionerna som orsakat dessa
 är \textit{isUnary()} samt \textit{parsePrimaryExpression()} som bägge
 innehåller en ooptimerbar switch-sats. \mbox{Node.js} v0.8.16 har inte

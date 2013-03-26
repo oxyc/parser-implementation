@@ -7,6 +7,6 @@ while (true) {
     var right = parseSubExpression(precedence);
     expression = binaryExpression(operator, expression, right);
   } else {
-    break
+    break;
   }
 }
