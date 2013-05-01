@@ -1,7 +1,7 @@
 \section{Prestandaoptimering}
 
-Eftersom JavaScript är ett tolkat språk som evaluerar kod vid exekvering bör
-tolkade språk fokusera mer tid på prestandaoptimering än kompilerade språk. Dessutom är
+Tolkade språk såsom JavaScript bör fokusera mer tid på prestandaoptimering än
+kompilerade språk, eftersom de evaluerar programkod vid exekvering. Dessutom är
 JavaScript ett språk som huvudsakligen körs i webbläsare med varierande
 prestanda. Mindre applikationer med ett fåtal funktionsanrop behöver vanligen
 inte prioritera prestandaoptimering eftersom webbläsarens JavaScript-motor är
@@ -65,7 +65,7 @@ Nedan följer en lista på de kommandoradsflaggor som används i detta kapitel
     Anger orsaken till varför en funktion avoptimerats med en
     \textit{``bailout''}.
   \item[-{}-trace_inlining] \hfill \\
-    Registrerar varje gång en Crankshaft försöker omkompilera en funktion med
+    Registrerar varje gång Crankshaft försöker omkompilera en funktion med
     hjälp av en teknik som kallas \textit{``function inlining''}. Denna
     optimeringsteknik innebär att kompilatorn ersätter ett funktionsanrop med
     själva funktionsinnehållet och därmed sparar kostnaden av själva andropet
