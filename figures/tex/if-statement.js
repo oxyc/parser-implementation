@@ -19,6 +19,7 @@ function parseIfStatement() {
   expect('end');
 
   return {
+    type: 'IfStatement',
     clauses: clauses
   };
 }
