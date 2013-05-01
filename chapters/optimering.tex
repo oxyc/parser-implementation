@@ -7,11 +7,12 @@ prestanda. Mindre applikationer med ett fåtal funktionsanrop behöver vanligen
 inte prioritera prestandaoptimering eftersom webbläsarens JavaScript-motor är
 tillräkligt effektiv för att inte påverka användarupplevelsen. Målet med detta
 examensarbete handlar dock om att implementera en parser som kan användas i
-nätbaserade kodredigerare, exempelvis som en \textit{``syntax highlighter''}.
-Eftersom en \textit{``syntax highlighter''} behöver uppdateras vid varje
-kodförändring kan antalet funktionsanrop snabbt stiga och påverka
-användarupplevelsen. När användaren gör en uppdatering förväntas en omedelbar
-respons och därmed måste en parser ämnad för webbläsare uppfylla detta krav.
+nätbaserade programkodsredigerare, exempelvis som en \textit{``syntax
+highlighter''}. Eftersom en \textit{``syntax highlighter''} behöver
+uppdateras vid varje programkodsförändring kan antalet funktionsanrop snabbt
+stiga och påverka användarupplevelsen. När användaren gör en uppdatering
+förväntas en omedelbar respons och därmed måste en parser ämnad för webbläsare
+uppfylla detta krav.
 
 Insamligen av data utgörs av att parsa ett exempelprogram vid specifika
 revisioner av implementation. Utgående från resultatet uppdateras
@@ -25,26 +26,26 @@ källkod som skapats av Google ämnad för deras webbläsare Google Chrome.
 
 V8 består av en optimeringskompilator kallad Crankshft. Syftet med denna
 kompontent är att identifiera och optimera enbart de funktioner som är
-väsentliga för exekveringen av JavaScript-kod. Processen att optimera kod i en
-tolk är tidskrävande och därmed bör optimeringen enbart fokusera på funktioner
-som har en inverkan på exekveringstiden.
+väsentliga för exekveringen av JavaScript-kod. Processen att optimera
+programkod i en tolk är tidskrävande och därmed bör optimeringen enbart
+fokusera på funktioner som har en inverkan på exekveringstiden.
 
 Processen för Crankshaft utgörs av fyra steg där det första innebär att
-baskompilatorn kompilerar koden som normalt. Efter detta börjar en s.k.
+baskompilatorn kompilerar programkoden som normalt. Efter detta börjar en s.k.
 \textit{``runtime-profiler''} övervaka körningen av programmet för att
 identifiera de väsentliga funktionerna. När en funktion anses vara väsentlig
 för exekveringen börjar en s.k. girig omkompilering.
 
-En girig kompilering innebär att kompilatorn inte bryr sig om ifall
-optimeringen kommer att lyckas eller inte. Istället för att analysera koden
-väljer kompilatorn att testa sig fram och sedan återgå till den ursprungliga
-koden om optimeringen misslyckades \citep{mk10}. Denna åtgärd kallas för
-avoptimering och inträffar aktivt i körningen av JavaScript eftersom språket
-är dynamiskt och en avoptimering sker varje gång en datatyp konverteras.
-Ytterligare existerar det specifika strukturer som kompilatorn inte kan
-optimera, exempelvis try-satser samt vissa typer av switch-satser. Även här
-måste en avoptimering ske men för dessa struktur-relaterade problem kallas det
-för en s.k. \textit{``bailout''}.
+En girig kompilering innebär att kompilatorn inte bryr sig om optimeringen
+kommer att lyckas eller inte. Istället för att analysera programkoden väljer
+kompilatorn att testa sig fram och sedan återgå till den ursprungliga
+maskinkoden om optimeringen misslyckades \citep{mk10}. Denna åtgärd kallas
+för avoptimering och inträffar aktivt i körningen av JavaScript eftersom
+språket är dynamiskt och en avoptimering sker varje gång en datatyp
+konverteras.  Ytterligare existerar det specifika strukturer som kompilatorn
+inte kan optimera, exempelvis try-satser samt vissa typer av switch-satser.
+Även här måste en avoptimering ske men för dessa struktur-relaterade problem
+kallas det för en s.k. \textit{``bailout''}.
 
 För att identifiera dessa avoptimeringar och \textit{``bailouts''} har V8 diverse
 kommandoradsflaggor som kan användas. Dessa kan även användas för att
@@ -70,9 +71,9 @@ Nedan följer en lista på de kommandoradsflaggor som används i detta kapitel
     optimeringsteknik innebär att kompilatorn ersätter ett funktionsanrop med
     själva funktionsinnehållet och därmed sparar kostnaden av själva andropet
     samt dess returnering. När en \textit{``function inlining''} utförs
-    möjliggör det ytterligare optimeringsmöjligheter eftersom koden nu är mer
-    kompakt och introducerar satser som möjligen kan kombineras med omliggande
-    kod.
+    möjliggör det ytterligare optimeringsmöjligheter eftersom programkoden nu
+    är mer kompakt och introducerar satser som möjligen kan kombineras med
+    omliggande programkod.
 \end{description}
 
 \subsection{Provtagning}
@@ -97,7 +98,7 @@ icke-litterala labels, d.v.s. variabler.
 
 % @TODO linebreak is messed up, why?
 Detta är ett enkelt problem att lösa eftersom avoptimeringen inte sker för
-``if-sats''-\\motsvarigheten och därmed kan koden optimeras enligt
+``if-sats''-\\motsvarigheten och därmed kan programkoden optimeras enligt
 figur~\ref{fig:bailout}.
 
 \lstloadlanguages{JavaScript}

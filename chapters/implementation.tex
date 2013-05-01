@@ -29,9 +29,9 @@ i input-teckensträngen, dess rad och kolumn i input samt dess tokenvärde.
 
 \subsubsection{Blanksteg och kommentarer}
 
-Eftersom blanksteg utgör 40\% av implementationens kod kan det konstateras att
-lexern spenderar en väsentlig del av sin tid på blanksteg. Det första lexern
-gör när den anropas är att anropa en funktion som ignorerar alla
+Eftersom blanksteg utgör 40\% av implementationens programkod kan det
+konstateras att lexern spenderar en väsentlig del av sin tid på blanksteg. Det
+första lexern gör när den anropas är att anropa en funktion som ignorerar alla
 blankstegstecken som hittas.
 
 Eftersom token-objekt innehåller information om rad och kolumn i input
@@ -42,7 +42,7 @@ och bildar därmed kolumnen.
 
 Kompilatorer kan ignorera kommentarer eftersom de inte innehåller semantiska
 värden men eftersom målet med denna implementation är användning för
-kodanalys sparas även kommentarer. Detta görs genom att söka efter
+programkodsanalys sparas även kommentarer. Detta görs genom att söka efter
 avgränsarsymbolen (\verb+--+) och lagra dess information i en separat tabell
 som slutligen anknyts till det returnerade syntaxträdet.
 
@@ -230,7 +230,7 @@ Processen för att införa detta kommer bestå av tre steg, där det det första
 steget visar den ursprungliga regeln, det andra steget visar resultatet från
 att eliminera vänsterrekursion och det tredje steget visar regeln skriven utan epsilon.
 Med att omforma regeln till att använda repetition istället för epsilon är
-regeln färdig för att översättas till kod.
+regeln färdig för att översättas till programkod.
 
 \subsubsection{Gruppering av uttryck}
 
@@ -475,10 +475,10 @@ handskriven rekursivt nedstigande parser.
 
 \subsection{Abstrakt syntaxträd}
 
-Eftersom implementationens mål är att användas som kodanalysator representeras
-parsningens syntaxträd som ett abstrakt syntaxträd. Varje nod i trädet
-innehåller ett obligatoriskt typ-attribut samt en serie andra attribut som är
-nod-specifika. Dessa noder är implementerade som objekt-litteraler och
+Eftersom implementationens mål är att användas som programkodanalysator
+representeras parsningens syntaxträd som ett abstrakt syntaxträd. Varje nod i
+trädet innehåller ett obligatoriskt typ-attribut samt en serie andra attribut
+som är nod-specifika. Dessa noder är implementerade som objekt-litteraler och
 returneras till det anropande programmet började från programmets rot, Luas
 s.k. \textit{``chunk''}.
 

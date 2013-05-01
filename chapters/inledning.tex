@@ -1,7 +1,7 @@
 \section{Inledning}
 
 Det existerar ett flertal olika parser-arkitekturer i dagens kompilatorer.
-Vissa använder sig av maskingenererad kod medan andra implementerar
+Vissa använder sig av maskingenererad programkod medan andra implementerar
 komponenten manuellt. Beroende på komplexiteten av det kompilerade språkets
 syntax påverkas även komplexiteten av parser-implementationen av att
 vissa implementationer väljer att inte vara fullständiga.
@@ -28,25 +28,26 @@ Den praktiska delen använder denna teori för att implementera en handskriven
 Lua-parser i JavaScript. I kapitel 6 beskrivs en prestandaanalys och parserns
 väsentliga flaskhalsar avlägsnas. Orsaken till att JavaScript valts som
 implementationsspråk är att i framtiden kunna använda parsern som ett
-analyseringsverktyg i en nätbaserad kodredigerare.
+analyseringsverktyg i en nätbaserad programkodsredigerare.
 
 För att upprätthålla en hög kvalitet på implementationen har ett antal
 kvalitetssäkringar uppgjorts. Över 500 funktionstest har skapats med hjälp av
 kodgenerering och manuell verifiering. Testen baserar sig på
 Yueliang-projektets testsvit. Med dessa test har ett flertal fel korrigerats
-och implementationen har i nuläget en kodtäckning på 100\%.
+och implementationen har i nuläget en programkodstäckning på 100\%.
 
-Funktionstest, mätning av kodtäckning, test för funktionskomplexitet samt en
-statisk kodanlys körs före varje uppdatering för att verifiera dess
-kvalitet. Ytterligare används Travis kontinuerlig integrering för att
-verifiera att utomstående uppdateringar håller standarden.
+Funktionstest, mätning av programkodstäckning, test för funktionskomplexitet
+samt en statisk programkodsanalys körs före varje uppdatering för att
+verifiera dess kvalitet. Ytterligare används Travis kontinuerlig integrering
+för att verifiera att utomstående uppdateringar håller standarden.
 
 \subsection{Avgränsning}
 
 Teorin om formella språk innehåller enbart det som krävs för att förstå senare
 kapitel. Ytterligare presenteras enbart tekniker som är anses vara aktuella
 för parser-implementationen eller Lua-språket. Till detta examensarbete hör
-inte senare kompilatorskeden såsom semantisk analys eller kodgenerering.
+inte senare kompilatorskeden såsom semantisk analys eller
+programkodsgenerering.
 
 % vim: set tw=78:ts=2:sw=2:et:fdm=marker:wrap:wm=78:ft=tex
 % vim: spell spelllang=sv

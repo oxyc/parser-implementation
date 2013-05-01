@@ -4,7 +4,7 @@ declare -a words=(
 'prestanda-analys' 'lua språket' 'syntax-highlighter' ' editor'
 'hittas i figur' ' lookahead' ' backtracker' ' backtracking'
 'gnu projektet' 'array' 'prestanda analys' 'kontextfrigrammatik'
-'syntax analys' 'syntastisk' '\-\-'
+'syntax analys' 'syntastisk' '\-\-' ' kod'
 )
 
 IFS="|"
@@ -13,3 +13,6 @@ IFS=" "
 
 echo -e "\nFigure references"
 ack -a -G '\.tex$' 'fig:' | sed -e 's/.*fig:\([^}]*\)}.*/\1/' | sort | uniq -c
+
+echo -e "\nTODO"
+ack -a -G '\.tex$' "@TODO|@FIXME"
