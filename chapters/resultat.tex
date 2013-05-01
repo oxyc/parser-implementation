@@ -78,16 +78,17 @@ genererade parsern fortfarande är långsam jämfört med examensarbetets
 implementation kan det konstateras att lösningen inte är passande för ett
 prestandakritiskt projekt.
 
-Parsern tillhörande LuaMinify visar sig vara över 30 gånger långsammare än
-examensarbetets parser. Detta resultat är svårt att tolka eftersom
-implementationerna använder sig av skilda språk. LuaJIT är känd för att vara
-en mycket snabb tolk jämfört med andra. I en diskussion från 2010 hävdar dess
-skapare Mike Pall \citep{mp10} att skräpinsamling är ett problem för LuaJIT
-jämfört med V8. Eftersom parsningsprocessen konstruerar 5000 noder i ett
-syntaxträd vid varje test och testen körs 100 gånger är det möjligt att detta
-är en orsak till det sämre resultatet. Skräpinsamlingsproblem går vanligtvis
-att optimera genom att inte kontrollera användningen av de objekt som skapas
-under en exekvering.
+Parsern tillhörande LuaMinify visar sig vara mer än 30 gånger långsammare än
+examensarbetets parser när den exekveras med Lua 5.1. Detta resultat är svårt
+att tolka eftersom implementationerna använder sig av skilda språk. Vid
+en exekvering med LuaJIT som är känd för att vara en mycket snabb tolk är
+LuaMinify-parsern 15 gånger långsammare är examensarbetets parser. I en
+diskussion från 2010 hävdar LuaJIT skaparen Mike Pall \citep{mp10} att
+skräpinsamling är ett problem för LuaJIT jämfört med V8.  Eftersom
+parsningsprocessen konstruerar 5000 noder i ett syntaxträd vid varje test och
+testen körs 100 gånger är det möjligt att detta är en orsak till det sämre
+resultatet. Skräpinsamlingsproblem går vanligtvis att optimera genom att
+kontrollera användningen av de objekt som skapas under en exekvering.
 
 % vim: set tw=78:ts=2:sw=2:et:fdm=marker:wrap:wm=78:ft=tex
 % vim: spell spelllang=sv
