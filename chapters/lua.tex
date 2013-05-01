@@ -169,7 +169,8 @@ objekt-metoder till något som liknar klasser. Figur~\ref{fig:class} visar en
 klass-lik implementation i Lua.
 
 \begin{figure}[ht]
-  \begin{lstlisting}[language=Lua]
+  \begin{minipage}[t]{0.5\textwidth}
+\begin{lstlisting}[language=Lua]
 Person = {}
 function Person:new(name)
   o = { name = name }
@@ -185,7 +186,16 @@ end
 
 carl = Person:new("Carl")
 carl:greet("Roger");
-  \end{lstlisting}
+\end{lstlisting}
+  \end{minipage}
+  \begin{minipage}[t]{0.5\textwidth}
+\begin{lstlisting}[]
+Exempel output:
+
+> Hello Roger
+> My name is Carl
+\end{lstlisting}
+  \end{minipage}
   \caption{En arv-implementation i Lua med hjälp av metatabeller.}
   \label{fig:class}
 \end{figure}
