@@ -204,6 +204,11 @@ funktionens returnering.
 
 \subsection{Eliminering av mångtydighet}
 
+Eftersom handskrivna parsers i huvudsak använder sig av
+\textit{``uppifrån-och-ner''} algoritmer kan de inte parsa alla kontextfria
+grammatiker. Vissa grammatiker innehåller mångtydigheter som måste elimineras
+för att denna typ av algoritm skall kunna användas.
+
 \subsubsection{Vänsterrekursion}
 
 Ett vanligt problem med grammatiken i en parser med \textit{``uppifrån-och-ner''}
@@ -302,6 +307,12 @@ A^\prime &\rightarrow \beta_1\;|\;\beta_2
 \end{align*}
 
 \subsection{Vidareutveckling av parsertyper}
+
+Genom att eliminera mångtydigheter i en grammatik klarar
+\textit{``uppifrån-och-ner''}-baserade parsers av en större mängd
+programmeringsspråk. I vissa fall kan mångtydigheter inte elimineras, vilket
+leder till att parsern behöver ett större antal \textit{``lookahead''}-tokens
+för att kunna göra ett beslut.
 
 \subsubsection{Backtracking}
 

@@ -149,10 +149,6 @@ komponent.
 
 \subsubsection{EBNF-notation till JavaScript-kod}
 
-Processen att omvandla EBNF-notation är en enkel process när eliminieringen av
-$\epsilon$ gjorts. Alternering implementeras som switch-satser, villkor som
-if-satser och repetition som while-, for- eller do-satser.
-
 För att minimera komplexiteten av parsern har implementationen delat upp
 produktionsregeln \bnfrule{sats} så att den enbart identifierar vilken typ av
 sats det handlar om utgående från den första terminalen. Efter att satsen
@@ -186,18 +182,20 @@ Den nya \bnfrule{sats}-grammatiken visas i figur~\ref{fig:stat}.
   \label{fig:stat}
 \end{figure}
 
-\subsubsection{Implementation av produktionsregler}
+Processen att omvandla EBNF-notation är en enkel process när eliminieringen av
+$\epsilon$ gjorts. Alternering implementeras som switch-satser, villkor som
+if-satser och repetition som while-, for- eller do-satser.
 
-Som exempel omvandlas följande if- samt while-sats till
-JavaScript-motsvarigheterna i figur~\ref{fig:ifstat}.
+Genom att omvandla varje produktionsregel till en JavaScript-funktion enligt detta
+mönster fullständiggörs den syntaktiska analysatorn. Som exempel omvandlas
+EBNF-notationen för if- samt while-satser till dess JavaScript-motsvarighet i
+figur~\ref{fig:ifstat}.
 
 \begin{figure}
   \setlength{\grammarindent}{3em}
   \begin{grammar}
     \singlespace\small%
     \fontfamily{lmr}\selectfont
-      <sats> ::= "if" <if-sats> | "while" <while-sats> | \ldots
-
       <if-sats> ::= "if" <uttryck> "then" <block> \{"elseif" <uttryck> "then" <block>\}
       ["else" <block>] "end"
 
